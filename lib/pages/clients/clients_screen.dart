@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/config/constants.dart';
 import 'package:mapos_app/pages/clients/clients_manager.dart';
 import 'package:mapos_app/pages/clients/clientes_add.dart';
+import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
 
 class ClientesScreen extends StatefulWidget {
   @override
@@ -12,6 +13,7 @@ class ClientesScreen extends StatefulWidget {
 }
 
 class _ClientesScreenState extends State<ClientesScreen> {
+  int _selectedIndex = 3;
   List<dynamic> clientes = [];
   List<dynamic> filteredClientes = [];
   bool isSearching = false;
@@ -98,11 +100,12 @@ class _ClientesScreenState extends State<ClientesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: !isSearching
-            ? Text('Clientes')
+            ? Text('Clientes', style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.05))
             : TextField(
           controller: searchController,
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white, fontSize: MediaQuery.of(context).size.width * 0.05),
           onChanged: (value) {
             _filterClientes(value);
           },
@@ -186,7 +189,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
                         child: Text(
                           '${filteredClientes[index]['idClientes']}',
                           style: TextStyle(
-                            fontSize: 20 * MediaQuery.of(context).textScaleFactor,
+                            fontSize: MediaQuery.of(context).size.width * 0.04, // 4% da largura da tela
                             color: Colors.white,
                           ),
                         ),
@@ -201,15 +204,24 @@ class _ClientesScreenState extends State<ClientesScreen> {
                             '${filteredClientes[index]['nomeCliente']}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
+                              fontSize: MediaQuery.of(context).size.width * 0.04, // 4% da largura da tela
                             ),
                           ),
                           Row(
                             children: [
                               Text(
-                                  'Celular: ${filteredClientes[index]['celular']}'),
+                                'Celular: ${filteredClientes[index]['celular']}',
+                                style: TextStyle(
+                                  fontSize: MediaQuery.of(context).size.width * 0.029, // 4% da largura da tela
+                                ),
+                              ),
                               SizedBox(width: 8.0),
                               Text(
-                                  'Telefone: ${filteredClientes[index]['telefone']}'),
+                                'Telefone: ${filteredClientes[index]['telefone']}',
+                                style: TextStyle(
+                                  fontSize: MediaQuery.of(context).size.width * 0.029, // 4% da largura da tela
+                                ),
+                              ),
                             ],
                           ),
                         ],
@@ -248,7 +260,16 @@ class _ClientesScreenState extends State<ClientesScreen> {
         },
         child: Icon(Icons.add),
       ),
-
+      bottomNavigationBar: BottomNavigationBarWidget(
+        activeIndex: _selectedIndex,
+        context: context,
+        onTap: _onItemTapped,
+      ),
     );
+  }
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 }
