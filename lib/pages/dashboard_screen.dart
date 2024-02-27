@@ -1,17 +1,26 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/pages/clients/clients_screen.dart';
-import 'package:mapos_app/main.dart';
 import 'package:mapos_app/pages/services/services_screen.dart';
+import 'package:mapos_app/widgets/menu_lateral.dart';
+import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
+import 'package:mapos_app/widgets/bottom_navigation_bar.dart'; // Importe o widget BottomNavigationBarWidget
+import 'package:mapos_app/main.dart';
 
-class DashboardScreen extends StatelessWidget {
+
+class DashboardScreen extends StatefulWidget {
+  @override
+  _DashboardScreenState createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  int _selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Mostrar o diálogo de confirmação ao pressionar o botão de voltar no dispositivo
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -44,11 +53,20 @@ class DashboardScreen extends StatelessWidget {
         appBar: AppBar(
           title: Text('Dashboard'),
           automaticallyImplyLeading: false,
+          leading: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: Icon(Icons.menu),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              );
+            },
+          ),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.logout),
               onPressed: () {
-                // Exibir o mesmo diálogo ao pressionar o botão de logout
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -62,6 +80,7 @@ class DashboardScreen extends StatelessWidget {
                           },
                           child: Text("Cancelar"),
                         ),
+
                         TextButton(
                           onPressed: () {
                             // Remova o token e outras informações de autenticação
@@ -77,6 +96,7 @@ class DashboardScreen extends StatelessWidget {
             ),
           ],
         ),
+        drawer: MenuLateral(),
         body: Center(
           child: FutureBuilder<Map<String, dynamic>>(
             future: _getUserData(),
@@ -90,19 +110,17 @@ class DashboardScreen extends StatelessWidget {
                   String ciKey = snapshot.data?['ci_key'] ?? '';
                   List<dynamic> permissoes = snapshot.data?['permissoes'] ?? [];
                   bool temPermissaoCliente = false;
-                  bool temPermissaoServicos = false; // Adiciona a verificação para vServicos
+                  bool temPermissaoServicos = false;
 
                   for (var permissao in permissoes) {
                     if (permissao['vCliente'] == "1") {
                       temPermissaoCliente = true;
                     }
 
-                    // Verifica se há permissão para vServicos
                     if (permissao['vServico'] == "1") {
                       temPermissaoServicos = true;
                     }
 
-                    // Se ambas as permissões foram encontradas, pode parar a busca
                     if (temPermissaoCliente && temPermissaoServicos) {
                       break;
                     }
@@ -110,16 +128,7 @@ class DashboardScreen extends StatelessWidget {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Text(
-                      //   'Valor de ci_key: $ciKey',
-                      //   style: TextStyle(fontSize: 20.0),
-                      // ),
-                      // SizedBox(height: 20),
-                      // Text(
-                      //   'Permissões: $permissoes',
-                      //   style: TextStyle(fontSize: 20.0),
-                      // ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10),
                       Visibility(
                         visible: temPermissaoCliente,
                         child: ElevatedButton(
@@ -152,6 +161,10 @@ class DashboardScreen extends StatelessWidget {
             },
           ),
         ),
+        bottomNavigationBar: BottomNavigationBarWidget(
+          activeIndex: _selectedIndex,
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }
@@ -163,18 +176,21 @@ class DashboardScreen extends StatelessWidget {
     List<dynamic> permissoes = jsonDecode(permissoesString);
     return {'ci_key': ciKey, 'permissoes': permissoes};
   }
-}
 
-void removeTokenAndNavigateToLogin(BuildContext context) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  // Remova o token e outras informações de autenticação
-  await prefs.remove('token');
-  await prefs.remove('permissoes');
+  void removeTokenAndNavigateToLogin(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+    await prefs.remove('permissoes');
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+          (Route<dynamic> route) => false,
+    );
+  }
 
-  // Navegue de volta para a tela de login
-  Navigator.pushAndRemoveUntil(
-    context,
-    MaterialPageRoute(builder: (context) => LoginPage()), // Substitua LoginScreen pela tela de login apropriada
-        (Route<dynamic> route) => false,
-  );
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 }
