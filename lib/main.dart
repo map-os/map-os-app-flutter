@@ -80,7 +80,10 @@ class _LoginPageState extends State<LoginPage> {
         final data = json.decode(response.body);
         if (data['result'] == true) {
           String ciKey = data['ci_key'];
-          String permissoes = data['permissions']['permissoes'];
+          List<
+              dynamic> permissoesList = data['permissions']; // Acessando a lista de permissões diretamente
+          String permissoes = jsonEncode(
+              permissoesList); // Convertendo a lista de permissões em uma string JSON
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('token', ciKey);
           await prefs.setString('permissoes', permissoes);
@@ -89,17 +92,16 @@ class _LoginPageState extends State<LoginPage> {
             MaterialPageRoute(builder: (context) => DashboardScreen()),
           );
         } else {
-          showSnackBar('Credenciais inválidas');
+          ('Credenciais inválidas');
         }
       } else {
-        showSnackBar('Erro durante a solicitação: ${response.statusCode}');
+        ('Erro durante a solicitação: ${response.statusCode}');
       }
     } catch (e) {
-      showSnackBar('Erro durante a solicitação: $e');
+      ('Erro durante a solicitação: $e');
     }
   }
-
-  bool isValidEmail(String email) {
+    bool isValidEmail(String email) {
     String emailRegex = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
     return RegExp(emailRegex).hasMatch(email);
   }
@@ -178,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
                     foregroundColor: Colors.white,
                     backgroundColor: Color(0xffff4d00),
                     elevation: 1,
-                    padding: EdgeInsets.symmetric(horizontal: 230, vertical: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
