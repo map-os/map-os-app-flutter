@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/config/constants.dart';
 import 'package:mapos_app/pages/services/services_manager.dart';
+import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
+import 'package:mapos_app/pages/services/services_add.dart';
 
 class ServicesScreen extends StatefulWidget {
   @override
@@ -13,6 +15,7 @@ class ServicesScreen extends StatefulWidget {
 }
 
 class _ServicesScreenState extends State<ServicesScreen> {
+  int _selectedIndex = 1;
   List<dynamic> services = [];
   List<dynamic> filteredServices = [];
   bool isSearching = false;
@@ -35,12 +38,11 @@ class _ServicesScreenState extends State<ServicesScreen> {
   Future<void> _getServices() async {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
-    int page = 1;
-    int perPage = 200;
+
 
     while (true) {
       var url =
-          '${APIConfig.baseURL}${APIConfig.servicossEndpoint}?X-API-KEY=$ciKey&page=$page&per_page=$perPage';
+          '${APIConfig.baseURL}${APIConfig.servicossEndpoint}?X-API-KEY=$ciKey';
 
       var response = await http.get(Uri.parse(url));
 
@@ -56,7 +58,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
               services.addAll(newServices);
               filteredServices = List.from(services); // Update filtered list
             });
-            page++;
+
           }
         } else {
           print('Key "services" not found in API response');
@@ -96,6 +98,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: !isSearching
             ? Text('Serviços')
             : TextField(
@@ -185,7 +188,8 @@ class _ServicesScreenState extends State<ServicesScreen> {
                         child: Text(
                           '${filteredServices[index]['idServicos']}',
                           style: TextStyle(
-                            fontSize: 20 * MediaQuery.of(context).textScaleFactor,
+                            fontSize: MediaQuery.of(context).size.width * 0.04, // 4% da largura da tela
+
                             color: Colors.white,
                           ),
                         ),
@@ -200,6 +204,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                             '${filteredServices[index]['nome']}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
+                              fontSize: MediaQuery.of(context).size.width * 0.04, // 4% da largura da tela
                             ),
                           ),
                           Text(
@@ -219,29 +224,39 @@ class _ServicesScreenState extends State<ServicesScreen> {
         onPressed: () async {
           Map<String, dynamic> permissions = await _getCiKey();
           bool hasPermissionToAdd = false;
-          for (var permission in permissions['permissions']) {
-            if (permission['addService'] == '1') {
+          for (var permissao in permissions['permissoes']) {
+            if (permissao['aServico'] == '1') {
               hasPermissionToAdd = true;
               break;
             }
           }
           if (hasPermissionToAdd) {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => ServiceAddScreen()),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ServicoAddScreen()),
+            );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 backgroundColor: Colors.red,
-                content: Text(
-                    'Você não tem permissões para adicionar serviços.'),
+                content: Text('Você não tem permissão para adicionar clientes.'),
               ),
             );
           }
         },
         child: Icon(Icons.add),
       ),
+      bottomNavigationBar: BottomNavigationBarWidget(
+        activeIndex: _selectedIndex,
+        context: context, // Passe o contexto aqui
+        onTap: _onItemTapped,
+      ),
     );
   }
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 }
+
