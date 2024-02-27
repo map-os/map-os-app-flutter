@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/pages/clients/clients_screen.dart';
-import '../main.dart';
+import 'package:mapos_app/main.dart';
+import 'package:mapos_app/pages/services/services_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   @override
@@ -84,21 +87,38 @@ class DashboardScreen extends StatelessWidget {
                 if (snapshot.hasError) {
                   return Text('Erro: ${snapshot.error}');
                 } else {
-                  String ciKey = snapshot.data?['ci_key'];
-                  String permissoes = snapshot.data?['permissoes'];
-                  bool temPermissaoCliente = permissoes.contains('vCliente');
+                  String ciKey = snapshot.data?['ci_key'] ?? '';
+                  List<dynamic> permissoes = snapshot.data?['permissoes'] ?? [];
+                  bool temPermissaoCliente = false;
+                  bool temPermissaoServicos = false; // Adiciona a verificação para vServicos
+
+                  for (var permissao in permissoes) {
+                    if (permissao['vCliente'] == "1") {
+                      temPermissaoCliente = true;
+                    }
+
+                    // Verifica se há permissão para vServicos
+                    if (permissao['vServico'] == "1") {
+                      temPermissaoServicos = true;
+                    }
+
+                    // Se ambas as permissões foram encontradas, pode parar a busca
+                    if (temPermissaoCliente && temPermissaoServicos) {
+                      break;
+                    }
+                  }
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Valor de ci_key: $ciKey',
-                        style: TextStyle(fontSize: 20.0),
-                      ),
-                      SizedBox(height: 20),
-                      Text(
-                        'Permissões: $permissoes',
-                        style: TextStyle(fontSize: 20.0),
-                      ),
+                      // Text(
+                      //   'Valor de ci_key: $ciKey',
+                      //   style: TextStyle(fontSize: 20.0),
+                      // ),
+                      // SizedBox(height: 20),
+                      // Text(
+                      //   'Permissões: $permissoes',
+                      //   style: TextStyle(fontSize: 20.0),
+                      // ),
                       SizedBox(height: 20),
                       Visibility(
                         visible: temPermissaoCliente,
@@ -109,7 +129,20 @@ class DashboardScreen extends StatelessWidget {
                               MaterialPageRoute(builder: (context) => ClientesScreen()),
                             );
                           },
-                          child: Text('Acesso a Clientes'),
+                          child: Text('Clientes'),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Visibility(
+                        visible: temPermissaoServicos,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => ServicesScreen()),
+                            );
+                          },
+                          child: Text('Serviços'),
                         ),
                       ),
                     ],
@@ -126,7 +159,8 @@ class DashboardScreen extends StatelessWidget {
   Future<Map<String, dynamic>> _getUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String ciKey = prefs.getString('token') ?? '';
-    String permissoes = prefs.getString('permissoes') ?? '';
+    String permissoesString = prefs.getString('permissoes') ?? '[]';
+    List<dynamic> permissoes = jsonDecode(permissoesString);
     return {'ci_key': ciKey, 'permissoes': permissoes};
   }
 }

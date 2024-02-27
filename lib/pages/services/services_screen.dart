@@ -1,26 +1,27 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/config/constants.dart';
-import 'package:mapos_app/pages/clients/clients_manager.dart';
-import 'package:mapos_app/pages/clients/clientes_add.dart';
+import 'package:mapos_app/pages/services/services_manager.dart';
 
-class ClientesScreen extends StatefulWidget {
+class ServicesScreen extends StatefulWidget {
   @override
-  _ClientesScreenState createState() => _ClientesScreenState();
+  _ServicesScreenState createState() => _ServicesScreenState();
 }
 
-class _ClientesScreenState extends State<ClientesScreen> {
-  List<dynamic> clientes = [];
-  List<dynamic> filteredClientes = [];
+class _ServicesScreenState extends State<ServicesScreen> {
+  List<dynamic> services = [];
+  List<dynamic> filteredServices = [];
   bool isSearching = false;
   TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _getClientes();
+    _getServices();
   }
 
   Future<Map<String, dynamic>> _getCiKey() async {
@@ -31,7 +32,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
     return {'ciKey': ciKey, 'permissoes': permissoes};
   }
 
-  Future<void> _getClientes() async {
+  Future<void> _getServices() async {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
     int page = 1;
@@ -39,33 +40,31 @@ class _ClientesScreenState extends State<ClientesScreen> {
 
     while (true) {
       var url =
-          '${APIConfig.baseURL}${APIConfig.clientesEndpoint}?X-API-KEY=$ciKey&page=$page&per_page=$perPage';
+          '${APIConfig.baseURL}${APIConfig.servicossEndpoint}?X-API-KEY=$ciKey&page=$page&per_page=$perPage';
 
       var response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
         Map<String, dynamic> data = json.decode(response.body);
         if (data.containsKey('result')) {
-          List<dynamic> newClientes = data['result'];
-          if (newClientes.isEmpty) {
-            // Se não houver mais clientes, saia do loop
+          List<dynamic> newServices = data['result'];
+          if (newServices.isEmpty) {
+            // If no more services, exit the loop
             break;
           } else {
-            // Adicione os novos clientes à lista existente
             setState(() {
-              clientes.addAll(newClientes);
-              filteredClientes = List.from(clientes); // Atualizar a lista filtrada
+              services.addAll(newServices);
+              filteredServices = List.from(services); // Update filtered list
             });
-            // Avance para a próxima página
             page++;
           }
         } else {
-          print('Chave "clientes" não encontrada na resposta da API');
-          break; // Saia do loop se não houver clientes
+          print('Key "services" not found in API response');
+          break;
         }
       } else {
-        print('Falha ao carregar clientes');
-        break; // Saia do loop em caso de falha
+        print('Failed to load services');
+        break;
       }
     }
   }
@@ -80,16 +79,15 @@ class _ClientesScreenState extends State<ClientesScreen> {
     setState(() {
       isSearching = false;
       searchController.clear();
-      filteredClientes = List.from(clientes); // Restaurar lista filtrada para a original
+      filteredServices = List.from(services); // Restore filtered list to original
     });
   }
 
-  void _filterClientes(String searchText) {
+  void _filterServices(String searchText) {
     setState(() {
-      filteredClientes = clientes
-          .where((cliente) => cliente['nomeCliente']
-          .toLowerCase()
-          .contains(searchText.toLowerCase()))
+      filteredServices = services
+          .where((service) =>
+          service['nome'].toLowerCase().contains(searchText.toLowerCase()))
           .toList();
     });
   }
@@ -99,12 +97,12 @@ class _ClientesScreenState extends State<ClientesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: !isSearching
-            ? Text('Clientes')
+            ? Text('Serviços')
             : TextField(
           controller: searchController,
           style: TextStyle(color: Colors.white),
           onChanged: (value) {
-            _filterClientes(value);
+            _filterServices(value);
           },
           decoration: InputDecoration(
             hintText: 'Pesquisar...',
@@ -113,8 +111,8 @@ class _ClientesScreenState extends State<ClientesScreen> {
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide.none,
             ),
-            filled: true, // Preenchimento ativado
-            fillColor: Color(0xffe79a24), // Cor de fundo personalizada
+            filled: true,
+            fillColor: Color(0xffe79a24),
             contentPadding:
             EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           ),
@@ -135,12 +133,12 @@ class _ClientesScreenState extends State<ClientesScreen> {
           ),
         ],
       ),
-      body: filteredClientes.isEmpty
+      body: filteredServices.isEmpty
           ? Center(
         child: CircularProgressIndicator(),
       )
           : ListView.builder(
-        itemCount: filteredClientes.length,
+        itemCount: filteredServices.length,
         itemBuilder: (BuildContext context, int index) {
           return Padding(
             padding: const EdgeInsets.all(1.0),
@@ -150,7 +148,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
                   Map<String, dynamic> permissions = await _getCiKey();
                   bool hasPermissionToEdit = false;
                   for (var permissao in permissions['permissoes']) {
-                    if (permissao['eCliente'] == '1') {
+                    if (permissao['eServico'] == '1') {
                       hasPermissionToEdit = true;
                       break;
                     }
@@ -159,8 +157,8 @@ class _ClientesScreenState extends State<ClientesScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ClienteEditScreen(
-                          cliente: filteredClientes[index],
+                        builder: (context) => ServicoEditScreen(
+                          servico: filteredServices[index],
                         ),
                       ),
                     );
@@ -168,7 +166,8 @@ class _ClientesScreenState extends State<ClientesScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         backgroundColor: Colors.red,
-                        content: Text('Você não tem permissão para editar clientes.'),
+                        content: Text(
+                            'Você não tem permissões para editar serviços.'),
                       ),
                     );
                   }
@@ -184,7 +183,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
                       padding: EdgeInsets.all(8.0),
                       child: Center(
                         child: Text(
-                          '${filteredClientes[index]['idClientes']}',
+                          '${filteredServices[index]['idServicos']}',
                           style: TextStyle(
                             fontSize: 20 * MediaQuery.of(context).textScaleFactor,
                             color: Colors.white,
@@ -198,19 +197,13 @@ class _ClientesScreenState extends State<ClientesScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${filteredClientes[index]['nomeCliente']}',
+                            '${filteredServices[index]['nome']}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Row(
-                            children: [
-                              Text(
-                                  'Celular: ${filteredClientes[index]['celular']}'),
-                              SizedBox(width: 8.0),
-                              Text(
-                                  'Telefone: ${filteredClientes[index]['telefone']}'),
-                            ],
+                          Text(
+                            'Valor: ${filteredServices[index]['preco']}',
                           ),
                         ],
                       ),
@@ -226,29 +219,29 @@ class _ClientesScreenState extends State<ClientesScreen> {
         onPressed: () async {
           Map<String, dynamic> permissions = await _getCiKey();
           bool hasPermissionToAdd = false;
-          for (var permissao in permissions['permissoes']) {
-            if (permissao['aCliente'] == '1') {
+          for (var permission in permissions['permissions']) {
+            if (permission['addService'] == '1') {
               hasPermissionToAdd = true;
               break;
             }
           }
           if (hasPermissionToAdd) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ClienteAddScreen()),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => ServiceAddScreen()),
+            // );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 backgroundColor: Colors.red,
-                content: Text('Você não tem permissão para adicionar clientes.'),
+                content: Text(
+                    'Você não tem permissões para adicionar serviços.'),
               ),
             );
           }
         },
         child: Icon(Icons.add),
       ),
-
     );
   }
 }

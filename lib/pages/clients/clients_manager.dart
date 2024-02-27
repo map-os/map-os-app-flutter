@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/config/constants.dart';
+import 'dart:convert';
 
 class ClienteEditScreen extends StatefulWidget {
   final Map<String, dynamic> cliente;
@@ -78,9 +79,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Nome do Cliente',
                   labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.person),
+                  prefixIcon: Icon(Icons.person, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Colors.grey[200],
+                  fillColor: Color(0x99fff4e6),
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(
                       vertical: 2.0, horizontal: 2.0),
@@ -97,9 +98,10 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Celular',
                   labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.phone_android),
+                  prefixIcon: Icon(
+                      Icons.phone_android, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Colors.grey[200],
+                  fillColor: Color(0x99fff4e6),
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(
                       vertical: 2.0, horizontal: 2.0),
@@ -115,9 +117,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Telefone',
                   labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.phone),
+                  prefixIcon: Icon(Icons.phone, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Colors.grey[200],
+                  fillColor: Color(0x99fff4e6),
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(
                       vertical: 2.0, horizontal: 2.0),
@@ -134,9 +136,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Documento',
                   labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.description),
+                  prefixIcon: Icon(Icons.description, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Colors.grey[200],
+                  fillColor: Color(0x99fff4e6),
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(
                       vertical: 2.0, horizontal: 2.0),
@@ -152,9 +154,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'E-mail',
                   labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.email),
+                  prefixIcon: Icon(Icons.email, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Colors.grey[200],
+                  fillColor: Color(0x99fff4e6),
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(
                       vertical: 2.0, horizontal: 2.0),
@@ -171,9 +173,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Rua',
                   labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.map),
+                  prefixIcon: Icon(Icons.map, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Colors.grey[200],
+                  fillColor: Color(0x99fff4e6),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -193,9 +195,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Número',
                   labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.numbers),
+                  prefixIcon: Icon(Icons.numbers, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Colors.grey[200],
+                  fillColor: Color(0x99fff4e6),
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(
                       vertical: 2.0, horizontal: 2.0),
@@ -211,9 +213,10 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Bairro',
                   labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.maps_home_work),
+                  prefixIcon: Icon(
+                      Icons.maps_home_work, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Colors.grey[200],
+                  fillColor: Color(0x99fff4e6),
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(
                       vertical: 2.0, horizontal: 2.0),
@@ -230,9 +233,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'CEP',
                   labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.numbers),
+                  prefixIcon: Icon(Icons.numbers, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Colors.grey[200],
+                  fillColor: Color(0x99fff4e6),
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(
                       vertical: 2.0, horizontal: 2.0),
@@ -258,9 +261,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Cidade',
                   labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.map),
+                  prefixIcon: Icon(Icons.map, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Colors.grey[200],
+                  fillColor: Color(0x99fff4e6),
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(
                       vertical: 2.0, horizontal: 2.0),
@@ -276,9 +279,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Estado',
                   labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.map),
+                  prefixIcon: Icon(Icons.map, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Colors.grey[200],
+                  fillColor: Color(0x99fff4e6),
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(
                       vertical: 2.0, horizontal: 2.0),
@@ -294,9 +297,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Complemento',
                   labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.add),
+                  prefixIcon: Icon(Icons.add, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Colors.grey[200],
+                  fillColor: Color(0x99fff4e6),
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(
                       vertical: 2.0, horizontal: 2.0),
@@ -337,11 +340,13 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                     Future<bool> success = _updateCliente(
                         updatedCliente); // Removido o await
                     if (await success) {
-                      _showSnackBar('Cliente atualizado com sucesso', backgroundColor: Colors.green, textColor: Colors.white);
+                      _showSnackBar('Cliente atualizado com sucesso',
+                          backgroundColor: Colors.green,
+                          textColor: Colors.white);
                     } else {
-                      _showSnackBar('Falha ao atualizar o cliente', backgroundColor: Colors.red, textColor: Colors.white);
+                      _showSnackBar('Falha ao atualizar o cliente',
+                          backgroundColor: Colors.red, textColor: Colors.white);
                     }
-
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
@@ -357,7 +362,8 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
     );
   }
 
-  void _showSnackBar(String message, {Color backgroundColor = Colors.black, Color textColor = Colors.white}) {
+  void _showSnackBar(String message,
+      {Color backgroundColor = Colors.black, Color textColor = Colors.white}) {
     final snackBar = SnackBar(
       content: Text(message, style: TextStyle(color: textColor)),
       backgroundColor: backgroundColor,
@@ -372,31 +378,57 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
     return ciKey;
   }
 
+
   Future<bool> _updateCliente(Map<String, dynamic> updatedCliente) async {
     String ciKey = await _getCiKey();
 
-    updatedCliente['X-API-KEY'] = ciKey;
-
     var url =
-        '${APIConfig.baseURL}${APIConfig.clientesEndpoint}/${widget
-        .cliente['idClientes']}';
-    print(url);
+        '${APIConfig.baseURL}${APIConfig.clientesEndpoint}/${widget.cliente['idClientes']}';
     try {
+      // Formatando o mapa updatedCliente para corresponder ao formato JSON esperado
+      Map<String, dynamic> formattedCliente = {
+        "idClientes": updatedCliente['idClientes'],
+        "asaas_id": null,
+        "nomeCliente": updatedCliente['nomeCliente'],
+        "sexo": null,
+        "pessoa_fisica": "1",
+        "documento": updatedCliente['documento'],
+        "telefone": updatedCliente['telefone'],
+        "celular": updatedCliente['celular'],
+        "email": updatedCliente['email'],
+        "senha": updatedCliente['senha'],
+        "dataCadastro": updatedCliente['dataCadastro'],
+        "rua": updatedCliente['rua'],
+        "numero": updatedCliente['numero'],
+        "bairro": updatedCliente['bairro'],
+        "cidade": updatedCliente['cidade'],
+        "estado": updatedCliente['estado'],
+        "cep": updatedCliente['cep'],
+        "contato": null,
+        "complemento": updatedCliente['complemento'],
+        "fornecedor": "0"
+      };
+
       var response = await http.put(
         Uri.parse(url),
-        body: updatedCliente,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'X-API-KEY': ciKey,
+        },
+        body: jsonEncode(
+            formattedCliente), // Serializa o mapa para JSON com formatação
       );
 
       if (response.statusCode == 200) {
         print('Cliente atualizado com sucesso');
-        return true; // Retorna true se a atualização for bem-sucedida
+        return true;
       } else {
         print('Falha ao atualizar o cliente: ${response.reasonPhrase}');
-        return false; // Retorna false em caso de falha
+        return false;
       }
     } catch (error) {
       print('Erro ao enviar solicitação PUT: $error');
-      return false; // Retorna false em caso de erro
+      return false;
     }
   }
 }
