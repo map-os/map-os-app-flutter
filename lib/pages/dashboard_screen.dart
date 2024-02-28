@@ -3,16 +3,66 @@ import 'package:mapos_app/pages/clients/clients_screen.dart';
 import 'package:mapos_app/pages/services/services_screen.dart';
 import 'package:mapos_app/widgets/menu_lateral.dart';
 import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
-import'package:mapos_app/pages/products/products_screen.dart';
-
+import 'package:mapos_app/pages/products/products_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:mapos_app/config/constants.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_boxicons/flutter_boxicons.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
 }
-
+Future<Map<String, dynamic>> _getCiKey() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String ciKey = prefs.getString('token') ?? '';
+  String permissoesString = prefs.getString('permissoes') ?? '[]';
+  List<dynamic> permissoes = jsonDecode(permissoesString);
+  return {'ciKey': ciKey, 'permissoes': permissoes};
+}
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 2;
+  int countOs = 0;
+  int clientes = 0;
+  int produtos = 0;
+  int servicos = 0;
+  int garantias = 0;
+  int vendas = 0;
+
+  Future<void> _getData() async {
+    Map<String, dynamic> keyAndPermissions = await _getCiKey();
+    String ciKey = keyAndPermissions['ciKey'] ?? '';
+
+    var url = '${APIConfig.baseURL}${APIConfig.indexEndpoint}?X-API-KEY=$ciKey';
+
+    var response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = json.decode(response.body);
+      if (data.containsKey('result')) {
+        setState(() {
+          countOs = data['result']['countOs'];
+          clientes = data['result']['clientes'];
+          produtos = data['result']['produtos'];
+          servicos = data['result']['servicos'];
+          garantias = data['result']['garantia'];
+          vendas = data['result']['vendas'];
+        });
+        print(countOs);
+      } else {
+        print('Key "result" not found in API response');
+      }
+    } else {
+      print('Failed to load data');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +73,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       drawer: MenuLateral(),
       body: Container(
         decoration: BoxDecoration(
-          color: Color(0xffd97b06), // Cor de fundo desejada
+          color: Color(0xffd97b06),
           borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(20.0), // Bordas inferiores arredondadas
-            bottomRight: Radius.circular(20.0), // Bordas inferiores arredondadas
+            bottomLeft: Radius.circular(20.0),
+            bottomRight: Radius.circular(20.0),
           ),
         ),
         child: SingleChildScrollView(
@@ -36,30 +86,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
                 child: GridView.count(
                   shrinkWrap: true,
-                  crossAxisCount: 2,
-                  crossAxisSpacing: (MediaQuery.of(context).size.width * 0.030),
+                  crossAxisSpacing: (MediaQuery.of(context).size.width * 0.020),
+                  crossAxisCount: 3,
                   mainAxisSpacing: 9.0,
-                  childAspectRatio: 1.5, // Aspect Ratio dos cartões
+                  childAspectRatio: 0.99,
                   children: [
-                    _buildCard('Clientes', Icons.people, () {
+                    _buildCard('Clientes', Boxicons.bx_group, clientes.toString(), () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => ClientesScreen()),
                       );
                     }),
-                    _buildCard('Serviços', Icons.construction_outlined, () {
+                    _buildCard('Serviços', Boxicons.bx_wrench, servicos.toString(), () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => ServicesScreen()),
                       );
                     }),
-                    _buildCard('Produtos', Icons.shopping_cart, () {
+                    _buildCard('Produtos', Boxicons.bx_basket, produtos.toString(), () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => ProductsScreen()),
                       );
                     }),
-                    _buildCard('O.S', Icons.description, () {
+                    _buildCard('O.S', Boxicons.bx_file, countOs.toString(), () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ServicesScreen()),
+                      );
+                    }),
+                    _buildCard('Garantias', Boxicons.bx_receipt, garantias.toString(), () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ServicesScreen()),
+                      );
+                    }),
+                    _buildCard('Vendas', Icons.shopping_cart_outlined, vendas.toString(), () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => ServicesScreen()),
@@ -74,29 +136,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       bottomNavigationBar: BottomNavigationBarWidget(
         activeIndex: _selectedIndex,
-        context: context, // Passe o contexto aqui
+        context: context,
         onTap: _onItemTapped,
       ),
     );
   }
 
-  Widget _buildCard(String title, IconData icon, Function() onTap) {
+  Widget _buildCard(String title, IconData icon, String data, Function() onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.4, // Largura relativa à largura da tela
-        height: MediaQuery.of(context).size.width * 0.4, // Altura relativa à largura da tela
+        // width: MediaQuery.of(context).size.width * 0.4,
+        // height: MediaQuery.of(context).size.width * 0.8,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.0),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xffffffff),
-              Color(0xffffffff)],
-          ),
+          color: Colors.white,
         ),
         child: Padding(
-          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.04),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -105,11 +162,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 size: (MediaQuery.of(context).size.width * 0.09),
                 color: Colors.orange,
               ),
-              SizedBox(height: (MediaQuery.of(context).size.width * 0.01)),
+              SizedBox(height: (MediaQuery.of(context).size.width * 0.001)),
               Text(
                 title,
-                style: TextStyle(fontSize: (MediaQuery.of(context).size.width * 0.035), fontWeight: FontWeight.bold, color: Color(
-                    0xffd87a06)), // Cor do texto
+                style: TextStyle(fontSize: (MediaQuery.of(context).size.width * 0.04),
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xffd87a06)),
+              ),
+              SizedBox(height: (MediaQuery.of(context).size.width * 0.001)),
+              Text(
+                data,
+                style: TextStyle(fontSize: (MediaQuery.of(context).size.width * 0.05), fontWeight: FontWeight.bold, color: Color(
+                    0xffd87a06)),
               ),
             ],
           ),
@@ -117,7 +181,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
-
 
   void _onItemTapped(int index) {
     setState(() {

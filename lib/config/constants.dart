@@ -6,7 +6,7 @@ class APIConfig
     static const String apiKey = '569e087716a8e427c8defefacb2011c1';
 
     //ENDPOITNS
-    static const String indexEndpoint = '/index';
+    static const String indexEndpoint = '';
     static const String loginEndpoint = '/login';
     static const String clientesEndpoint = '/clientes';
     static const String prodtuostesEndpoint = '/produtos';
