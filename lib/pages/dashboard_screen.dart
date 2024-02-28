@@ -3,6 +3,7 @@ import 'package:mapos_app/pages/clients/clients_screen.dart';
 import 'package:mapos_app/pages/services/services_screen.dart';
 import 'package:mapos_app/widgets/menu_lateral.dart';
 import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
+import'package:mapos_app/pages/products/products_screen.dart';
 
 
 class DashboardScreen extends StatefulWidget {
@@ -55,7 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     _buildCard('Produtos', Icons.shopping_cart, () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ClientesScreen()),
+                        MaterialPageRoute(builder: (context) => ProductsScreen()),
                       );
                     }),
                     _buildCard('O.S', Icons.description, () {
@@ -90,8 +91,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xffe78046),
-              Color(0xffec8506)],
+            colors: [Color(0xffffffff),
+              Color(0xffffffff)],
           ),
         ),
         child: Padding(
@@ -102,12 +103,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Icon(
                 icon,
                 size: (MediaQuery.of(context).size.width * 0.09),
-                color: Colors.white,
+                color: Colors.orange,
               ),
               SizedBox(height: (MediaQuery.of(context).size.width * 0.01)),
               Text(
                 title,
-                style: TextStyle(fontSize: (MediaQuery.of(context).size.width * 0.035), fontWeight: FontWeight.bold, color: Colors.white), // Cor do texto
+                style: TextStyle(fontSize: (MediaQuery.of(context).size.width * 0.035), fontWeight: FontWeight.bold, color: Color(
+                    0xffd87a06)), // Cor do texto
               ),
             ],
           ),

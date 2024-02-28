@@ -1,5 +1,5 @@
-class APIConfig {
-
+class APIConfig
+{
     //dados estaticos para teste!
     //URL DA API E TOKEN
     static const String baseURL = 'https://sistema.assitecac.com/index.php/api';
@@ -13,5 +13,4 @@ class APIConfig {
     static const String servicossEndpoint = '/servicos';
     static const String osEndpoint = '/os';
     static const String usuarioEndpoint = '/usuario';
-
 }

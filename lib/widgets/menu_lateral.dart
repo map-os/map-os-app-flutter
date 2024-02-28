@@ -4,6 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/pages/clients/clients_screen.dart';
 import 'package:mapos_app/main.dart';
 import 'package:mapos_app/pages/services/services_screen.dart';
+import 'package:mapos_app/pages/products/products_screen.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:flutter_boxicons/flutter_boxicons.dart';
 
 class MenuLateral extends StatelessWidget {
   @override
@@ -27,6 +30,7 @@ class MenuLateral extends StatelessWidget {
                   List<dynamic> permissoes = snapshot.data?['permissoes'] ?? [];
                   bool temPermissaoCliente = false;
                   bool temPermissaoServicos = false;
+                  bool temPermissaoProdutos = false;
 
                   for (var permissao in permissoes) {
                     if (permissao['vCliente'] == "1") {
@@ -34,6 +38,9 @@ class MenuLateral extends StatelessWidget {
                     }
                     if (permissao['vServico'] == "1") {
                       temPermissaoServicos = true;
+                    }
+                    if (permissao['vProduto'] == "1") {
+                      temPermissaoProdutos = true;
                     }
                   }
 
@@ -68,7 +75,7 @@ class MenuLateral extends StatelessWidget {
                       ),
                       ListTile(
                         leading: Icon(
-                          Icons.home,
+                          Boxicons.bxs_home,
                           color: Color(0xffd97b06),
                           size: 20,
                         ),
@@ -86,7 +93,7 @@ class MenuLateral extends StatelessWidget {
                       ),
                       ListTile(
                         leading: Icon(
-                          Icons.account_circle,
+                          Boxicons.bxs_user_circle,
                           color: Color(0xffd97b06),
                           size: 20,
                         ),
@@ -104,7 +111,7 @@ class MenuLateral extends StatelessWidget {
                       ),
                       ListTile(
                         leading: Icon(
-                          Icons.settings,
+                          Boxicons.bxs_cog,
                           color: Color(0xffd97b06),
                           size: 20,
                         ),
@@ -127,7 +134,7 @@ class MenuLateral extends StatelessWidget {
                         visible: temPermissaoCliente,
                         child: ListTile(
                           leading: Icon(
-                            Icons.people,
+                            Boxicons.bxs_user,
                             color: Color(0xffd97b06),
                             size: 20,
                           ),
@@ -150,7 +157,7 @@ class MenuLateral extends StatelessWidget {
                         visible: temPermissaoServicos,
                         child: ListTile(
                           leading: Icon(
-                            Icons.settings_input_component,
+                            Boxicons.bxs_wrench,
                             color: Color(0xffd97b06),
                             size: 20,
                           ),
@@ -169,13 +176,38 @@ class MenuLateral extends StatelessWidget {
                           },
                         ),
                       ),
-
+                      Visibility(
+                        visible: temPermissaoProdutos,
+                        child: ListTile(
+                          leading: Icon(
+                            Boxicons.bxs_basket,
+                            color: Color(0xffd97b06),
+                            size: 20,
+                          ),
+                          title: Text(
+                            'Produtos',
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: MediaQuery.of(context).size.width * 0.044,                            ),
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                                PageTransition(
+                                  child: ProductsScreen(),
+                                  type: PageTransitionType.leftToRight,
+                                )
+                            );
+                          },
+                        ),
+                      ),
                       Divider(
                         color: Color(0xffd97b06),
                       ),
                       ListTile(
                         leading: Icon(
-                          Icons.exit_to_app,
+                          Boxicons.bx_log_out,
                           color: Color(0xffd97b06),
                           size: 20,
                         ),
