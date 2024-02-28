@@ -37,6 +37,8 @@ dependencies:
   fluttericon: ^2.0.0
   syncfusion_flutter_calendar: ^24.2.8
   flutter_svg: ^2.0.10+1
+  page_transition: ^2.1.0
+  flutter_boxicons: ^3.0.0
 
 
 

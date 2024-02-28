@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mapos_app/pages/dashboard_screen.dart';
 import 'package:mapos_app/config/constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:page_transition/page_transition.dart';
 
 void main() {
   runApp(MyApp());
@@ -55,7 +57,10 @@ class _LoginPageState extends State<LoginPage> {
     if (token != null && token.isNotEmpty) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => DashboardScreen()),
+        PageTransition(
+            child: DashboardScreen(),
+            type: PageTransitionType.bottomToTop,
+        )
       );
     }
   }
@@ -90,7 +95,10 @@ class _LoginPageState extends State<LoginPage> {
           await prefs.setString('permissoes', permissoes);
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => DashboardScreen()),
+              PageTransition(
+                child: DashboardScreen(),
+                type: PageTransitionType.leftToRight,
+              )
           );
         } else {
           showSnackBar('Credenciais inválidas');

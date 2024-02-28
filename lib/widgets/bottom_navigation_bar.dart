@@ -3,6 +3,8 @@ import 'package:mapos_app/widgets/ButtonMenu.dart';
 import 'package:mapos_app/pages/dashboard_screen.dart';
 import 'package:mapos_app/pages/services/services_screen.dart';
 import 'package:mapos_app/pages/clients/clients_screen.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:mapos_app/pages/products/products_screen.dart';
 
 
 class BottomNavigationBar extends StatelessWidget {
@@ -83,22 +85,40 @@ class BottomNavigationBarWidget extends StatelessWidget {
   void _handleTap(int index) {
     if (onTap != null) {
       onTap!(index);
-      if (index == 2) {
+      if (index == 0) {
         Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => DashboardScreen()),
+            context,
+            PageTransition(
+              child: ProductsScreen(),
+              type: PageTransitionType.leftToRight,
+            )
         );
       }
       if (index == 1) {
         Navigator.push(
+            context,
+            PageTransition(
+              child: ServicesScreen(),
+              type: PageTransitionType.leftToRight,
+            )
+        );
+      }
+      if (index == 2) {
+        Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ServicesScreen()),
+            PageTransition(
+              child: DashboardScreen(),
+              type: PageTransitionType.leftToRight,
+            )
         );
       }
       if (index == 3) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ClientesScreen()),
+            PageTransition(
+              child: ClientesScreen(),
+              type: PageTransitionType.leftToRight,
+            )
         );
       }
     }

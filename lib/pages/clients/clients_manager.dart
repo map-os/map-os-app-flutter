@@ -77,14 +77,14 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
               TextFormField(
                 controller: _nomeClienteController,
                 decoration: InputDecoration(
-                  labelText: 'Nome do Cliente',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.person, color: Color(0xfffa9e10)),
+                  labelText: 'Nome',
+                  labelStyle: TextStyle(color: Colors.orange),
+                  prefixIcon: Icon(
+                      Icons.account_circle_sharp, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Color(0x99fff4e6),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 2.0, horizontal: 2.0),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Color(0xfffa9e10),
                         width: 2.0),
@@ -97,14 +97,13 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 controller: _celularController,
                 decoration: InputDecoration(
                   labelText: 'Celular',
-                  labelStyle: TextStyle(color: Colors.black),
+                  labelStyle: TextStyle(color: Colors.orange),
                   prefixIcon: Icon(
                       Icons.phone_android, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Color(0x99fff4e6),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 2.0, horizontal: 2.0),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Color(0xfffa9e10),
                         width: 2.0),
@@ -116,35 +115,34 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 controller: _telefoneController,
                 decoration: InputDecoration(
                   labelText: 'Telefone',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.phone, color: Color(0xfffa9e10)),
+                  labelStyle: TextStyle(color: Colors.orange),
+                  prefixIcon: Icon(
+                      Icons.phone, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Color(0x99fff4e6),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 2.0, horizontal: 2.0),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0), // Define a cor da borda quando selecionado
+                        width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
-              // Corrigi o texto duplicado e adicionei um ícone de documento
               TextFormField(
                 controller: _documentoController,
                 decoration: InputDecoration(
-                  labelText: 'Documento',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.description, color: Color(0xfffa9e10)),
+                  labelText: 'C.P.F',
+                  labelStyle: TextStyle(color: Colors.orange),
+                  prefixIcon: Icon(
+                      Icons.description_sharp, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Color(0x99fff4e6),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 2.0, horizontal: 2.0),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0), // Define a cor da borda quando selecionado
+                        width: 2.0),
                   ),
                 ),
               ),
@@ -153,57 +151,52 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 controller: _emailtoController,
                 decoration: InputDecoration(
                   labelText: 'E-mail',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.email, color: Color(0xfffa9e10)),
+                  labelStyle: TextStyle(color: Colors.orange),
+                  prefixIcon: Icon(
+                      Icons.email, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Color(0x99fff4e6),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 2.0, horizontal: 2.0),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0), // Define a cor da borda quando selecionado
+                        width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
-              // Alterei a cor de fundo e o estilo da borda
               TextFormField(
                 controller: _ruaController,
                 decoration: InputDecoration(
                   labelText: 'Rua',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.map, color: Color(0xfffa9e10)),
+                  labelStyle: TextStyle(color: Colors.orange),
+                  prefixIcon: Icon(
+                      Icons.bookmark_added_rounded, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Color(0x99fff4e6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 2.0, horizontal: 15.0),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0), // Define a cor da borda quando selecionado
+                        width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
-              // Alterei o campo de texto para aceitar apenas números
               TextFormField(
                 controller: _numeroController,
-                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: 'Número',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.numbers, color: Color(0xfffa9e10)),
+                  labelText: 'Numero',
+                  labelStyle: TextStyle(color: Colors.orange),
+                  prefixIcon: Icon(
+                      Icons.numbers, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Color(0x99fff4e6),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 2.0, horizontal: 2.0),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0), // Define a cor da borda quando selecionado
+                        width: 2.0),
                   ),
                 ),
               ),
@@ -212,64 +205,52 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 controller: _bairroController,
                 decoration: InputDecoration(
                   labelText: 'Bairro',
-                  labelStyle: TextStyle(color: Colors.black),
+                  labelStyle: TextStyle(color: Colors.orange),
                   prefixIcon: Icon(
                       Icons.maps_home_work, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Color(0x99fff4e6),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 2.0, horizontal: 2.0),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0), // Define a cor da borda quando selecionado
+                        width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
-              // Adicionei um exemplo de validação de CEP
               TextFormField(
                 controller: _cepController,
                 decoration: InputDecoration(
                   labelText: 'CEP',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.numbers, color: Color(0xfffa9e10)),
+                  labelStyle: TextStyle(color: Colors.orange),
+                  prefixIcon: Icon(
+                      Icons.numbers, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Color(0x99fff4e6),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 2.0, horizontal: 2.0),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0), // Define a cor da borda quando selecionado
+                        width: 2.0),
                   ),
                 ),
-                keyboardType: TextInputType.number,
-                maxLength: 8,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Informe o CEP';
-                  } else if (value.length != 8) {
-                    return 'CEP inválido';
-                  }
-                  return null;
-                },
               ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _cidadeController,
                 decoration: InputDecoration(
                   labelText: 'Cidade',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.map, color: Color(0xfffa9e10)),
+                  labelStyle: TextStyle(color: Colors.orange),
+                  prefixIcon: Icon(
+                      Icons.bookmark_added_rounded, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Color(0x99fff4e6),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 2.0, horizontal: 2.0),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0), // Define a cor da borda quando selecionado
+                        width: 2.0),
                   ),
                 ),
               ),
@@ -278,16 +259,16 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 controller: _estadoController,
                 decoration: InputDecoration(
                   labelText: 'Estado',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.map, color: Color(0xfffa9e10)),
+                  labelStyle: TextStyle(color: Colors.orange),
+                  prefixIcon: Icon(
+                      Icons.map, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Color(0x99fff4e6),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 2.0, horizontal: 2.0),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0), // Define a cor da borda quando selecionado
+                        width: 2.0),
                   ),
                 ),
               ),
@@ -296,16 +277,16 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 controller: _complementoController,
                 decoration: InputDecoration(
                   labelText: 'Complemento',
-                  labelStyle: TextStyle(color: Colors.black),
-                  prefixIcon: Icon(Icons.add, color: Color(0xfffa9e10)),
+                  labelStyle: TextStyle(color: Colors.orange),
+                  prefixIcon: Icon(
+                      Icons.add, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Color(0x99fff4e6),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 2.0, horizontal: 2.0),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0), // Define a cor da borda quando selecionado
+                        width: 2.0),
                   ),
                 ),
               ),
