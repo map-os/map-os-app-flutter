@@ -39,6 +39,17 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
                 decoration: InputDecoration(
                   labelText: 'Nome',
                   prefixIcon: Icon(Icons.construction_outlined),
+                  filled: true,
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                  ),
                 ),
               ),
               SizedBox(height: 16.0),
@@ -47,6 +58,17 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
                 decoration: InputDecoration(
                   labelText: 'Descrição',
                   prefixIcon: Icon(Icons.description_outlined),
+                  filled: true,
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                  ),
                 ),
               ),
               SizedBox(height: 16.0),
@@ -55,10 +77,28 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
                 decoration: InputDecoration(
                   labelText: 'Valor',
                   prefixIcon: Icon(Icons.attach_money),
+                  filled: true,
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                  ),
                 ),
               ),
               SizedBox(height: 16.0),
-              ElevatedButton(
+          Container(
+            height: 50.0,
+            decoration: BoxDecoration(
+              color: Color(0xfffa9e10), // Cor de fundo do botão
+              borderRadius: BorderRadius.circular(8.0), // Borda arredondada
+            ),
+            child:
+            ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: Color(0xfffa9e10),
@@ -82,6 +122,7 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
                 },
                 child: Text('Adicionar Serviço'),
               ),
+            ),
             ],
           ),
         ),

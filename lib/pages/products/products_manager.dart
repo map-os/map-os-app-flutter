@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:mapos_app/config/constants.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 
 class ProductEditScreen extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -30,12 +31,18 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         TextEditingController(text: widget.product['descricao'] ?? '');
     _productCodController =
         TextEditingController(text: widget.product['codDeBarra'] ?? '');
-    _productPrecoCompraController =
-        TextEditingController(text: widget.product['precoCompra'] ?? '');
-    _productPriceController =
-        TextEditingController(text: widget.product['precoVenda'] ?? '');
-    _productPrecoCompraController =
-        TextEditingController(text: widget.product['precoCompra'] ?? '');
+    _productPrecoCompraController = MoneyMaskedTextController(
+      decimalSeparator: ',',
+      thousandSeparator: '.',
+      leftSymbol: 'R\$ ',
+      initialValue: double.tryParse(widget.product['precoCompra'] ?? '0.00') ?? 0.00,
+    );
+    _productPriceController = MoneyMaskedTextController(
+      decimalSeparator: ',',
+      thousandSeparator: '.',
+      leftSymbol: 'R\$ ',
+      initialValue: double.tryParse(widget.product['precoVenda'] ?? '0.00') ?? 0.00,
+    );
     // _productUnidadeController =
     //     TextEditingController(text: widget.product['unidade'] ?? 'UNID');
     _productEstoqueController =
@@ -66,8 +73,16 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Nome',
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                  ),
                 ),
               ),
               SizedBox(height: 16.0),
@@ -76,8 +91,16 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'COD de Barras',
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                  ),
                 ),
               ),
               SizedBox(height: 16.0),
@@ -86,8 +109,16 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Preço de compra',
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                  ),
                 ),
               ),
               SizedBox(height: 16.0),
@@ -96,8 +127,16 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Preço de Venda',
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                  ),
                 ),
               ),
               SizedBox(height: 16.0),
@@ -106,8 +145,16 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Estoque',
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                  ),
                 ),
               ),
               SizedBox(height: 16.0),
@@ -116,27 +163,44 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Estoque Minimo',
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                  ),
                 ),
               ),
               SizedBox(height: 16.0),
-              ElevatedButton(
+          Container(
+            height: 50.0,
+            decoration: BoxDecoration(
+              color: Color(0xfffa9e10), // Cor de fundo do botão
+              borderRadius: BorderRadius.circular(8.0), // Borda arredondada
+            ),
+            child:
+            ElevatedButton(
                 onPressed: () async {
-                  // String ciKey = await _getCiKey();
+                  String precoCompra = _productPrecoCompraController.text.replaceAll('R\$ ', '').replaceAll('.', '').replaceAll(',', '.');
+                  String precoVenda = _productPriceController.text.replaceAll('R\$ ', '').replaceAll('.', '').replaceAll(',', '.');
 
                   Map<String, dynamic> updatedProduct = {
                     'idProdutos': widget.product['idProdutos'],
                     'descricao': _productNameController.text,
                     'codDeBarra': _productCodController.text,
-                    'precoVenda': _productPriceController.text,
-                    'precoCompra': _productPrecoCompraController.text,
+                    'precoVenda': precoVenda,
+                    'precoCompra': precoCompra,
                     'unidade': 'UNID',
                     'estoque': _productEstoqueController.text,
                     'estoqueMinimo': _productEstoqueMinimoController.text,
                     'entrada': '',
                     'saida': '',
                   };
+
 
                   bool success = await _updateProduct(updatedProduct);
                   if (success) {
@@ -155,6 +219,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                 ),
                 child: Text('Salvar Alterações'),
               ),
+          ),
             ],
           ),
         ),

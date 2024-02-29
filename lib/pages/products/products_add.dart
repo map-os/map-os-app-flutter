@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:mapos_app/config/constants.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 
 
 
@@ -14,9 +15,8 @@ class ProductAddScreen extends StatefulWidget {
 class _ProductAddScreenState extends State<ProductAddScreen> {
   late TextEditingController _productNameController;
   late TextEditingController _productCodController;
-  late TextEditingController _productPriceController;
-  late TextEditingController _productPrecoCompraController;
-  // late TextEditingController _productUnidadeController;
+  late MoneyMaskedTextController _productPriceController;
+  late MoneyMaskedTextController _productPrecoCompraController;
   late TextEditingController _productEstoqueController;
   late TextEditingController _productEstoqueMinimoController;
 
@@ -25,12 +25,29 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
     super.initState();
     _productNameController = TextEditingController();
     _productCodController = TextEditingController();
-    _productPrecoCompraController = TextEditingController();
-    _productPriceController = TextEditingController();
-    _productPrecoCompraController = TextEditingController();
-    // _productUnidadeController = TextEditingController(text: 'UNID');
+    _productPrecoCompraController = MoneyMaskedTextController(
+      decimalSeparator: ',',
+      thousandSeparator: '.',
+      leftSymbol: 'R\$ ',
+    );
+    _productPriceController = MoneyMaskedTextController(
+      decimalSeparator: ',',
+      thousandSeparator: '.',
+      leftSymbol: 'R\$ ',
+    );
     _productEstoqueController = TextEditingController();
     _productEstoqueMinimoController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _productNameController.dispose();
+    _productCodController.dispose();
+    _productPrecoCompraController.dispose();
+    _productPriceController.dispose();
+    _productEstoqueController.dispose();
+    _productEstoqueMinimoController.dispose();
+    super.dispose();
   }
 
   @override
@@ -50,8 +67,16 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                 decoration: InputDecoration(
                   labelText: 'Nome',
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                  ),
                 ),
               ),
               SizedBox(height: 16.0),
@@ -60,8 +85,16 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                 decoration: InputDecoration(
                   labelText: 'COD de Barras',
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                  ),
                 ),
               ),
               SizedBox(height: 16.0),
@@ -70,8 +103,16 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                 decoration: InputDecoration(
                   labelText: 'Preço de compra',
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                  ),
                 ),
               ),
               SizedBox(height: 16.0),
@@ -80,8 +121,16 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                 decoration: InputDecoration(
                   labelText: 'Preço de Venda',
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                  ),
                 ),
               ),
               SizedBox(height: 16.0),
@@ -90,8 +139,16 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                 decoration: InputDecoration(
                   labelText: 'Estoque',
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                  ),
                 ),
               ),
               SizedBox(height: 16.0),
@@ -100,22 +157,43 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                 decoration: InputDecoration(
                   labelText: 'Estoque Minimo',
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                  ),
                 ),
               ),
               SizedBox(height: 16.0),
-              ElevatedButton(
+          Container(
+            height: 50.0,
+            decoration: BoxDecoration(
+              color: Color(0xfffa9e10), // Cor de fundo do botão
+              borderRadius: BorderRadius.circular(8.0), // Borda arredondada
+            ),
+            child:
+            ElevatedButton(
                 onPressed: () async {
                   bool success = await _addProduct();
                   if (success) {
-                    _showSnackBar('Produto adicionado com sucesso',
-                        backgroundColor: Colors.green,
-                        textColor: Colors.white);
+                    final snackBar = SnackBar(
+                      content: Text('Produto adicionado com sucesso'),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 2),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   } else {
-                    _showSnackBar('Falha ao adicionar o produto',
-                        backgroundColor: Colors.red,
-                        textColor: Colors.white);
+                    final snackBar = SnackBar(
+                      content: Text('Falha ao adicionar o produto'),
+                      backgroundColor: Colors.red,
+                      duration: Duration(seconds: 2),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -124,6 +202,7 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                 ),
                 child: Text('Adicionar Produto'),
               ),
+          ),
             ],
           ),
         ),
@@ -131,15 +210,6 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
     );
   }
 
-  void _showSnackBar(String message,
-      {Color backgroundColor = Colors.black, Color textColor = Colors.white}) {
-    final snackBar = SnackBar(
-      content: Text(message, style: TextStyle(color: textColor)),
-      backgroundColor: backgroundColor,
-      duration: Duration(seconds: 2),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
 
   Future<String> _getCiKey() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -151,12 +221,14 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
     String ciKey = await _getCiKey();
 
     var url = '${APIConfig.baseURL}${APIConfig.prodtuostesEndpoint}';
+    String precoCompra = _productPrecoCompraController.text.replaceAll('R\$ ', '').replaceAll('.', '').replaceAll(',', '.');
+    String precoVenda = _productPriceController.text.replaceAll('R\$ ', '').replaceAll('.', '').replaceAll(',', '.');
 
     Map<String, dynamic> newProduct = {
       'descricao': _productNameController.text,
       'codDeBarra': _productCodController.text,
-      'precoVenda': _productPriceController.text,
-      'precoCompra': _productPrecoCompraController.text,
+      'precoVenda': precoCompra,
+      'precoCompra': precoVenda,
       'unidade': 'UNID',
       'estoque': _productEstoqueController.text,
       'estoqueMinimo': _productEstoqueMinimoController.text,

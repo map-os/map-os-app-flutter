@@ -85,9 +85,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Nome',
-                  labelStyle: TextStyle(color: Colors.orange),
+                  labelStyle: TextStyle(color: Color(0xff333649)),
                   prefixIcon: Icon(
-                      Icons.account_circle_sharp, color: Color(0xfffa9e10)),
+                      Icons.account_circle_sharp, color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
@@ -97,7 +97,7 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -108,9 +108,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Celular',
-                  labelStyle: TextStyle(color: Colors.orange),
+                  labelStyle: TextStyle(color: Color(0xff333649)),
                   prefixIcon: Icon(
-                      Icons.phone_android, color: Color(0xfffa9e10)),
+                      Icons.phone_android, color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
@@ -120,7 +120,7 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -130,9 +130,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Telefone',
-                  labelStyle: TextStyle(color: Colors.orange),
+                  labelStyle: TextStyle(color: Color(0xff333649)),
                   prefixIcon: Icon(
-                      Icons.phone, color: Color(0xfffa9e10)),
+                      Icons.phone, color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
@@ -142,7 +142,7 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -152,9 +152,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'C.P.F',
-                  labelStyle: TextStyle(color: Colors.orange),
+                  labelStyle: TextStyle(color: Color(0xff333649)),
                   prefixIcon: Icon(
-                      Icons.description_sharp, color: Color(0xfffa9e10)),
+                      Icons.description_sharp, color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
@@ -164,7 +164,7 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -174,9 +174,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'E-mail',
-                  labelStyle: TextStyle(color: Colors.orange),
+                  labelStyle: TextStyle(color: Color(0xff333649)),
                   prefixIcon: Icon(
-                      Icons.email, color: Color(0xfffa9e10)),
+                      Icons.email, color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
@@ -186,7 +186,7 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -196,9 +196,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Rua',
-                  labelStyle: TextStyle(color: Colors.orange),
+                  labelStyle: TextStyle(color: Color(0xff333649)),
                   prefixIcon: Icon(
-                      Icons.bookmark_added_rounded, color: Color(0xfffa9e10)),
+                      Icons.bookmark_added_rounded, color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
@@ -208,7 +208,7 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -218,9 +218,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Numero',
-                  labelStyle: TextStyle(color: Colors.orange),
+                  labelStyle: TextStyle(color: Color(0xff333649)),
                   prefixIcon: Icon(
-                      Icons.numbers, color: Color(0xfffa9e10)),
+                      Icons.numbers, color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
@@ -230,7 +230,7 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -240,9 +240,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Bairro',
-                  labelStyle: TextStyle(color: Colors.orange),
+                  labelStyle: TextStyle(color: Color(0xff333649)),
                   prefixIcon: Icon(
-                      Icons.maps_home_work, color: Color(0xfffa9e10)),
+                      Icons.maps_home_work, color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
@@ -252,7 +252,7 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -262,9 +262,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'CEP',
-                  labelStyle: TextStyle(color: Colors.orange),
+                  labelStyle: TextStyle(color: Color(0xff333649)),
                   prefixIcon: Icon(
-                      Icons.numbers, color: Color(0xfffa9e10)),
+                      Icons.numbers, color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
@@ -274,7 +274,7 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -284,9 +284,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Cidade',
-                  labelStyle: TextStyle(color: Colors.orange),
+                  labelStyle: TextStyle(color: Color(0xff333649)),
                   prefixIcon: Icon(
-                      Icons.bookmark_added_rounded, color: Color(0xfffa9e10)),
+                      Icons.bookmark_added_rounded, color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
@@ -296,7 +296,7 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -306,9 +306,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Estado',
-                  labelStyle: TextStyle(color: Colors.orange),
+                  labelStyle: TextStyle(color: Color(0xff333649)),
                   prefixIcon: Icon(
-                      Icons.map, color: Color(0xfffa9e10)),
+                      Icons.map, color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
@@ -318,7 +318,7 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -328,9 +328,9 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Complemento',
-                  labelStyle: TextStyle(color: Colors.orange),
+                  labelStyle: TextStyle(color: Color(0xff333649)),
                   prefixIcon: Icon(
-                      Icons.add, color: Color(0xfffa9e10)),
+                      Icons.add, color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
@@ -340,7 +340,7 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),

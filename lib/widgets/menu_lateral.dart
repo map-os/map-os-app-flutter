@@ -49,7 +49,7 @@ class MenuLateral extends StatelessWidget {
                     children: <Widget>[
                       DrawerHeader(
                         decoration: BoxDecoration(
-                          color: Color(0xffd97b06),
+                          color: Color(0xff333649),
                           image: DecorationImage(
                             image: AssetImage("lib/assets/images/logo-two.png"),
                             fit: BoxFit.cover,
@@ -76,7 +76,7 @@ class MenuLateral extends StatelessWidget {
                       ListTile(
                         leading: Icon(
                           Boxicons.bxs_home,
-                          color: Color(0xffd97b06),
+                          color: Color(0xff333649),
                           size: 20,
                         ),
                         title: Text(
@@ -94,7 +94,7 @@ class MenuLateral extends StatelessWidget {
                       ListTile(
                         leading: Icon(
                           Boxicons.bxs_user_circle,
-                          color: Color(0xffd97b06),
+                          color: Color(0xff333649),
                           size: 20,
                         ),
                         title: Text(
@@ -112,7 +112,7 @@ class MenuLateral extends StatelessWidget {
                       ListTile(
                         leading: Icon(
                           Boxicons.bxs_cog,
-                          color: Color(0xffd97b06),
+                          color: Color(0xff333649),
                           size: 20,
                         ),
                         title: Text(
@@ -128,14 +128,14 @@ class MenuLateral extends StatelessWidget {
                         },
                       ),
                       Divider(
-                        color: Color(0xffd97b06),
+                        color: Color(0xff333649),
                       ),
                       Visibility(
                         visible: temPermissaoCliente,
                         child: ListTile(
                           leading: Icon(
                             Boxicons.bxs_user,
-                            color: Color(0xffd97b06),
+                            color: Color(0xff333649),
                             size: 20,
                           ),
                           title: Text(
@@ -158,7 +158,7 @@ class MenuLateral extends StatelessWidget {
                         child: ListTile(
                           leading: Icon(
                             Boxicons.bxs_wrench,
-                            color: Color(0xffd97b06),
+                            color: Color(0xff333649),
                             size: 20,
                           ),
                           title: Text(
@@ -181,7 +181,7 @@ class MenuLateral extends StatelessWidget {
                         child: ListTile(
                           leading: Icon(
                             Boxicons.bxs_basket,
-                            color: Color(0xffd97b06),
+                            color: Color(0xff333649),
                             size: 20,
                           ),
                           title: Text(
@@ -203,12 +203,12 @@ class MenuLateral extends StatelessWidget {
                         ),
                       ),
                       Divider(
-                        color: Color(0xffd97b06),
+                        color: Color(0xff333649),
                       ),
                       ListTile(
                         leading: Icon(
                           Boxicons.bx_log_out,
-                          color: Color(0xffd97b06),
+                          color: Color(0xff333649),
                           size: 20,
                         ),
                         title: Text(

@@ -32,7 +32,7 @@ class _MyAppState extends State<MyApp> {
       title: 'Login MAP-OS',
       theme: ThemeData.light().copyWith(
         appBarTheme: AppBarTheme(
-          color: Color(0xffd87a06),
+          color: Color(0xff333649),
           iconTheme: IconThemeData(
             color: Colors.white,
           ),
@@ -185,25 +185,25 @@ class _LoginPageState extends State<LoginPage> {
                           labelText: 'E-mail',
                           labelStyle: TextStyle(
                               color: Theme.of(context).brightness == Brightness.light
-                                  ? Colors.orange
+                                  ? Color(0xff333649)
                                   : Colors.white),
                           prefixIcon: Icon(Icons.email,
                               color: Theme.of(context).brightness == Brightness.light
-                                  ? Colors.orange
+                                  ? Color(0xff333649)
                                   : Colors.white),
-                          filled: true,
-                          fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                          contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                            borderSide: BorderSide.none, // Remove a linha preta
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                            borderSide: BorderSide(color: Color(0x88576788), width: 2.0),
-                          ),
-                        ),
-                      ),
+                                filled: true,
+                                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                                  borderSide: BorderSide.none, // Remove a linha preta
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                                ),
+                              ),
+                            ),
                       SizedBox(height: 20.0),
                       TextField(
                         controller: _passwordController,
@@ -216,11 +216,11 @@ class _LoginPageState extends State<LoginPage> {
                           labelText: 'Senha',
                           labelStyle: TextStyle(
                               color: Theme.of(context).brightness == Brightness.light
-                                  ? Colors.orange
+                                  ? Color(0xff333649)
                                   : Colors.white),
                           prefixIcon: Icon(Icons.lock,
                               color: Theme.of(context).brightness == Brightness.light
-                                  ? Colors.orange
+                                  ? Color(0xff333649)
                                   : Colors.white),
                           filled: true,
                           fillColor: Color(0xffb9dbfd).withOpacity(0.3),
@@ -231,7 +231,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                            borderSide: BorderSide(color: Color(0x88576788), width: 2.0),
+                            borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                           ),
                         ),
                       ),
@@ -240,7 +240,7 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: _login,
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
-                          backgroundColor: Color(0xd8ff6c00),
+                          backgroundColor: Color(0xff333649),
                           elevation: 2,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -316,7 +316,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Container(
               height: MediaQuery.of(context).size.height * 0.36,
               decoration: BoxDecoration(
-                color: Color(0xffd97b06),
+                color: Color(0xff333649),
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(20.0),
                   bottomRight: Radius.circular(20.0),
