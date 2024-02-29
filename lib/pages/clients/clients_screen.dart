@@ -36,8 +36,8 @@ class _ClientesScreenState extends State<ClientesScreen> {
   Future<void> _getClientes() async {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
-    int page = 1;
-    int perPage = 200;
+    int page = 0;
+    int perPage = 20;
 
     while (true) {
       var url =
@@ -50,24 +50,21 @@ class _ClientesScreenState extends State<ClientesScreen> {
         if (data.containsKey('result')) {
           List<dynamic> newClientes = data['result'] ?? 0;
           if (newClientes.isEmpty) {
-            // Se não houver mais clientes, saia do loop
             break;
           } else {
-            // Adicione os novos clientes à lista existente
             setState(() {
               clientes.addAll(newClientes);
               filteredClientes = List.from(clientes); // Atualizar a lista filtrada
             });
-            // Avance para a próxima página
             page++;
           }
         } else {
           print('Chave "clientes" não encontrada na resposta da API');
-          break; // Saia do loop se não houver clientes
+          break;
         }
       } else {
         print('Falha ao carregar clientes');
-        break; // Saia do loop em caso de falha
+        break;
       }
     }
   }
@@ -117,7 +114,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
               borderSide: BorderSide.none,
             ),
             filled: true, // Preenchimento ativado
-            fillColor: Color(0xffe79a24), // Cor de fundo personalizada
+            fillColor: Color(0xff535772), // Cor de fundo personalizada
             contentPadding:
             EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           ),
@@ -181,13 +178,13 @@ class _ClientesScreenState extends State<ClientesScreen> {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        color: Color(0xFFFD8900),
+                        color: Color(0xFF333649),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       padding: EdgeInsets.all(8.0),
                       child: Center(
                         child: Text(
-                          '${filteredClientes[index]['idClientes']}',
+                          '${filteredClientes[index]['idClientes'] ?? 0}',
                           style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * 0.04, // 4% da largura da tela
                             color: Colors.white,
@@ -201,7 +198,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${filteredClientes[index]['nomeCliente']}',
+                            '${filteredClientes[index]['nomeCliente'] ?? 0}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: MediaQuery.of(context).size.width * 0.04, // 4% da largura da tela
@@ -210,14 +207,14 @@ class _ClientesScreenState extends State<ClientesScreen> {
                           Row(
                             children: [
                               Text(
-                                'Cel: ${filteredClientes[index]['celular']}',
+                                'Cel: ${filteredClientes[index]['celular'] ?? 0}',
                                 style: TextStyle(
                                   fontSize: MediaQuery.of(context).size.width * 0.029, // 4% da largura da tela
                                 ),
                               ),
                               SizedBox(width: 8.0),
                               Text(
-                                'Tel: ${filteredClientes[index]['telefone']}',
+                                'Tel: ${filteredClientes[index]['telefone'] ?? 0}',
                                 style: TextStyle(
                                   fontSize: MediaQuery.of(context).size.width * 0.029, // 4% da largura da tela
                                 ),

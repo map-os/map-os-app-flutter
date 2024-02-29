@@ -50,15 +50,15 @@ class _OsManagerState extends State<OsManager> with SingleTickerProviderStateMix
       body: Column(
         children: [
           Container(
-            color: Color(0xffd97b06),
+            color: Color(0xff333649),
             child:TabBar(
               controller: _tabController,
               indicator: BoxDecoration(
                 color: Color(0xffffffff), // Cor de fundo do item selecionado
-                borderRadius: BorderRadius.circular(50), // Define o raio da borda
+                borderRadius: BorderRadius.circular(100), // Define o raio da borda
               ),
               indicatorSize: TabBarIndicatorSize.tab, // Tamanho do indicador igual ao tamanho da tab
-              indicatorWeight: 2.0, // Espessura do indicador
+              indicatorWeight: 2,// Espessura do indicador
               unselectedLabelColor: Colors.white, // Cor dos ícones não selecionados
               labelColor: Colors.deepOrange, // Cor do ícone selecionado
               tabs: [

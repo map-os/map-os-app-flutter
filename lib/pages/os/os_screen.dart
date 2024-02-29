@@ -121,7 +121,7 @@ class _OsScreenState extends State<OsScreen> {
               borderSide: BorderSide.none,
             ),
             filled: true,
-            fillColor: Color(0xffe79a24),
+            fillColor: Color(0xff56596e),
             contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           ),
         ),
@@ -171,7 +171,7 @@ class _OsScreenState extends State<OsScreen> {
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            color: Color(0xFFFD8900),
+                            color: Color(0xFF333649),
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           padding: EdgeInsets.all(10.0),
@@ -258,6 +258,7 @@ class _OsScreenState extends State<OsScreen> {
           }
         },
         child: Icon(Icons.add),
+
       ),
       bottomNavigationBar: BottomNavigationBarWidget(
         activeIndex: _selectedIndex,

@@ -76,7 +76,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Color(0xffd97b06),
+              color: Color(0xff333649),
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(20.0),
                 bottomRight: Radius.circular(20.0),
@@ -187,7 +187,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     .of(context)
                     .size
                     .width * 0.09),
-                color: Colors.orange,
+                color: Color(0xff333649),
               ),
               SizedBox(height: (MediaQuery
                   .of(context)
@@ -200,7 +200,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     .size
                     .width * 0.04),
                     fontWeight: FontWeight.bold,
-                    color: Color(0xffd87a06)),
+                    color: Color(0xff333649)),
               ),
               SizedBox(height: (MediaQuery
                   .of(context)
@@ -212,7 +212,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     .of(context)
                     .size
                     .width * 0.05), fontWeight: FontWeight.bold, color: Color(
-                    0xffd87a06)),
+                    0xff333649)),
               ),
             ],
           ),

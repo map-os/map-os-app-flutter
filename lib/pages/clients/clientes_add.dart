@@ -60,11 +60,15 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   labelStyle: TextStyle(color: Colors.black),
                   prefixIcon: Icon(Icons.person),
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10), width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -76,11 +80,15 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   labelStyle: TextStyle(color: Colors.black),
                   prefixIcon: Icon(Icons.phone),
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10), width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -92,11 +100,15 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   labelStyle: TextStyle(color: Colors.black),
                   prefixIcon: Icon(Icons.phone),
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10), width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -108,11 +120,15 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   labelStyle: TextStyle(color: Colors.black),
                   prefixIcon: Icon(Icons.description),
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10), width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -124,11 +140,15 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   labelStyle: TextStyle(color: Colors.black),
                   prefixIcon: Icon(Icons.email),
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10), width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -140,11 +160,15 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   labelStyle: TextStyle(color: Colors.black),
                   prefixIcon: Icon(Icons.location_on),
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10), width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -156,14 +180,17 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   labelStyle: TextStyle(color: Colors.black),
                   prefixIcon: Icon(Icons.format_list_numbered),
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10), width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
-                keyboardType: TextInputType.number,
               ),
               SizedBox(height: 16.0),
               TextFormField(
@@ -173,11 +200,15 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   labelStyle: TextStyle(color: Colors.black),
                   prefixIcon: Icon(Icons.location_city),
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10), width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -189,14 +220,17 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   labelStyle: TextStyle(color: Colors.black),
                   prefixIcon: Icon(Icons.location_on),
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10), width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
-                keyboardType: TextInputType.number,
               ),
               SizedBox(height: 16.0),
               TextFormField(
@@ -206,11 +240,15 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   labelStyle: TextStyle(color: Colors.black),
                   prefixIcon: Icon(Icons.location_city),
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10), width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -222,11 +260,15 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   labelStyle: TextStyle(color: Colors.black),
                   prefixIcon: Icon(Icons.location_on),
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10), width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -238,17 +280,28 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   labelStyle: TextStyle(color: Colors.black),
                   prefixIcon: Icon(Icons.format_list_numbered),
                   filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10), width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
               SizedBox(height: 16.0),
-              ElevatedButton(
+          Container(
+            height: 50.0,
+            decoration: BoxDecoration(
+              color: Color(0xfffa9e10), // Cor de fundo do botão
+              borderRadius: BorderRadius.circular(8.0), // Borda arredondada
+            ),
+            child:
+            ElevatedButton(
                 onPressed: () {
                   _addCliente();
                 },
@@ -257,7 +310,7 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   foregroundColor: Colors.white,
                   backgroundColor: Color(0xfffa9e10),
                 ),
-
+              ),
               ),
             ],
           ),

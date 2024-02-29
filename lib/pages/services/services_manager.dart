@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:mapos_app/config/constants.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 
 class ServicoEditScreen extends StatefulWidget {
   final Map<String, dynamic> servico;
@@ -90,8 +91,8 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                 style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Nome',
-                  labelStyle: TextStyle(color: Colors.orange),
-                  prefixIcon: Icon(Icons.construction_outlined, color: Color(0xfffa9e10)),
+                  labelStyle: TextStyle(color: Color(0xff333649)),
+                  prefixIcon: Icon(Icons.construction_outlined, color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
@@ -101,7 +102,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -112,8 +113,8 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                 style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Descricao',
-                  labelStyle: TextStyle(color: Colors.orange),
-                  prefixIcon: Icon(Icons.description_outlined, color: Color(0xfffa9e10)),
+                  labelStyle: TextStyle(color: Color(0xff333649)),
+                  prefixIcon: Icon(Icons.description_outlined, color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
@@ -123,12 +124,10 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
-
-
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _precoServicoController,
@@ -136,8 +135,8 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                 style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Valor',
-                  labelStyle: TextStyle(color: Colors.orange),
-                  prefixIcon: Icon(Icons.attach_money, color: Color(0xfffa9e10)),
+                  labelStyle: TextStyle(color: Color(0xff333649)),
+                  prefixIcon: Icon(Icons.attach_money, color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
@@ -147,12 +146,19 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
-              ElevatedButton(
+          Container(
+            height: 50.0,
+            decoration: BoxDecoration(
+              color: Color(0xfffa9e10), // Cor de fundo do botão
+              borderRadius: BorderRadius.circular(8.0), // Borda arredondada
+            ),
+            child:
+            ElevatedButton(
                 onPressed: _editingEnabled ? _saveChanges : null,
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
@@ -160,6 +166,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                 ),
                 child: Text('Salvar Alterações'),
               ),
+          ),
             ],
           ),
         ),
