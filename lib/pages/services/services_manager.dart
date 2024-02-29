@@ -12,11 +12,11 @@ class ServicoEditScreen extends StatefulWidget {
   @override
   _ServicoEditScreenState createState() => _ServicoEditScreenState();
 }
-
 class _ServicoEditScreenState extends State<ServicoEditScreen> {
   late TextEditingController _nomeServicoController;
   late TextEditingController _descricaoServicoController;
   late TextEditingController _precoServicoController;
+  bool _editingEnabled = false;
 
   @override
   void initState() {
@@ -29,11 +29,49 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
         TextEditingController(text: widget.servico['preco'] ?? '');
   }
 
+  Future<Map<String, dynamic>> _getCiKey() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String ciKey = prefs.getString('token') ?? '';
+    String permissoesString = prefs.getString('permissoes') ?? '[]';
+    List<dynamic> permissoes = jsonDecode(permissoesString);
+    return {'ciKey': ciKey, 'permissoes': permissoes};
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Editar Serviço'),
+        actions: [
+          IconButton(
+            icon: Icon(_editingEnabled ? Icons.edit_note_sharp : Icons.edit),
+            onPressed: () async {
+              Map<String, dynamic> permissionsMap = await _getCiKey();
+              List<dynamic> permissoes = permissionsMap['permissoes'];
+
+              bool hasPermissionToEdit = false;
+
+              for (var permissao in permissoes) {
+                if (permissao['eServico'] == '1') {
+                  hasPermissionToEdit = true;
+                  break;
+                }
+              }
+              if (hasPermissionToEdit) {
+                setState(() {
+                  _editingEnabled = !_editingEnabled;
+                });
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.red,
+                    content: Text('Você não tem permissões para editar serviços.'),
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -48,80 +86,74 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _nomeServicoController,
+                enabled: _editingEnabled,
+                style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Nome',
-                  labelStyle: TextStyle(color: Colors.black),
+                  labelStyle: TextStyle(color: Colors.orange),
                   prefixIcon: Icon(Icons.construction_outlined, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Color(0x99fff4e6),
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 2.0, horizontal: 2.0),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _descricaoServicoController,
+                enabled: _editingEnabled,
+                style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Descricao',
-                  labelStyle: TextStyle(color: Colors.black),
+                  labelStyle: TextStyle(color: Colors.orange),
                   prefixIcon: Icon(Icons.description_outlined, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Color(0x99fff4e6),
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 2.0, horizontal: 2.0),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
                   ),
                 ),
               ),
+
+
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _precoServicoController,
+                enabled: _editingEnabled,
+                style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Valor',
-                  labelStyle: TextStyle(color: Colors.black),
+                  labelStyle: TextStyle(color: Colors.orange),
                   prefixIcon: Icon(Icons.attach_money, color: Color(0xfffa9e10)),
                   filled: true,
-                  fillColor: Color(0x99fff4e6),
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 2.0, horizontal: 2.0),
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0), // Define a cor da borda quando selecionado
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: () async {
-                  String ciKey = await _getCiKey();
-
-                  Map<String, dynamic> updatedServico = {
-                    'idServicos': widget.servico['idServico'],
-                    'nome': _nomeServicoController.text,
-                    'descricao': _descricaoServicoController.text,
-                    'preco': _precoServicoController.text,
-                  };
-
-                  Future<bool> success =
-                  _updateServico(updatedServico);
-                  if (await success) {
-                    _showSnackBar('Serviço atualizado com sucesso',
-                        backgroundColor: Colors.green,
-                        textColor: Colors.white);
-                  } else {
-                    _showSnackBar('Falha ao atualizar o serviço',
-                        backgroundColor: Colors.red, textColor: Colors.white);
-                  }
-                },
+                onPressed: _editingEnabled ? _saveChanges : null,
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: Color(0xfffa9e10),
@@ -135,6 +167,26 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
     );
   }
 
+  void _saveChanges() async {
+    // Map<String, dynamic> ciKey = await _getCiKey();
+
+    Map<String, dynamic> updatedServico = {
+      'idServicos': widget.servico['idServico'],
+      'nome': _nomeServicoController.text,
+      'descricao': _descricaoServicoController.text,
+      'preco': _precoServicoController.text,
+    };
+
+    Future<bool> success = _updateServico(updatedServico);
+    if (await success) {
+      _showSnackBar('Serviço atualizado com sucesso',
+          backgroundColor: Colors.green, textColor: Colors.white);
+    } else {
+      _showSnackBar('Falha ao atualizar o serviço',
+          backgroundColor: Colors.red, textColor: Colors.white);
+    }
+  }
+
   void _showSnackBar(String message,
       {Color backgroundColor = Colors.black, Color textColor = Colors.white}) {
     final snackBar = SnackBar(
@@ -145,14 +197,10 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  Future<String> _getCiKey() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String ciKey = prefs.getString('token') ?? '';
-    return ciKey;
-  }
+
 
   Future<bool> _updateServico(Map<String, dynamic> updatedServico) async {
-    String ciKey = await _getCiKey();
+    Map<String, dynamic> ciKey = await _getCiKey();
 
     var url =
         '${APIConfig.baseURL}${APIConfig.servicossEndpoint}/${widget.servico['idServicos']}';
@@ -162,7 +210,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
         Uri.parse(url),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'X-API-KEY': ciKey,
+          'X-API-KEY': ciKey['ciKey'],
         },
         body: jsonEncode(updatedServico),
       );

@@ -16,7 +16,7 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
   late TextEditingController _productCodController;
   late TextEditingController _productPriceController;
   late TextEditingController _productPrecoCompraController;
-  late TextEditingController _productUnidadeController;
+  // late TextEditingController _productUnidadeController;
   late TextEditingController _productEstoqueController;
   late TextEditingController _productEstoqueMinimoController;
 
@@ -28,7 +28,7 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
     _productPrecoCompraController = TextEditingController();
     _productPriceController = TextEditingController();
     _productPrecoCompraController = TextEditingController();
-    _productUnidadeController = TextEditingController(text: 'UNID');
+    // _productUnidadeController = TextEditingController(text: 'UNID');
     _productEstoqueController = TextEditingController();
     _productEstoqueMinimoController = TextEditingController();
   }

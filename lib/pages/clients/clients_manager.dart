@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/config/constants.dart';
 import 'dart:convert';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 
 class ClienteEditScreen extends StatefulWidget {
   final Map<String, dynamic> cliente;
@@ -32,12 +33,17 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
     super.initState();
     _nomeClienteController =
         TextEditingController(text: widget.cliente['nomeCliente'] ?? '');
-    _celularController =
-        TextEditingController(text: widget.cliente['celular'] ?? '');
-    _telefoneController =
-        TextEditingController(text: widget.cliente['telefone'] ?? '');
-    _documentoController =
-        TextEditingController(text: widget.cliente['documento'] ?? '');
+
+    _celularController = MaskedTextController(mask: '(00) 00000-0000');
+    _celularController.text = widget.cliente['celular'] ?? '';
+
+
+    _telefoneController = MaskedTextController(mask: '(00) 0000-0000');
+    _telefoneController.text = widget.cliente['telefone'] ?? '';
+
+    _documentoController = MaskedTextController(mask: '000.000.000-00');
+    _documentoController.text = widget.cliente['ducumento'] ?? '';
+
     _emailtoController =
         TextEditingController(text: widget.cliente['email'] ?? '');
     _ruaController =
@@ -50,8 +56,8 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
         TextEditingController(text: widget.cliente['cidade'] ?? '');
     _estadoController =
         TextEditingController(text: widget.cliente['estado'] ?? '');
-    _cepController =
-        TextEditingController(text: widget.cliente['cep'] ?? '');
+    _cepController =  MaskedTextController(mask: '00000-000');
+    _cepController.text = widget.cliente['cep'] ?? '';
 
     _complementoController =
         TextEditingController(text: widget.cliente['complemento'] ?? '');
@@ -76,6 +82,7 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _nomeClienteController,
+                style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Nome',
                   labelStyle: TextStyle(color: Colors.orange),
@@ -83,11 +90,14 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                       Icons.account_circle_sharp, color: Color(0xfffa9e10)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
                   ),
                 ),
               ),
@@ -95,6 +105,7 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _celularController,
+                style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Celular',
                   labelStyle: TextStyle(color: Colors.orange),
@@ -102,17 +113,21 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                       Icons.phone_android, color: Color(0xfffa9e10)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _telefoneController,
+                style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Telefone',
                   labelStyle: TextStyle(color: Colors.orange),
@@ -120,17 +135,21 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                       Icons.phone, color: Color(0xfffa9e10)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _documentoController,
+                style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'C.P.F',
                   labelStyle: TextStyle(color: Colors.orange),
@@ -138,17 +157,21 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                       Icons.description_sharp, color: Color(0xfffa9e10)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _emailtoController,
+                style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'E-mail',
                   labelStyle: TextStyle(color: Colors.orange),
@@ -156,17 +179,21 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                       Icons.email, color: Color(0xfffa9e10)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _ruaController,
+                style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Rua',
                   labelStyle: TextStyle(color: Colors.orange),
@@ -174,17 +201,21 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                       Icons.bookmark_added_rounded, color: Color(0xfffa9e10)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _numeroController,
+                style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Numero',
                   labelStyle: TextStyle(color: Colors.orange),
@@ -192,17 +223,21 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                       Icons.numbers, color: Color(0xfffa9e10)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _bairroController,
+                style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Bairro',
                   labelStyle: TextStyle(color: Colors.orange),
@@ -210,17 +245,21 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                       Icons.maps_home_work, color: Color(0xfffa9e10)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _cepController,
+                style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'CEP',
                   labelStyle: TextStyle(color: Colors.orange),
@@ -228,17 +267,21 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                       Icons.numbers, color: Color(0xfffa9e10)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _cidadeController,
+                style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Cidade',
                   labelStyle: TextStyle(color: Colors.orange),
@@ -246,17 +289,21 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                       Icons.bookmark_added_rounded, color: Color(0xfffa9e10)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _estadoController,
+                style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Estado',
                   labelStyle: TextStyle(color: Colors.orange),
@@ -264,17 +311,21 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                       Icons.map, color: Color(0xfffa9e10)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _complementoController,
+                style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Complemento',
                   labelStyle: TextStyle(color: Colors.orange),
@@ -282,11 +333,14 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                       Icons.add, color: Color(0xfffa9e10)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide.none, // Remove a linha preta
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xfffa9e10),
-                        width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xfffadccc), width: 2.0),
                   ),
                 ),
               ),
@@ -300,7 +354,7 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 child:
                 ElevatedButton(
                   onPressed: () async {
-                    String ciKey = await _getCiKey();
+                    // String ciKey = await _getCiKey();
 
                     Map<String, dynamic> updatedCliente = {
                       'idClientes': widget.cliente['idClientes'],

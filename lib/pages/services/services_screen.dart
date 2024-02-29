@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -39,35 +37,23 @@ class _ServicesScreenState extends State<ServicesScreen> {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
 
+    var url = '${APIConfig.baseURL}${APIConfig.servicossEndpoint}?X-API-KEY=$ciKey';
+    var response = await http.get(Uri.parse(url));
 
-    while (true) {
-      var url =
-          '${APIConfig.baseURL}${APIConfig.servicossEndpoint}?X-API-KEY=$ciKey';
-
-      var response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.body);
-        if (data.containsKey('result')) {
-          List<dynamic> newServices = data['result'];
-          if (newServices.isEmpty) {
-            // If no more services, exit the loop
-            break;
-          } else {
-            setState(() {
-              services.addAll(newServices);
-              filteredServices = List.from(services); // Update filtered list
-            });
-
-          }
-        } else {
-          print('Key "services" not found in API response');
-          break;
-        }
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = json.decode(response.body);
+      if (data.containsKey('result')) {
+        List<dynamic> newServices = data['result'];
+        setState(() {
+          services.clear();
+          services.addAll(newServices);
+          filteredServices = List.from(services);
+        });
       } else {
-        print('Failed to load services');
-        break;
+        print('Key "services" not found in API response');
       }
+    } else {
+      print('Failed to load services');
     }
   }
 
@@ -81,7 +67,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
     setState(() {
       isSearching = false;
       searchController.clear();
-      filteredServices = List.from(services); // Restore filtered list to original
+      filteredServices = List.from(services);
     });
   }
 
@@ -99,9 +85,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: !isSearching
-            ? Text('Serviços')
-            : TextField(
+        title: !isSearching ? Text('Serviços') : TextField(
           controller: searchController,
           style: TextStyle(color: Colors.white),
           onChanged: (value) {
@@ -116,8 +100,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
             ),
             filled: true,
             fillColor: Color(0xffe79a24),
-            contentPadding:
-            EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           ),
         ),
         actions: <Widget>[
@@ -136,27 +119,20 @@ class _ServicesScreenState extends State<ServicesScreen> {
           ),
         ],
       ),
-      body: filteredServices.isEmpty
-          ? Center(
-        child: CircularProgressIndicator(),
-      )
-          : ListView.builder(
-        itemCount: filteredServices.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Padding(
-            padding: const EdgeInsets.all(1.0),
-            child: Card(
-              child: ListTile(
-                onTap: () async {
-                  Map<String, dynamic> permissions = await _getCiKey();
-                  bool hasPermissionToEdit = false;
-                  for (var permissao in permissions['permissoes']) {
-                    if (permissao['eServico'] == '1') {
-                      hasPermissionToEdit = true;
-                      break;
-                    }
-                  }
-                  if (hasPermissionToEdit) {
+      body: RefreshIndicator(
+        onRefresh: _getServices,
+        child: filteredServices.isEmpty
+            ? Center(
+          child: CircularProgressIndicator(),
+        )
+            : ListView.builder(
+          itemCount: filteredServices.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Padding(
+              padding: const EdgeInsets.all(1.0),
+              child: Card(
+                child: ListTile(
+                  onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -165,60 +141,51 @@ class _ServicesScreenState extends State<ServicesScreen> {
                         ),
                       ),
                     );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: Colors.red,
-                        content: Text(
-                            'Você não tem permissões para editar serviços.'),
-                      ),
-                    );
-                  }
-                },
-                contentPadding: EdgeInsets.all(16.0),
-                title: Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xFFFD8900),
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      padding: EdgeInsets.all(8.0),
-                      child: Center(
-                        child: Text(
-                          '${filteredServices[index]['idServicos']}',
-                          style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.width * 0.04, // 4% da largura da tela
-
-                            color: Colors.white,
+                  },
+                  contentPadding: EdgeInsets.all(16.0),
+                  title: Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xFFFD8900),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        padding: EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Text(
+                            '${filteredServices[index]['idServicos']}',
+                            style: TextStyle(
+                              fontSize: MediaQuery.of(context).size.width * 0.04, // 4% da largura da tela
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 16.0),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${filteredServices[index]['nome']}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: MediaQuery.of(context).size.width * 0.04, // 4% da largura da tela
+                      SizedBox(width: 16.0),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${filteredServices[index]['nome']}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: MediaQuery.of(context).size.width * 0.04, // 4% da largura da tela
+                              ),
                             ),
-                          ),
-                          Text(
-                            'Valor: ${filteredServices[index]['preco']}',
-                          ),
-                        ],
+                            Text(
+                              'Valor: ${filteredServices[index]['preco']}',
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -248,15 +215,15 @@ class _ServicesScreenState extends State<ServicesScreen> {
       ),
       bottomNavigationBar: BottomNavigationBarWidget(
         activeIndex: _selectedIndex,
-        context: context, // Passe o contexto aqui
+        context: context,
         onTap: _onItemTapped,
       ),
     );
   }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 }
-
