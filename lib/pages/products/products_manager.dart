@@ -18,7 +18,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
   late TextEditingController _productCodController;
   late TextEditingController _productPriceController;
   late TextEditingController _productPrecoCompraController;
-  late TextEditingController _productUnidadeController;
+  // late TextEditingController _productUnidadeController;
   late TextEditingController _productEstoqueController;
   late TextEditingController _productEstoqueMinimoController;
 
@@ -36,8 +36,8 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         TextEditingController(text: widget.product['precoVenda'] ?? '');
     _productPrecoCompraController =
         TextEditingController(text: widget.product['precoCompra'] ?? '');
-    _productUnidadeController =
-        TextEditingController(text: widget.product['unidade'] ?? 'UNID');
+    // _productUnidadeController =
+    //     TextEditingController(text: widget.product['unidade'] ?? 'UNID');
     _productEstoqueController =
         TextEditingController(text: widget.product['estoque'] ?? '');
     _productEstoqueMinimoController =
@@ -123,7 +123,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
               SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () async {
-                  String ciKey = await _getCiKey();
+                  // String ciKey = await _getCiKey();
 
                   Map<String, dynamic> updatedProduct = {
                     'idProdutos': widget.product['idProdutos'],

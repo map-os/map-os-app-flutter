@@ -48,7 +48,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
       if (response.statusCode == 200) {
         Map<String, dynamic> data = json.decode(response.body);
         if (data.containsKey('result')) {
-          List<dynamic> newClientes = data['result'];
+          List<dynamic> newClientes = data['result'] ?? 0;
           if (newClientes.isEmpty) {
             // Se não houver mais clientes, saia do loop
             break;
@@ -210,14 +210,14 @@ class _ClientesScreenState extends State<ClientesScreen> {
                           Row(
                             children: [
                               Text(
-                                'Celular: ${filteredClientes[index]['celular']}',
+                                'Cel: ${filteredClientes[index]['celular']}',
                                 style: TextStyle(
                                   fontSize: MediaQuery.of(context).size.width * 0.029, // 4% da largura da tela
                                 ),
                               ),
                               SizedBox(width: 8.0),
                               Text(
-                                'Telefone: ${filteredClientes[index]['telefone']}',
+                                'Tel: ${filteredClientes[index]['telefone']}',
                                 style: TextStyle(
                                   fontSize: MediaQuery.of(context).size.width * 0.029, // 4% da largura da tela
                                 ),

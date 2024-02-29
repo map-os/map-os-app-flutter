@@ -5,6 +5,7 @@ import 'package:mapos_app/pages/services/services_screen.dart';
 import 'package:mapos_app/pages/clients/clients_screen.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:mapos_app/pages/products/products_screen.dart';
+import  'package:mapos_app/pages/os/os_screen.dart';
 
 
 class BottomNavigationBar extends StatelessWidget {
@@ -117,6 +118,15 @@ class BottomNavigationBarWidget extends StatelessWidget {
           context,
             PageTransition(
               child: ClientesScreen(),
+              type: PageTransitionType.leftToRight,
+            )
+        );
+      }
+      if (index == 4) {
+        Navigator.push(
+            context,
+            PageTransition(
+              child: OsScreen(),
               type: PageTransitionType.leftToRight,
             )
         );

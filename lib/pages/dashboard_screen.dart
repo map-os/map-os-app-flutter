@@ -9,6 +9,8 @@ import 'dart:convert';
 import 'package:mapos_app/config/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_boxicons/flutter_boxicons.dart';
+import 'package:mapos_app/pages/os/os_screen.dart';
+import 'package:mapos_app/widgets/tab_home_os_aberto.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -42,14 +44,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       Map<String, dynamic> data = json.decode(response.body);
       if (data.containsKey('result')) {
         setState(() {
-          countOs = data['result']['countOs'];
-          clientes = data['result']['clientes'];
-          produtos = data['result']['produtos'];
-          servicos = data['result']['servicos'];
-          garantias = data['result']['garantia'];
-          vendas = data['result']['vendas'];
+          countOs = data['result']['countOs'] ?? 0;
+          clientes = data['result']['clientes'] ?? 0;
+          produtos = data['result']['produtos'] ?? 0;
+          servicos = data['result']['servicos'] ?? 0;
+          garantias = data['result']['garantia'] ?? 0;
+          vendas = data['result']['vendas'] ?? 0;
         });
-        print(countOs);
       } else {
         print('Key "result" not found in API response');
       }
@@ -71,68 +72,86 @@ class _DashboardScreenState extends State<DashboardScreen> {
         title: Text('Dashboard'),
       ),
       drawer: MenuLateral(),
-      body: Container(
-        decoration: BoxDecoration(
-          color: Color(0xffd97b06),
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(20.0),
-            bottomRight: Radius.circular(20.0),
-          ),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
-                child: GridView.count(
-                  shrinkWrap: true,
-                  crossAxisSpacing: (MediaQuery.of(context).size.width * 0.020),
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 9.0,
-                  childAspectRatio: 0.99,
-                  children: [
-                    _buildCard('Clientes', Boxicons.bx_group, clientes.toString(), () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ClientesScreen()),
-                      );
-                    }),
-                    _buildCard('Serviços', Boxicons.bx_wrench, servicos.toString(), () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ServicesScreen()),
-                      );
-                    }),
-                    _buildCard('Produtos', Boxicons.bx_basket, produtos.toString(), () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ProductsScreen()),
-                      );
-                    }),
-                    _buildCard('O.S', Boxicons.bx_file, countOs.toString(), () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ServicesScreen()),
-                      );
-                    }),
-                    _buildCard('Garantias', Boxicons.bx_receipt, garantias.toString(), () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ServicesScreen()),
-                      );
-                    }),
-                    _buildCard('Vendas', Icons.shopping_cart_outlined, vendas.toString(), () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ServicesScreen()),
-                      );
-                    }),
-                  ],
-                ),
+      body: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Color(0xffd97b06),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(20.0),
+                bottomRight: Radius.circular(20.0),
               ),
-            ],
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
+                    child: GridView.count(
+                      shrinkWrap: true,
+                      crossAxisSpacing: (MediaQuery.of(context).size.width * 0.020),
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 9.0,
+                      childAspectRatio: 0.99,
+                      children: [
+                        _buildCard(
+                            'Clientes', Boxicons.bx_group, clientes.toString(), () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) =>
+                                ClientesScreen()),
+                          );
+                        }),
+                        _buildCard('Serviços', Boxicons.bx_wrench,
+                            servicos.toString(), () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) =>
+                                    ServicesScreen()),
+                              );
+                            }),
+                        _buildCard('Produtos', Boxicons.bx_basket,
+                            produtos.toString(), () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) =>
+                                    ProductsScreen()),
+                              );
+                            }),
+                        _buildCard('O.S', Boxicons.bx_file, countOs.toString(), () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => OsScreen()),
+                          );
+                        }),
+                        _buildCard('Garantias', Boxicons.bx_receipt,
+                            garantias.toString(), () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) =>
+                                    ServicesScreen()),
+                              );
+                            }),
+                        _buildCard('Vendas', Icons.shopping_cart_outlined,
+                            vendas.toString(), () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) =>
+                                    ServicesScreen()),
+                              );
+                            }),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
+          // MeuWidgetPersonalizado(
+          //   titulo: 'Meu Título',
+          //   texto: '',
+          // ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBarWidget(
         activeIndex: _selectedIndex,
@@ -142,7 +161,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildCard(String title, IconData icon, String data, Function() onTap) {
+
+  Widget _buildCard(String title, IconData icon, String data,
+      Function() onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -153,26 +174,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
           color: Colors.white,
         ),
         child: Padding(
-          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.04),
+          padding: EdgeInsets.all(MediaQuery
+              .of(context)
+              .size
+              .width * 0.04),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 icon,
-                size: (MediaQuery.of(context).size.width * 0.09),
+                size: (MediaQuery
+                    .of(context)
+                    .size
+                    .width * 0.09),
                 color: Colors.orange,
               ),
-              SizedBox(height: (MediaQuery.of(context).size.width * 0.001)),
+              SizedBox(height: (MediaQuery
+                  .of(context)
+                  .size
+                  .width * 0.001)),
               Text(
                 title,
-                style: TextStyle(fontSize: (MediaQuery.of(context).size.width * 0.04),
+                style: TextStyle(fontSize: (MediaQuery
+                    .of(context)
+                    .size
+                    .width * 0.04),
                     fontWeight: FontWeight.bold,
                     color: Color(0xffd87a06)),
               ),
-              SizedBox(height: (MediaQuery.of(context).size.width * 0.001)),
+              SizedBox(height: (MediaQuery
+                  .of(context)
+                  .size
+                  .width * 0.001)),
               Text(
                 data,
-                style: TextStyle(fontSize: (MediaQuery.of(context).size.width * 0.05), fontWeight: FontWeight.bold, color: Color(
+                style: TextStyle(fontSize: (MediaQuery
+                    .of(context)
+                    .size
+                    .width * 0.05), fontWeight: FontWeight.bold, color: Color(
                     0xffd87a06)),
               ),
             ],

@@ -26,7 +26,7 @@ class MenuLateral extends StatelessWidget {
                 if (snapshot.hasError) {
                   return Text('Erro: ${snapshot.error}');
                 } else {
-                  String ciKey = snapshot.data?['ci_key'] ?? '';
+                  // String ciKey = snapshot.data?['ci_key'] ?? '';
                   List<dynamic> permissoes = snapshot.data?['permissoes'] ?? [];
                   bool temPermissaoCliente = false;
                   bool temPermissaoServicos = false;
@@ -249,8 +249,9 @@ class MenuLateral extends StatelessWidget {
     // Navega para a tela de login e remove todas as rotas anteriores
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => LoginPage((){})),
           (Route<dynamic> route) => false,
     );
+
   }
 }

@@ -309,7 +309,7 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
       } else {
         var errorMessage = 'Falha ao adicionar cliente';
 
-        if (response.body != null && response.body.isNotEmpty) {
+        if (response.body.isNotEmpty) {
           var responseBody = json.decode(response.body);
           if (responseBody['message'] != null && responseBody['message'].isNotEmpty) {
             errorMessage = responseBody['message'];
