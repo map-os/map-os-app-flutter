@@ -6,6 +6,7 @@ import 'package:mapos_app/config/constants.dart';
 import 'package:mapos_app/pages/services/services_manager.dart';
 import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
 import 'package:mapos_app/pages/services/services_add.dart';
+import 'package:intl/intl.dart';
 
 class ServicesScreen extends StatefulWidget {
   @override
@@ -174,7 +175,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                               ),
                             ),
                             Text(
-                              'Valor: ${filteredServices[index]['preco']}',
+                              'Valor: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(double.parse(filteredServices[index]['preco']))}',
                             ),
                           ],
                         ),

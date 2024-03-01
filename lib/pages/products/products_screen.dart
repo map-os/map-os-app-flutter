@@ -140,7 +140,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     Map<String, dynamic> permissions = await _getCiKey();
                     bool hasPermissionToEdit = false;
                     for (var permissao in permissions['permissoes']) {
-                      if (permissao['eProduto'] == '1') {
+                      if (permissao['vProduto'] == '1') {
                         hasPermissionToEdit = true;
                         break;
                       }
@@ -159,7 +159,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         SnackBar(
                           backgroundColor: Colors.red,
                           content: Text(
-                              'Você não tem permissões para editar produtos.'),
+                              'Você não tem permissões para Vizualizar produtos.'),
                         ),
                       );
                     }

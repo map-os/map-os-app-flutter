@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:mapos_app/config/constants.dart';
 
+
+
 class TabDetalhes extends StatefulWidget {
   final Map<String, dynamic> os;
 
@@ -24,10 +26,11 @@ class _TabDetalhesState extends State<TabDetalhes> {
   late TextEditingController _nomeClienteController;
   late TextEditingController _celularClienteController;
 
+
   @override
   void initState() {
     super.initState();
-    _dataInicialController = TextEditingController(text: widget.os['dataInicial']);
+    _dataInicialController = TextEditingController(text:  widget.os['dataInicial']);
     _dataFinalController = TextEditingController(text: widget.os['dataFinal']);
     _responsavelController = TextEditingController(text: widget.os['nome']);
     _statusController = TextEditingController(text: widget.os['status']);
@@ -62,67 +65,203 @@ class _TabDetalhesState extends State<TabDetalhes> {
           children: [
             TextFormField(
               controller: _nomeClienteController,
-              decoration: InputDecoration(labelText: 'Cliente'),
-              style: TextStyle(fontSize: 16.0),
-            ),
-            TextFormField(
-              controller: _celularClienteController,
-              decoration: InputDecoration(labelText: 'Celular Cliente'),
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 8.0),
-            TextFormField(
-              controller: _dataInicialController,
-              decoration: InputDecoration(labelText: 'Data entrada'),
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 8.0),
-            TextFormField(
-              controller: _dataFinalController,
-              decoration: InputDecoration(labelText: 'Prev. Saída'),
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 8.0),
-            TextFormField(
-              controller: _responsavelController,
-              decoration: InputDecoration(labelText: 'Responsável'),
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 8.0),
-            TextFormField(
-              controller: _statusController,
-              decoration: InputDecoration(labelText: 'Status'),
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 8.0),
-            TextFormField(
-              controller: _descricaoController,
-              decoration: InputDecoration(labelText: 'Descrição'),
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 8.0),
-            TextFormField(
-              controller: _defeitoController,
-              decoration: InputDecoration(labelText: 'Defeito'),
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 8.0),
-            TextFormField(
-              controller: _laudoTecnicoController,
-              decoration: InputDecoration(labelText: 'Laudo Técnico'),
-              style: TextStyle(fontSize: 16.0),
+              enabled: false,
+               style: TextStyle(color: Colors.black),
+              decoration: InputDecoration(
+                labelText: 'Cliente',
+                filled: true,
+
+                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide.none, // Remove a linha preta
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                ),
+                labelStyle: TextStyle(
+                  color: Colors.black, // Cor do texto quando o campo está desabilitado
+                ),
+              ),
             ),
             SizedBox(height: 16.0),
-            // Botão para atualizar a OS
-            ElevatedButton(
-              onPressed: _atualizarOS,
-              child: Text('Atualizar OS'),
+            TextFormField(
+              controller: _celularClienteController,
+              enabled: false,
+              style: TextStyle(color: Colors.black),
+              decoration: InputDecoration(
+                labelText: 'Celular Cliente',
+                filled: true,
+                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide.none, // Remove a linha preta
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextFormField(
+              controller: _dataInicialController,
+              enabled: false,
+              style: TextStyle(color: Colors.black),
+              decoration: InputDecoration(
+                labelText: 'Entrada',
+                filled: true,
+                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide.none, // Remove a linha preta
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextFormField(
+              controller: _dataFinalController,
+              decoration: InputDecoration(
+                labelText: 'Prev. Saída',
+                filled: true,
+                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide.none, // Remove a linha preta
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextFormField(
+              controller: _responsavelController,
+              enabled: false,
+              style: TextStyle(color: Colors.black),
+              decoration: InputDecoration(
+                labelText: 'Responsavel',
+                filled: true,
+                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide.none, // Remove a linha preta
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextFormField(
+              controller: _statusController,
+              decoration: InputDecoration(
+                labelText: 'Status',
+                filled: true,
+                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide.none, // Remove a linha preta
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextFormField(
+              controller: _descricaoController,
+              maxLines: 5,
+              decoration: InputDecoration(
+                labelText: 'Descrição',
+                filled: true,
+                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide.none, // Remove a linha preta
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextFormField(
+              controller: _defeitoController,
+              maxLines: 5,
+              decoration: InputDecoration(
+                labelText: 'Defeito',
+                filled: true,
+                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide.none, // Remove a linha preta
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextFormField(
+              controller: _laudoTecnicoController,
+              maxLines: 5,
+              decoration: InputDecoration(
+                labelText: 'Laudo Técnico',
+                filled: true,
+                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide.none, // Remove a linha preta
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            Center(
+              child: ElevatedButton(
+                onPressed: _atualizarOS,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xff2c9b5b),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  minimumSize: Size(200, 50),
+                ),
+                child: Text(
+                  'Atualizar OS',
+                  style: TextStyle(fontSize: 18.0, color: Colors.white),
+                ),
+              ),
             ),
           ],
         ),
       ),
     );
   }
+
 
   // Função para atualizar a OS
   void _atualizarOS() async {

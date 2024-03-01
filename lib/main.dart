@@ -76,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController(text: 'teste@teste.com');
   TextEditingController _passwordController =
   TextEditingController(text: '123456');
-
+  bool _showPassword = false;
   @override
   void initState() {
     super.initState();
@@ -118,9 +118,9 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['result'] == true) {
-          String ciKey = data['ci_key'];
-          List<dynamic> permissoesList = data['permissions'];
+        if (data['status'] == true) {
+          String ciKey = data['result']['ci_key'];
+          List<dynamic> permissoesList = data['result']['permissions'];
           String permissoes = jsonEncode(permissoesList);
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('token', ciKey);
@@ -204,37 +204,54 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                             ),
-                      SizedBox(height: 20.0),
-                      TextField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.light
-                                ? Colors.grey[700]
-                                : Colors.white),
-                        decoration: InputDecoration(
-                          labelText: 'Senha',
-                          labelStyle: TextStyle(
+                          SizedBox(height: 20.0),
+                          TextField(
+                            controller: _passwordController,
+                            obscureText: !_showPassword, // Altere o obscureText com base em _showPassword
+                            style: TextStyle(
                               color: Theme.of(context).brightness == Brightness.light
-                                  ? Color(0xff333649)
-                                  : Colors.white),
-                          prefixIcon: Icon(Icons.lock,
-                              color: Theme.of(context).brightness == Brightness.light
-                                  ? Color(0xff333649)
-                                  : Colors.white),
-                          filled: true,
-                          fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                          contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                            borderSide: BorderSide.none, // Remove a linha preta
+                                  ? Colors.grey[700]
+                                  : Colors.white,
+                            ),
+                            decoration: InputDecoration(
+                              labelText: 'Senha',
+                              labelStyle: TextStyle(
+                                color: Theme.of(context).brightness == Brightness.light
+                                    ? Color(0xff333649)
+                                    : Colors.white,
+                              ),
+                              prefixIcon: Icon(Icons.lock,
+                                  color: Theme.of(context).brightness == Brightness.light
+                                      ? Color(0xff333649)
+                                      : Colors.white),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _showPassword ? Icons.visibility : Icons.visibility_off,
+                                  color: Theme.of(context).brightness == Brightness.light
+                                      ? Color(0xff333649)
+                                      : Colors.white,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _showPassword = !_showPassword;
+                                  });
+                                },
+                              ),
+                              filled: true,
+                              fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                              contentPadding:
+                              EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                                borderSide: BorderSide.none,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                                borderSide:
+                                BorderSide(color: Color(0xff333649), width: 2.0),
+                              ),
+                            ),
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                            borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
-                          ),
-                        ),
-                      ),
                       SizedBox(height: 18.0),
                       ElevatedButton(
                         onPressed: _login,

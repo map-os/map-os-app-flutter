@@ -41,9 +41,8 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
     _telefoneController = MaskedTextController(mask: '(00) 0000-0000');
     _telefoneController.text = widget.cliente['telefone'] ?? '';
 
-    _documentoController = MaskedTextController(mask: '000.000.000-00');
-    _documentoController.text = widget.cliente['ducumento'] ?? '';
-
+    _documentoController =
+        TextEditingController(text: widget.cliente['documento'] ?? '');
     _emailtoController =
         TextEditingController(text: widget.cliente['email'] ?? '');
     _ruaController =
@@ -345,49 +344,46 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                 ),
               ),
               SizedBox(height: 16.0),
-              Container(
-                height: 50.0,
-                decoration: BoxDecoration(
-                  color: Color(0xfffa9e10), // Cor de fundo do botão
-                  borderRadius: BorderRadius.circular(8.0), // Borda arredondada
-                ),
-                child:
-                ElevatedButton(
-                  onPressed: () async {
-                    // String ciKey = await _getCiKey();
+              ElevatedButton(
+                onPressed: () async {
+                  // String ciKey = await _getCiKey();
 
-                    Map<String, dynamic> updatedCliente = {
-                      'idClientes': widget.cliente['idClientes'],
-                      'nomeCliente': _nomeClienteController.text,
-                      'celular': _celularController.text,
-                      'telefone': _telefoneController.text,
-                      'documento': _documentoController.text,
-                      'email': _emailtoController.text,
-                      'rua': _ruaController.text,
-                      'numero': _numeroController.text,
-                      'bairro': _bairroController.text,
-                      'cep': _cepController.text,
-                      'cidade': _cidadeController.text,
-                      'estado': _estadoController.text,
-                      'complemento': _complementoController.text,
-                    };
+                  Map<String, dynamic> updatedCliente = {
+                    'idClientes': widget.cliente['idClientes'],
+                    'nomeCliente': _nomeClienteController.text,
+                    'celular': _celularController.text,
+                    'telefone': _telefoneController.text,
+                    'documento': _documentoController.text,
+                    'email': _emailtoController.text,
+                    'rua': _ruaController.text,
+                    'numero': _numeroController.text,
+                    'bairro': _bairroController.text,
+                    'cep': _cepController.text,
+                    'cidade': _cidadeController.text,
+                    'estado': _estadoController.text,
+                    'complemento': _complementoController.text,
+                  };
 
-                    Future<bool> success = _updateCliente(
-                        updatedCliente); // Removido o await
-                    if (await success) {
-                      _showSnackBar('Cliente atualizado com sucesso',
-                          backgroundColor: Colors.green,
-                          textColor: Colors.white);
-                    } else {
-                      _showSnackBar('Falha ao atualizar o cliente',
-                          backgroundColor: Colors.red, textColor: Colors.white);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Color(0xfffa9e10),
+                  Future<bool> success = _updateCliente(
+                      updatedCliente); // Removido o await
+                  if (await success) {
+                    _showSnackBar('Cliente atualizado com sucesso',
+                        backgroundColor: Colors.green,
+                        textColor: Colors.white);
+                  } else {
+                    _showSnackBar('Falha ao atualizar o cliente',
+                        backgroundColor: Colors.red, textColor: Colors.white);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xff2c9b5b),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
                   ),
-                  child: Text('Salvar Alterações'),
+                  minimumSize: Size(200, 50),
+                ),
+                child: Text('Salvar Alterações',
+                  style: TextStyle(fontSize: 18.0, color: Colors.white),
                 ),
               ),
             ],
