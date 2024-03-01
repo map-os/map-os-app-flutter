@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:mapos_app/config/constants.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
+import 'package:mapos_app/config/constants.dart';
 
 class ProductEditScreen extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -19,10 +19,10 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
   late TextEditingController _productCodController;
   late TextEditingController _productPriceController;
   late TextEditingController _productPrecoCompraController;
-  // late TextEditingController _productUnidadeController;
   late TextEditingController _productEstoqueController;
   late TextEditingController _productEstoqueMinimoController;
 
+  bool _isEditing = false;
 
   @override
   void initState() {
@@ -35,20 +35,28 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
       decimalSeparator: ',',
       thousandSeparator: '.',
       leftSymbol: 'R\$ ',
-      initialValue: double.tryParse(widget.product['precoCompra'] ?? '0.00') ?? 0.00,
+      initialValue:
+      double.tryParse(widget.product['precoCompra'] ?? '0.00') ?? 0.00,
     );
     _productPriceController = MoneyMaskedTextController(
       decimalSeparator: ',',
       thousandSeparator: '.',
       leftSymbol: 'R\$ ',
-      initialValue: double.tryParse(widget.product['precoVenda'] ?? '0.00') ?? 0.00,
+      initialValue:
+      double.tryParse(widget.product['precoVenda'] ?? '0.00') ?? 0.00,
     );
-    // _productUnidadeController =
-    //     TextEditingController(text: widget.product['unidade'] ?? 'UNID');
     _productEstoqueController =
         TextEditingController(text: widget.product['estoque'] ?? '');
     _productEstoqueMinimoController =
         TextEditingController(text: widget.product['estoqueMinimo'] ?? '');
+  }
+
+  Future<Map<String, dynamic>> _getCiKey() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String ciKey = prefs.getString('token') ?? '';
+    String permissoesString = prefs.getString('permissoes') ?? '[]';
+    List<dynamic> permissoes = jsonDecode(permissoesString);
+    return {'ciKey': ciKey, 'permissoes': permissoes};
   }
 
   @override
@@ -56,6 +64,34 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Editar Produto'),
+        actions: [
+          IconButton(
+            icon: Icon(_isEditing  ? Icons.edit_note_sharp  : Icons.edit),
+            onPressed: () async {
+              Map<String, dynamic> permissionsMap = await _getCiKey();
+              List<dynamic> permissoes = permissionsMap['permissoes'];
+              bool hasPermissionToEdit = false;
+              for (var permissao in permissoes) {
+                if (permissao['eProduto'] == '1') {
+                  hasPermissionToEdit = true;
+                  break;
+                }
+              }
+              if (hasPermissionToEdit) {
+                setState(() {
+                  _isEditing  = !_isEditing;;
+                });
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.red,
+                    content: Text('Você não tem permissões para editar serviços.'),
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -70,17 +106,19 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _productNameController,
+                enabled: _isEditing,
                 decoration: InputDecoration(
                   labelText: 'Nome',
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
@@ -88,17 +126,19 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _productCodController,
+                enabled: _isEditing,
                 decoration: InputDecoration(
                   labelText: 'COD de Barras',
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
@@ -106,17 +146,19 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _productPrecoCompraController,
+                enabled: _isEditing,
                 decoration: InputDecoration(
                   labelText: 'Preço de compra',
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
@@ -124,17 +166,19 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _productPriceController,
+                enabled: _isEditing,
                 decoration: InputDecoration(
                   labelText: 'Preço de Venda',
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
@@ -142,17 +186,19 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _productEstoqueController,
+                enabled: _isEditing,
                 decoration: InputDecoration(
                   labelText: 'Estoque',
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
@@ -160,31 +206,27 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _productEstoqueMinimoController,
+                enabled: _isEditing,
                 decoration: InputDecoration(
                   labelText: 'Estoque Minimo',
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
-          Container(
-            height: 50.0,
-            decoration: BoxDecoration(
-              color: Color(0xfffa9e10), // Cor de fundo do botão
-              borderRadius: BorderRadius.circular(8.0), // Borda arredondada
-            ),
-            child:
-            ElevatedButton(
-                onPressed: () async {
+              ElevatedButton(
+                onPressed: _isEditing
+                    ? () async {
                   String precoCompra = _productPrecoCompraController.text.replaceAll('R\$ ', '').replaceAll('.', '').replaceAll(',', '.');
                   String precoVenda = _productPriceController.text.replaceAll('R\$ ', '').replaceAll('.', '').replaceAll(',', '.');
 
@@ -201,7 +243,6 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                     'saida': '',
                   };
 
-
                   bool success = await _updateProduct(updatedProduct);
                   if (success) {
                     _showSnackBar('Produto atualizado com sucesso',
@@ -212,14 +253,20 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                         backgroundColor: Colors.red,
                         textColor: Colors.white);
                   }
-                },
+                }
+                    : null,
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Color(0xfffa9e10),
+                  backgroundColor: Color(0xff2c9b5b),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  minimumSize: Size(200, 50),
                 ),
-                child: Text('Salvar Alterações'),
+                child: Text(
+                  'Salvar Alterações',
+                  style: TextStyle(fontSize: 18.0, color: Colors.white),
+                ),
               ),
-          ),
             ],
           ),
         ),
@@ -237,14 +284,10 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  Future<String> _getCiKey() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String ciKey = prefs.getString('token') ?? '';
-    return ciKey;
-  }
+
 
   Future<bool> _updateProduct(Map<String, dynamic> updatedProduct) async {
-    String ciKey = await _getCiKey();
+    Map<String, dynamic> ciKey = await _getCiKey();
 
     var url =
         '${APIConfig.baseURL}${APIConfig.prodtuostesEndpoint}/${widget.product['idProdutos']}';
@@ -254,7 +297,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         Uri.parse(url),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'X-API-KEY': ciKey,
+          'X-API-KEY': ciKey['ciKey'],
         },
         body: jsonEncode(updatedProduct),
       );
@@ -272,3 +315,5 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     }
   }
 }
+
+

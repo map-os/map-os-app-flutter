@@ -170,13 +170,6 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                 ),
               ),
               SizedBox(height: 16.0),
-          Container(
-            height: 50.0,
-            decoration: BoxDecoration(
-              color: Color(0xfffa9e10), // Cor de fundo do botão
-              borderRadius: BorderRadius.circular(8.0), // Borda arredondada
-            ),
-            child:
             ElevatedButton(
                 onPressed: () async {
                   bool success = await _addProduct();
@@ -197,12 +190,16 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Color(0xfffa9e10),
+                  backgroundColor: Color(0xff2c9b5b),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  minimumSize: Size(200, 50),
                 ),
-                child: Text('Adicionar Produto'),
+                child: Text('Adicionar Produto',
+                  style: TextStyle(fontSize: 18.0, color: Colors.white),
+                ),
               ),
-          ),
             ],
           ),
         ),

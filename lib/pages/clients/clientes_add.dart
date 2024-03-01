@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/config/constants.dart';
 import 'dart:convert';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 
 class ClienteAddScreen extends StatefulWidget {
   @override
@@ -27,16 +28,16 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
   void initState() {
     super.initState();
     _nomeClienteController = TextEditingController();
-    _celularController = TextEditingController();
-    _telefoneController = TextEditingController();
-    _documentoController = TextEditingController();
+    _celularController = MaskedTextController(mask: '(00) 00000-0000');
+    _telefoneController = MaskedTextController(mask: '(00) 00000-0000');
+    _documentoController = MaskedTextController(mask: '000.000.000-00');
     _emailtoController = TextEditingController();
     _ruaController = TextEditingController();
     _numeroController = TextEditingController();
     _bairroController = TextEditingController();
     _cidadeController = TextEditingController();
     _estadoController = TextEditingController();
-    _cepController = TextEditingController();
+    _cepController =  MaskedTextController(mask: '00000-000');
     _complementoController = TextEditingController();
   }
 
@@ -294,23 +295,20 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
               ),
               SizedBox(height: 16.0),
               SizedBox(height: 16.0),
-          Container(
-            height: 50.0,
-            decoration: BoxDecoration(
-              color: Color(0xfffa9e10), // Cor de fundo do botão
-              borderRadius: BorderRadius.circular(8.0), // Borda arredondada
-            ),
-            child:
             ElevatedButton(
                 onPressed: () {
                   _addCliente();
                 },
-                child: Text('Adicionar Cliente'),
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Color(0xfffa9e10),
+                child: Text('Adicionar Cliente',
+                  style: TextStyle(fontSize: 18.0, color: Colors.white),
                 ),
-              ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xff2c9b5b),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  minimumSize: Size(200, 50),
+                ),
               ),
             ],
           ),
@@ -333,7 +331,7 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
       'cidade': _cidadeController.text,
       'estado': _estadoController.text,
       'complemento': _complementoController.text,
-      'senha': _documentoController.text,
+      'senha': '',
       'contato': '',
       'fornecedor': 0,
     };

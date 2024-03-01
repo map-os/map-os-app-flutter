@@ -83,7 +83,7 @@ class MenuLateral extends StatelessWidget {
                           'Início',
                           style: TextStyle(
                             color: Colors.black87,
-                            fontSize: MediaQuery.of(context).size.width * 0.044,                          ),
+                            fontSize: MediaQuery.of(context).size.width * 0.044,),
                         ),
                         onTap: () {
                           // Implemente a lógica desejada para o Item 1 aqui

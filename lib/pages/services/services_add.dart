@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:mapos_app/config/constants.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 
 class ServicoAddScreen extends StatefulWidget {
   @override
@@ -19,10 +20,15 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
     super.initState();
     _nomeServicoController = TextEditingController();
     _descricaoServicoController = TextEditingController();
-    _precoServicoController = TextEditingController();
+    _precoServicoController = MoneyMaskedTextController(
+      decimalSeparator: ',',
+      thousandSeparator: '.',
+      leftSymbol: 'R\$ ',
+    );
   }
 
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -91,23 +97,21 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
                 ),
               ),
               SizedBox(height: 16.0),
-          Container(
-            height: 50.0,
-            decoration: BoxDecoration(
-              color: Color(0xfffa9e10), // Cor de fundo do botão
-              borderRadius: BorderRadius.circular(8.0), // Borda arredondada
-            ),
-            child:
             ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Color(0xfffa9e10),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xff2c9b5b),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0),
                 ),
+                minimumSize: Size(200, 50),
+              ),
+
                 onPressed: () async {
+                  String preco = _precoServicoController.text.replaceAll('R\$ ', '').replaceAll('.', '').replaceAll(',', '.');
                   Map<String, dynamic> newServico = {
                     'nome': _nomeServicoController.text,
                     'descricao': _descricaoServicoController.text,
-                    'preco': _precoServicoController.text,
+                    'preco': preco,
                   };
 
                   bool success = await _addServico(newServico);
@@ -120,9 +124,10 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
                         backgroundColor: Colors.red);
                   }
                 },
-                child: Text('Adicionar Serviço'),
+                child: Text('Adicionar Serviço',
+                    style: TextStyle(fontSize: 18.0, color: Colors.white),
+                ),
               ),
-            ),
             ],
           ),
         ),

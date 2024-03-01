@@ -18,11 +18,26 @@ class _ClientesScreenState extends State<ClientesScreen> {
   List<dynamic> filteredClientes = [];
   bool isSearching = false;
   TextEditingController searchController = TextEditingController();
+  ScrollController _scrollController = ScrollController();
+  int _currentPage = 0; // Página atual
 
   @override
   void initState() {
     super.initState();
     _getClientes();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      _getClientes(page: _currentPage + 1);
+    }
   }
 
   Future<Map<String, dynamic>> _getCiKey() async {
@@ -33,39 +48,33 @@ class _ClientesScreenState extends State<ClientesScreen> {
     return {'ciKey': ciKey, 'permissoes': permissoes};
   }
 
-  Future<void> _getClientes() async {
+  Future<void> _getClientes({int page = 0}) async {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
-    int page = 0;
-    int perPage = 20;
 
-    while (true) {
-      var url =
-          '${APIConfig.baseURL}${APIConfig.clientesEndpoint}?X-API-KEY=$ciKey&page=$page&per_page=$perPage';
+    var url =
+        '${APIConfig.baseURL}${APIConfig.clientesEndpoint}?X-API-KEY=$ciKey&page=$page&per_page=20';
 
-      var response = await http.get(Uri.parse(url));
+    var response = await http.get(Uri.parse(url));
 
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.body);
-        if (data.containsKey('result')) {
-          List<dynamic> newClientes = data['result'] ?? 0;
-          if (newClientes.isEmpty) {
-            break;
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = json.decode(response.body);
+      if (data.containsKey('result')) {
+        List<dynamic> newClientes = data['result'] ?? [];
+        setState(() {
+          if (page == 0) {
+            clientes = newClientes;
           } else {
-            setState(() {
-              clientes.addAll(newClientes);
-              filteredClientes = List.from(clientes); // Atualizar a lista filtrada
-            });
-            page++;
+            clientes.addAll(newClientes);
           }
-        } else {
-          print('Chave "clientes" não encontrada na resposta da API');
-          break;
-        }
+          filteredClientes = List.from(clientes);
+          _currentPage = page;
+        });
       } else {
-        print('Falha ao carregar clientes');
-        break;
+        print('Chave "clientes" não encontrada na resposta da API');
       }
+    } else {
+      print('Falha ao carregar clientes');
     }
   }
 
@@ -83,14 +92,33 @@ class _ClientesScreenState extends State<ClientesScreen> {
     });
   }
 
-  void _filterClientes(String searchText) {
-    setState(() {
-      filteredClientes = clientes
-          .where((cliente) => cliente['nomeCliente']
-          .toLowerCase()
-          .contains(searchText.toLowerCase()))
-          .toList();
-    });
+  Future<void> _filterClientes(String searchText) async {
+    if (searchText.isEmpty) {
+      setState(() {
+        filteredClientes = List.from(clientes); // Restaurar a lista original
+      });
+      return;
+    }
+
+    try {
+      final Map<String, dynamic> keyAndPermissions = await _getCiKey();
+      final String ciKey = keyAndPermissions['ciKey'] ?? '';
+
+      final url = '${APIConfig.baseURL}${APIConfig.clientesEndpoint}?X-API-KEY=$ciKey&search=$searchText';
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final List<dynamic> data = responseData['result'];
+        setState(() {
+          filteredClientes = List.from(data);
+        });
+      } else {
+        print('Falha ao carregar clientes: ${response.body}');
+      }
+    } catch (e) {
+      print('Erro ao buscar clientes: $e');
+    }
   }
 
   @override
@@ -140,6 +168,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
         child: CircularProgressIndicator(),
       )
           : ListView.builder(
+        controller: _scrollController,
         itemCount: filteredClientes.length,
         itemBuilder: (BuildContext context, int index) {
           return Padding(
@@ -264,6 +293,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
       ),
     );
   }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;

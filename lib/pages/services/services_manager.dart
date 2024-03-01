@@ -26,8 +26,14 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
         TextEditingController(text: widget.servico['nome'] ?? '');
     _descricaoServicoController =
         TextEditingController(text: widget.servico['descricao'] ?? '');
-    _precoServicoController =
-        TextEditingController(text: widget.servico['preco'] ?? '');
+    _precoServicoController = MoneyMaskedTextController(
+      decimalSeparator: ',',
+      thousandSeparator: '.',
+      leftSymbol: 'R\$ ',
+      initialValue:
+      double.tryParse(widget.servico['preco'] ?? '0.00') ?? 0.00,
+    );
+
   }
 
   Future<Map<String, dynamic>> _getCiKey() async {
@@ -151,22 +157,20 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                 ),
               ),
               SizedBox(height: 16.0),
-          Container(
-            height: 50.0,
-            decoration: BoxDecoration(
-              color: Color(0xfffa9e10), // Cor de fundo do botão
-              borderRadius: BorderRadius.circular(8.0), // Borda arredondada
-            ),
-            child:
+
             ElevatedButton(
                 onPressed: _editingEnabled ? _saveChanges : null,
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Color(0xfffa9e10),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xff2c9b5b),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                    minimumSize: Size(200, 50),
+                  ),
+                child: Text('Salvar Alterações',
+                  style: TextStyle(fontSize: 18.0, color: Colors.white),
                 ),
-                child: Text('Salvar Alterações'),
               ),
-          ),
             ],
           ),
         ),
@@ -175,13 +179,13 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
   }
 
   void _saveChanges() async {
-    // Map<String, dynamic> ciKey = await _getCiKey();
+    String preco = _precoServicoController.text.replaceAll('R\$ ', '').replaceAll('.', '').replaceAll(',', '.');
 
     Map<String, dynamic> updatedServico = {
       'idServicos': widget.servico['idServico'],
       'nome': _nomeServicoController.text,
       'descricao': _descricaoServicoController.text,
-      'preco': _precoServicoController.text,
+      'preco': preco,
     };
 
     Future<bool> success = _updateServico(updatedServico);
