@@ -5,7 +5,8 @@ import 'package:mapos_app/pages/os/tabs/tab_descontos.dart';
 import 'package:mapos_app/pages/os/tabs/tab_detalhes.dart';
 import 'package:mapos_app/pages/os/tabs/tab_produtos.dart';
 import 'package:mapos_app/pages/os/tabs/tab_servicos.dart';
-
+import 'package:mapos_app/providers/calcTotal.dart';
+import 'package:intl/intl.dart';
 
 class OsManager extends StatefulWidget {
   final Map<String, dynamic> os;
@@ -19,13 +20,17 @@ class OsManager extends StatefulWidget {
 class _OsManagerState extends State<OsManager> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late int _selectedIndex;
+  double _calctotal = 0.0;
+  late OsCalculator osCalculator;
 
   @override
   void initState() {
     super.initState();
+    osCalculator = OsCalculator();
     _tabController = TabController(vsync: this, length: 6);
     _selectedIndex = 0;
     _tabController.addListener(_handleTabSelection);
+    _initializeCalcTotal();
   }
 
   void _handleTabSelection() {
@@ -40,27 +45,42 @@ class _OsManagerState extends State<OsManager> with SingleTickerProviderStateMix
     super.dispose();
   }
 
+  // Função para inicializar o cálculo total
+  void _initializeCalcTotal() async {
+    await osCalculator.getCalcTotal(widget.os);
+    setState(() {
+      _calctotal = osCalculator.calcTotal;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    SizedBox(height: 10);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ordem de Serviço'),
+        title: Row(
+          children: [
+            Text('OS ${widget.os['idOs']}'),
+            SizedBox(width: 10),
+            Text(
+              _formatCurrency(_calctotal),
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: [
           Container(
             color: Color(0xff333649),
-            child:TabBar(
+            child: TabBar(
               controller: _tabController,
               indicator: BoxDecoration(
-                color: Color(0xffffffff), // Cor de fundo do item selecionado
-                borderRadius: BorderRadius.circular(100), // Define o raio da borda
+                color: Color(0xffffffff),
+                borderRadius: BorderRadius.circular(100),
               ),
-              indicatorSize: TabBarIndicatorSize.tab, // Tamanho do indicador igual ao tamanho da tab
-              indicatorWeight: 2,// Espessura do indicador
-              unselectedLabelColor: Colors.white, // Cor dos ícones não selecionados
-              labelColor: Colors.deepOrange, // Cor do ícone selecionado
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorWeight: 2,
+              unselectedLabelColor: Colors.white,
+              labelColor: Colors.deepOrange,
               tabs: [
                 _buildTab(Icons.details, 0),
                 _buildTab(Icons.local_offer, 1),
@@ -97,4 +117,8 @@ class _OsManagerState extends State<OsManager> with SingleTickerProviderStateMix
       ),
     );
   }
+}
+String _formatCurrency(double amount) {
+  final formatter = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+  return formatter.format(amount);
 }

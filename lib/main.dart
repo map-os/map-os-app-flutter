@@ -23,38 +23,40 @@ class _MyAppState extends State<MyApp> {
   void toggleTheme() {
     setState(() {
       _themeMode =
-      _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+          _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Login MAP-OS',
       theme: ThemeData.light().copyWith(
-        appBarTheme: AppBarTheme(
-          color: Color(0xff333649),
-          iconTheme: IconThemeData(
+          appBarTheme: AppBarTheme(
+        color: Color(0xff333649),
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
+        toolbarTextStyle: TextTheme(
+          headline6: TextStyle(
             color: Colors.white,
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
           ),
-          toolbarTextStyle: TextTheme(
-            headline6: TextStyle(
-              color: Colors.white,
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ).bodyText2, titleTextStyle: TextTheme(
-            headline6: TextStyle(
-              color: Colors.white,
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ).headline6,
-        )
-      ),
+        ).bodyText2,
+        titleTextStyle: TextTheme(
+          headline6: TextStyle(
+            color: Colors.white,
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ).headline6,
+      )),
       darkTheme: ThemeData.dark().copyWith(
         // Defina a cor da AppBar no tema escuro aqui
         appBarTheme: AppBarTheme(
-          color: Colors.black, // Defina a cor desejada da AppBar no tema escuro
+          color: Color(
+              0xff333649), // Defina a cor desejada da AppBar no tema escuro
         ),
       ),
       themeMode: _themeMode,
@@ -73,9 +75,9 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   TextEditingController _usernameController =
-  TextEditingController(text: 'teste@teste.com');
+      TextEditingController(text: 'teste@teste.com');
   TextEditingController _passwordController =
-  TextEditingController(text: '123456');
+      TextEditingController(text: '123456');
   bool _showPassword = false;
   @override
   void initState() {
@@ -105,15 +107,19 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
+      final Map<String, dynamic> loginData = {
+        'email': _usernameController.text,
+        'password': _passwordController.text,
+      };
+
       final response = await http.post(
         Uri.parse('${APIConfig.baseURL}${APIConfig.loginEndpoint}'),
         headers: {
+          'Content-Type':
+              'application/json', // Define o tipo de conteúdo como JSON
           'X-API-KEY': APIConfig.apiKey,
         },
-        body: {
-          'email': _usernameController.text,
-          'senha': _passwordController.text,
-        },
+        body: json.encode(loginData), // Serializa os dados em JSON
       );
 
       if (response.statusCode == 200) {
@@ -178,80 +184,94 @@ class _LoginPageState extends State<LoginPage> {
                       TextField(
                         controller: _usernameController,
                         style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.light
-                                ? Colors.grey[700]
-                                : Colors.white),
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Colors.grey[700]
+                                    : Colors.white),
                         decoration: InputDecoration(
                           labelText: 'E-mail',
                           labelStyle: TextStyle(
-                              color: Theme.of(context).brightness == Brightness.light
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
                                   ? Color(0xff333649)
                                   : Colors.white),
                           prefixIcon: Icon(Icons.email,
-                              color: Theme.of(context).brightness == Brightness.light
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
                                   ? Color(0xff333649)
                                   : Colors.white),
-                                filled: true,
-                                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                                  borderSide: BorderSide.none, // Remove a linha preta
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
-                                ),
-                              ),
-                            ),
-                          SizedBox(height: 20.0),
-                          TextField(
-                            controller: _passwordController,
-                            obscureText: !_showPassword, // Altere o obscureText com base em _showPassword
-                            style: TextStyle(
-                              color: Theme.of(context).brightness == Brightness.light
+                          filled: true,
+                          fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 5.0, horizontal: 9.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                                10.0), // Define o raio do border
+                            borderSide: BorderSide.none, // Remove a linha preta
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                                10.0), // Define o raio do border
+                            borderSide: BorderSide(
+                                color: Color(0xff333649), width: 2.0),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20.0),
+                      TextField(
+                        controller: _passwordController,
+                        obscureText:
+                            !_showPassword, // Altere o obscureText com base em _showPassword
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
                                   ? Colors.grey[700]
                                   : Colors.white,
-                            ),
-                            decoration: InputDecoration(
-                              labelText: 'Senha',
-                              labelStyle: TextStyle(
-                                color: Theme.of(context).brightness == Brightness.light
+                        ),
+                        decoration: InputDecoration(
+                          labelText: 'Senha',
+                          labelStyle: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.light
                                     ? Color(0xff333649)
                                     : Colors.white,
-                              ),
-                              prefixIcon: Icon(Icons.lock,
-                                  color: Theme.of(context).brightness == Brightness.light
-                                      ? Color(0xff333649)
-                                      : Colors.white),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _showPassword ? Icons.visibility : Icons.visibility_off,
-                                  color: Theme.of(context).brightness == Brightness.light
-                                      ? Color(0xff333649)
-                                      : Colors.white,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _showPassword = !_showPassword;
-                                  });
-                                },
-                              ),
-                              filled: true,
-                              fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                              contentPadding:
-                              EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                borderSide: BorderSide.none,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                borderSide:
-                                BorderSide(color: Color(0xff333649), width: 2.0),
-                              ),
-                            ),
                           ),
+                          prefixIcon: Icon(Icons.lock,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Color(0xff333649)
+                                  : Colors.white),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _showPassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Color(0xff333649)
+                                  : Colors.white,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _showPassword = !_showPassword;
+                              });
+                            },
+                          ),
+                          filled: true,
+                          fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 5.0, horizontal: 9.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(
+                                color: Color(0xff333649), width: 2.0),
+                          ),
+                        ),
+                      ),
                       SizedBox(height: 18.0),
                       ElevatedButton(
                         onPressed: _login,
@@ -268,8 +288,11 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         child: Padding(
-                          padding:
-                          EdgeInsets.symmetric(horizontal: (MediaQuery.of(context).size.height * 0.0200), vertical: (MediaQuery.of(context).size.height * 0.0200)),
+                          padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  (MediaQuery.of(context).size.height * 0.0200),
+                              vertical: (MediaQuery.of(context).size.height *
+                                  0.0200)),
                           child: Text('Entrar', style: TextStyle(fontSize: 16)),
                         ),
                       )
@@ -279,53 +302,52 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ],
           ),
-        Positioned(
-          bottom: 10,
-          left: 0,
-          right: 0,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'MAP-OS APP V. ${APIConfig.appVersion}',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.grey[700]
-                      : Colors.white,
-                  fontSize: (MediaQuery.of(context).size.height * 0.0250),
-                  fontWeight: FontWeight.bold,
+          Positioned(
+            bottom: 10,
+            left: 0,
+            right: 0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'MAP-OS APP V. ${APIConfig.appVersion}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.grey[700]
+                        : Colors.white,
+                    fontSize: (MediaQuery.of(context).size.height * 0.0250),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              SizedBox(height: 0),
-              Text(
-                'Desenvolvido por \n Julio Lobo & \n Felipe Santt',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.grey[700]
-                      : Colors.white,
-                  fontSize: (MediaQuery.of(context).size.height * 0.0200),
+                SizedBox(height: 0),
+                Text(
+                  'Desenvolvido por \n Julio Lobo & \n Felipe Santt',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.grey[700]
+                        : Colors.white,
+                    fontSize: (MediaQuery.of(context).size.height * 0.0200),
+                  ),
                 ),
-              ),
-              SizedBox(height: 0),
-              GestureDetector(
-                onTap: () {
-                  final String url = 'https://github.com/fesantt/';
-                  _launchURL(url);
-                },
-                child: Icon(
-                  Boxicons.bxl_github,
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.grey[700]
-                      : Colors.white,
-                  size: (MediaQuery.of(context).size.height * 0.050),
+                SizedBox(height: 0),
+                GestureDetector(
+                  onTap: () {
+                    final String url = 'https://github.com/fesantt/';
+                    _launchURL(url);
+                  },
+                  child: Icon(
+                    Boxicons.bxl_github,
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.grey[700]
+                        : Colors.white,
+                    size: (MediaQuery.of(context).size.height * 0.050),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-
           Positioned(
             top: 0,
             left: 0,
@@ -347,7 +369,6 @@ class _LoginPageState extends State<LoginPage> {
                   width: double.infinity,
                 ),
               ),
-
             ),
           ),
           Positioned(
@@ -364,8 +385,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
               onPressed: widget.toggleTheme,
             ),
-
-
           ),
         ],
       ),
@@ -379,4 +398,3 @@ Future<void> _launchURL(String url) async {
     throw Exception('Could not launch $_url');
   }
 }
-

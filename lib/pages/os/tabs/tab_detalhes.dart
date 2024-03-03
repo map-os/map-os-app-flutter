@@ -4,8 +4,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:mapos_app/config/constants.dart';
 
-
-
 class TabDetalhes extends StatefulWidget {
   final Map<String, dynamic> os;
 
@@ -26,19 +24,23 @@ class _TabDetalhesState extends State<TabDetalhes> {
   late TextEditingController _nomeClienteController;
   late TextEditingController _celularClienteController;
 
-
   @override
   void initState() {
     super.initState();
-    _dataInicialController = TextEditingController(text:  widget.os['dataInicial']);
+    _dataInicialController =
+        TextEditingController(text: widget.os['dataInicial']);
     _dataFinalController = TextEditingController(text: widget.os['dataFinal']);
     _responsavelController = TextEditingController(text: widget.os['nome']);
     _statusController = TextEditingController(text: widget.os['status']);
-    _descricaoController = TextEditingController(text: widget.os['descricaoProduto']);
+    _descricaoController =
+        TextEditingController(text: widget.os['descricaoProduto']);
     _defeitoController = TextEditingController(text: widget.os['defeito']);
-    _laudoTecnicoController = TextEditingController(text: widget.os['laudoTecnico']);
-    _nomeClienteController = TextEditingController(text: widget.os['nomeCliente']);
-    _celularClienteController = TextEditingController(text: widget.os['celular_cliente']);
+    _laudoTecnicoController =
+        TextEditingController(text: widget.os['laudoTecnico']);
+    _nomeClienteController =
+        TextEditingController(text: widget.os['nomeCliente']);
+    _celularClienteController =
+        TextEditingController(text: widget.os['celular_cliente']);
   }
 
   @override
@@ -66,23 +68,26 @@ class _TabDetalhesState extends State<TabDetalhes> {
             TextFormField(
               controller: _nomeClienteController,
               enabled: false,
-               style: TextStyle(color: Colors.black),
+              style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 labelText: 'Cliente',
                 filled: true,
-
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
                 labelStyle: TextStyle(
-                  color: Colors.black, // Cor do texto quando o campo está desabilitado
+                  color: Colors
+                      .black, // Cor do texto quando o campo está desabilitado
                 ),
               ),
             ),
@@ -95,13 +100,16 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 labelText: 'Celular Cliente',
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
               ),
@@ -115,13 +123,16 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 labelText: 'Entrada',
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
               ),
@@ -133,13 +144,16 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 labelText: 'Prev. Saída',
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
               ),
@@ -153,13 +167,16 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 labelText: 'Responsavel',
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
               ),
@@ -171,13 +188,16 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 labelText: 'Status',
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
               ),
@@ -190,13 +210,16 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 labelText: 'Descrição',
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
               ),
@@ -209,13 +232,16 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 labelText: 'Defeito',
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
               ),
@@ -228,13 +254,16 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 labelText: 'Laudo Técnico',
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
               ),
@@ -262,7 +291,6 @@ class _TabDetalhesState extends State<TabDetalhes> {
     );
   }
 
-
   // Função para atualizar a OS
   void _atualizarOS() async {
     Map<String, dynamic> dadosAtualizados = {
@@ -289,14 +317,16 @@ class _TabDetalhesState extends State<TabDetalhes> {
       );
     }
   }
+
   Future<bool> _updateOS(Map<String, dynamic> updatedOS) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String ciKey = prefs.getString('token') ?? '';
     String permissoesString = prefs.getString('permissoes') ?? '[]';
     List<dynamic> permissoes = jsonDecode(permissoesString);
 
-    var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
-print(url);
+    var url =
+        '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
+    print(url);
     try {
       var response = await http.put(
         Uri.parse(url),
@@ -308,6 +338,14 @@ print(url);
       );
 
       if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        if (data.containsKey('refresh_token')) {
+          String refreshToken = data['refresh_token'];
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', refreshToken);
+        } else {
+          print('problema com sua sessão, faça login novamente!');
+        }
         print('OS atualizada com sucesso');
         return true;
       } else {

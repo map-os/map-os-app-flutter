@@ -38,11 +38,19 @@ class _ServicesScreenState extends State<ServicesScreen> {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
 
-    var url = '${APIConfig.baseURL}${APIConfig.servicossEndpoint}?X-API-KEY=$ciKey';
+    var url =
+        '${APIConfig.baseURL}${APIConfig.servicossEndpoint}?X-API-KEY=$ciKey';
     var response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
+      if (data.containsKey('refresh_token')) {
+        String refreshToken = data['refresh_token'];
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', refreshToken);
+      } else {
+        print('problema com sua sessão, faça login novamente!');
+      }
       if (data.containsKey('result')) {
         List<dynamic> newServices = data['result'];
         setState(() {
@@ -76,7 +84,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
     setState(() {
       filteredServices = services
           .where((service) =>
-          service['nome'].toLowerCase().contains(searchText.toLowerCase()))
+              service['nome'].toLowerCase().contains(searchText.toLowerCase()))
           .toList();
     });
   }
@@ -86,107 +94,114 @@ class _ServicesScreenState extends State<ServicesScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: !isSearching ? Text('Serviços') : TextField(
-          controller: searchController,
-          style: TextStyle(color: Colors.white),
-          onChanged: (value) {
-            _filterServices(value);
-          },
-          decoration: InputDecoration(
-            hintText: 'Pesquisar...',
-            hintStyle: TextStyle(color: Colors.white),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide.none,
-            ),
-            filled: true,
-            fillColor: Color(0xffe79a24),
-            contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          ),
-        ),
+        title: !isSearching
+            ? Text('Serviços')
+            : TextField(
+                controller: searchController,
+                style: TextStyle(color: Colors.white),
+                onChanged: (value) {
+                  _filterServices(value);
+                },
+                decoration: InputDecoration(
+                  hintText: 'Pesquisar...',
+                  hintStyle: TextStyle(color: Colors.white),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Color(0xffe79a24),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                ),
+              ),
         actions: <Widget>[
           isSearching
               ? IconButton(
-            icon: Icon(Icons.cancel),
-            onPressed: () {
-              _stopSearch();
-            },
-          )
+                  icon: Icon(Icons.cancel),
+                  onPressed: () {
+                    _stopSearch();
+                  },
+                )
               : IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              _startSearch();
-            },
-          ),
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    _startSearch();
+                  },
+                ),
         ],
       ),
       body: RefreshIndicator(
         onRefresh: _getServices,
         child: filteredServices.isEmpty
             ? Center(
-          child: CircularProgressIndicator(),
-        )
+                child: CircularProgressIndicator(),
+              )
             : ListView.builder(
-          itemCount: filteredServices.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Padding(
-              padding: const EdgeInsets.all(1.0),
-              child: Card(
-                child: ListTile(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ServicoEditScreen(
-                          servico: filteredServices[index],
-                        ),
-                      ),
-                    );
-                  },
-                  contentPadding: EdgeInsets.all(16.0),
-                  title: Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Color(0xFF333649),
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        padding: EdgeInsets.all(8.0),
-                        child: Center(
-                          child: Text(
-                            '${filteredServices[index]['idServicos']}',
-                            style: TextStyle(
-                              fontSize: MediaQuery.of(context).size.width * 0.04, // 4% da largura da tela
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 16.0),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${filteredServices[index]['nome']}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: MediaQuery.of(context).size.width * 0.04, // 4% da largura da tela
+                itemCount: filteredServices.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(1.0),
+                    child: Card(
+                      child: ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ServicoEditScreen(
+                                servico: filteredServices[index],
                               ),
                             ),
-                            Text(
-                              'Valor: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(double.parse(filteredServices[index]['preco']))}',
+                          );
+                        },
+                        contentPadding: EdgeInsets.all(16.0),
+                        title: Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xFF333649),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              padding: EdgeInsets.all(8.0),
+                              child: Center(
+                                child: Text(
+                                  '${filteredServices[index]['idServicos']}',
+                                  style: TextStyle(
+                                    fontSize:
+                                        MediaQuery.of(context).size.width *
+                                            0.04, // 4% da largura da tela
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 16.0),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${filteredServices[index]['nome']}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              0.04, // 4% da largura da tela
+                                    ),
+                                  ),
+                                  Text(
+                                    'Valor: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(double.parse(filteredServices[index]['preco']))}',
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -207,7 +222,8 @@ class _ServicesScreenState extends State<ServicesScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 backgroundColor: Colors.red,
-                content: Text('Você não tem permissão para adicionar clientes.'),
+                content:
+                    Text('Você não tem permissão para adicionar clientes.'),
               ),
             );
           }

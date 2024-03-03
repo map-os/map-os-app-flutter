@@ -38,12 +38,18 @@ class _ProductsScreenState extends State<ProductsScreen> {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
 
-    var url = '${APIConfig.baseURL}${APIConfig.prodtuostesEndpoint}?X-API-KEY=$ciKey';
+    var url =
+        '${APIConfig.baseURL}${APIConfig.prodtuostesEndpoint}?X-API-KEY=$ciKey';
 
     var response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
+      if (data.containsKey('refresh_token')) {
+        String refreshToken = data['refresh_token'];
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', refreshToken);
+      }
       if (data.containsKey('result')) {
         List<dynamic> newProducts = data['result'];
         setState(() {
@@ -68,15 +74,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
     setState(() {
       isSearching = false;
       searchController.clear();
-      filteredProducts = List.from(products); // Restore filtered list to original
+      filteredProducts =
+          List.from(products); // Restore filtered list to original
     });
   }
 
   void _filterProducts(String searchText) {
     setState(() {
       filteredProducts = products
-          .where((product) =>
-          product['descricao'].toLowerCase().contains(searchText.toLowerCase()))
+          .where((product) => product['descricao']
+              .toLowerCase()
+              .contains(searchText.toLowerCase()))
           .toList();
     });
   }
@@ -89,127 +97,129 @@ class _ProductsScreenState extends State<ProductsScreen> {
         title: !isSearching
             ? Text('Produtos')
             : TextField(
-          controller: searchController,
-          style: TextStyle(color: Colors.white),
-          onChanged: (value) {
-            _filterProducts(value);
-          },
-          decoration: InputDecoration(
-            hintText: 'Pesquisar...',
-            hintStyle: TextStyle(color: Colors.white),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide.none,
-            ),
-            filled: true,
-            fillColor: Color(0xff585c77),
-            contentPadding:
-            EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          ),
-        ),
+                controller: searchController,
+                style: TextStyle(color: Colors.white),
+                onChanged: (value) {
+                  _filterProducts(value);
+                },
+                decoration: InputDecoration(
+                  hintText: 'Pesquisar...',
+                  hintStyle: TextStyle(color: Colors.white),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Color(0xff585c77),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                ),
+              ),
         actions: <Widget>[
           isSearching
               ? IconButton(
-            icon: Icon(Icons.cancel),
-            onPressed: () {
-              _stopSearch();
-            },
-          )
+                  icon: Icon(Icons.cancel),
+                  onPressed: () {
+                    _stopSearch();
+                  },
+                )
               : IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              _startSearch();
-            },
-          ),
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    _startSearch();
+                  },
+                ),
         ],
       ),
       body: RefreshIndicator(
         onRefresh: _refreshProducts,
         child: filteredProducts.isEmpty
             ? Center(
-          child: CircularProgressIndicator(),
-        )
+                child: CircularProgressIndicator(),
+              )
             : ListView.builder(
-          itemCount: filteredProducts.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Padding(
-              padding: const EdgeInsets.all(1.0),
-              child: Card(
-                child: ListTile(
-                  onTap: () async {
-                    Map<String, dynamic> permissions = await _getCiKey();
-                    bool hasPermissionToEdit = false;
-                    for (var permissao in permissions['permissoes']) {
-                      if (permissao['vProduto'] == '1') {
-                        hasPermissionToEdit = true;
-                        break;
-                      }
-                    }
-                    if (hasPermissionToEdit) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ProductEditScreen(
-                            product: filteredProducts[index],
-                          ),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.red,
-                          content: Text(
-                              'Você não tem permissões para Vizualizar produtos.'),
-                        ),
-                      );
-                    }
-                  },
-                  contentPadding: EdgeInsets.all(16.0),
-                  title: Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Color(0xFF333649),
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        padding: EdgeInsets.all(8.0),
-                        child: Center(
-                          child: Text(
-                            '${filteredProducts[index]['idProdutos']}',
-                            style: TextStyle(
-                              fontSize: MediaQuery.of(context).size.width *
-                                  0.04, // 4% da largura da tela
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 16.0),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                itemCount: filteredProducts.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(1.0),
+                    child: Card(
+                      child: ListTile(
+                        onTap: () async {
+                          Map<String, dynamic> permissions = await _getCiKey();
+                          bool hasPermissionToEdit = false;
+                          for (var permissao in permissions['permissoes']) {
+                            if (permissao['vProduto'] == '1') {
+                              hasPermissionToEdit = true;
+                              break;
+                            }
+                          }
+                          if (hasPermissionToEdit) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProductEditScreen(
+                                  product: filteredProducts[index],
+                                ),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: Colors.red,
+                                content: Text(
+                                    'Você não tem permissões para Vizualizar produtos.'),
+                              ),
+                            );
+                          }
+                        },
+                        contentPadding: EdgeInsets.all(16.0),
+                        title: Row(
                           children: [
-                            Text(
-                              '${filteredProducts[index]['descricao']}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: MediaQuery.of(context).size.width *
-                                    0.04, // 4% da largura da tela
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xFF333649),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              padding: EdgeInsets.all(8.0),
+                              child: Center(
+                                child: Text(
+                                  '${filteredProducts[index]['idProdutos']}',
+                                  style: TextStyle(
+                                    fontSize:
+                                        MediaQuery.of(context).size.width *
+                                            0.04, // 4% da largura da tela
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
                             ),
-                            Text(
-                              'Valor: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(double.parse(filteredProducts[index]['precoVenda']))}',
+                            SizedBox(width: 16.0),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${filteredProducts[index]['descricao']}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              0.04, // 4% da largura da tela
+                                    ),
+                                  ),
+                                  Text(
+                                    'Valor: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(double.parse(filteredProducts[index]['precoVenda']))}',
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -230,7 +240,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 backgroundColor: Colors.red,
-                content: Text('Você não tem permissão para adicionar produtos.'),
+                content:
+                    Text('Você não tem permissão para adicionar produtos.'),
               ),
             );
           }

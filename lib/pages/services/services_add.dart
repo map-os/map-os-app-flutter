@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:mapos_app/config/constants.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
+import 'package:mapos_app/pages/services/services_screen.dart';
 
 class ServicoAddScreen extends StatefulWidget {
   @override
@@ -28,7 +29,6 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
   }
 
   @override
-
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -47,14 +47,18 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
                   prefixIcon: Icon(Icons.construction_outlined),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderRadius:
+                        BorderRadius.circular(10.0), // Define o raio do border
                     borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                    borderRadius:
+                        BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide:
+                        BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -66,14 +70,18 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
                   prefixIcon: Icon(Icons.description_outlined),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderRadius:
+                        BorderRadius.circular(10.0), // Define o raio do border
                     borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                    borderRadius:
+                        BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide:
+                        BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -85,29 +93,36 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
                   prefixIcon: Icon(Icons.attach_money),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderRadius:
+                        BorderRadius.circular(10.0), // Define o raio do border
                     borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                    borderRadius:
+                        BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide:
+                        BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
+                keyboardType: TextInputType.number,
               ),
               SizedBox(height: 16.0),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xff2c9b5b),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5.0),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xff2c9b5b),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  minimumSize: Size(200, 50),
                 ),
-                minimumSize: Size(200, 50),
-              ),
-
                 onPressed: () async {
-                  String preco = _precoServicoController.text.replaceAll('R\$ ', '').replaceAll('.', '').replaceAll(',', '.');
+                  String preco = _precoServicoController.text
+                      .replaceAll('R\$ ', '')
+                      .replaceAll('.', '')
+                      .replaceAll(',', '.');
                   Map<String, dynamic> newServico = {
                     'nome': _nomeServicoController.text,
                     'descricao': _descricaoServicoController.text,
@@ -124,8 +139,9 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
                         backgroundColor: Colors.red);
                   }
                 },
-                child: Text('Adicionar Serviço',
-                    style: TextStyle(fontSize: 18.0, color: Colors.white),
+                child: Text(
+                  'Adicionar Serviço',
+                  style: TextStyle(fontSize: 18.0, color: Colors.white),
                 ),
               ),
             ],
@@ -164,7 +180,15 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
         body: jsonEncode(newServico),
       );
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        if (data.containsKey('refresh_token')) {
+          String refreshToken = data['refresh_token'];
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', refreshToken);
+        } else {
+          print('problema com sua sessão, faça login novamente!');
+        }
         print('Serviço adicionado com sucesso');
         return true;
       } else {

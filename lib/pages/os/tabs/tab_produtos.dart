@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/config/constants.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:mapos_app/providers/calcTotal.dart';
 
 class TabProdutos extends StatefulWidget {
   final Map<String, dynamic> os;
@@ -17,6 +18,8 @@ class _TabProdutosState extends State<TabProdutos> {
   late List<dynamic> osData = [];
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _loading = false;
+  double _calctotal = 0.0;
+  late OsCalculator osCalculator;
 
   @override
   void initState() {
@@ -31,32 +34,35 @@ class _TabProdutosState extends State<TabProdutos> {
       body: Center(
         child: osData.isNotEmpty
             ? ListView.builder(
-          itemCount: osData.length,
-          itemBuilder: (context, index) {
-            return Card(
-              child: ListTile(
-                title: Text(osData[index]['descricao'] ?? 'NaN'),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Valor: ${osData[index]['precoVenda'] ?? 'NaN'}'),
-                    Text('Qtd: ${osData[index]['quantidade'] ?? 'NaN'}'),
-                    Text('idp_os: ${osData[index]['idProdutos_os'] ?? 'NaN'}'),
-                  ],
-                ),
-                trailing: IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    _deleteProduto(int.parse(osData[index]['idProdutos_os']));
-                  },
-                ),
-              ),
-            );
-          },
-        )
+                itemCount: osData.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    child: ListTile(
+                      title: Text(osData[index]['descricao'] ?? 'NaN'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              'Valor: ${osData[index]['precoVenda'] ?? 'NaN'}'),
+                          Text('Qtd: ${osData[index]['quantidade'] ?? 'NaN'}'),
+                          Text(
+                              'idp_os: ${osData[index]['idProdutos_os'] ?? 'NaN'}'),
+                        ],
+                      ),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          _deleteProduto(
+                              int.parse(osData[index]['idProdutos_os']));
+                        },
+                      ),
+                    ),
+                  );
+                },
+              )
             : osData.isEmpty && !_loading
-            ? _buildEmptyProductsWidget()
-            : CircularProgressIndicator(),
+                ? _buildEmptyProductsWidget()
+                : CircularProgressIndicator(),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -84,13 +90,20 @@ class _TabProdutosState extends State<TabProdutos> {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
 
-    var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget
-        .os['idOs']}?X-API-KEY=$ciKey';
+    var url =
+        '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}?X-API-KEY=$ciKey';
 
     var response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
+      if (data.containsKey('refresh_token')) {
+        String refreshToken = data['refresh_token'];
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', refreshToken);
+      } else {
+        print('problema com sua sessão, faça login novamente!');
+      }
       if (data.containsKey('result') &&
           data['result'].containsKey('produtos')) {
         setState(() {
@@ -121,32 +134,50 @@ class _TabProdutosState extends State<TabProdutos> {
   }
 
   Future<void> _deleteProduto(int produtoId) async {
-    Map<String, dynamic> keyAndPermissions = await _getCiKey();
-    String ciKey = keyAndPermissions['ciKey'] ?? '';
+    try {
+      Map<String, dynamic> keyAndPermissions = await _getCiKey();
+      String ciKey = keyAndPermissions['ciKey'] ?? '';
 
-    var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget
-        .os['idOs']}/produtos/$produtoId';
+      var url =
+          '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}/produtos/$produtoId';
 
-    var response = await http.delete(
-      Uri.parse(url),
-      headers: {'X-API-KEY': ciKey},
-    );
-
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
-        SnackBar(
-          content: Text('Produto excluido com sucesso!'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
-        ),
+      var response = await http.delete(
+        Uri.parse(url),
+        headers: {'X-API-KEY': ciKey},
       );
-      _getProdutosOs();
-    } else {}
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        if (data.containsKey('refresh_token')) {
+          String refreshToken = data['refresh_token'];
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', refreshToken);
+        } else {
+          print('problema com sua sessão, faça login novamente!');
+        }
+        ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
+          SnackBar(
+            content: Text('Produto excluído com sucesso!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+        // Após excluir o produto com sucesso, chame a função para recalcular o total
+        _getProdutosOs(); // Chama a função para recarregar a lista de produtos
+        _calctotal; // Chama a função para recalcular o total
+      } else {
+        // Lógica para lidar com erros de exclusão do produto
+      }
+    } catch (e) {
+      print('Exception during product deletion: $e');
+      // Lógica para lidar com exceções durante a exclusão do produto
+    }
   }
 
   Future<void> _mostrarDialogAdicionarProduto() async {
     TextEditingController _controller = TextEditingController();
-    TextEditingController _quantityController = TextEditingController(text: '1'); // Controller for quantity input
+    TextEditingController _quantityController =
+        TextEditingController(text: '1'); // Controller for quantity input
     List<dynamic> produtos = [];
 
     await showDialog(
@@ -179,16 +210,16 @@ class _TabProdutosState extends State<TabProdutos> {
                       itemBuilder: (context, index) {
                         return ListTile(
                           title: Text(produtos[index]['descricao'] ?? 'NaN'),
-                          subtitle: Text(
-                              produtos[index]['idProdutos'] ?? 'NaN'),
+                          subtitle:
+                              Text(produtos[index]['idProdutos'] ?? 'NaN'),
                           onTap: () {
                             try {
-                              int idProduto = int.parse(
-                                  produtos[index]['idProdutos']);
-                              String precoProduto = produtos[index]['precoVenda'] ??
-                                  '';
-                              int quantidade = int.parse(
-                                  _quantityController.text);
+                              int idProduto =
+                                  int.parse(produtos[index]['idProdutos']);
+                              String precoProduto =
+                                  produtos[index]['precoVenda'] ?? '';
+                              int quantidade =
+                                  int.parse(_quantityController.text);
 
                               _adicionarProduto(
                                   idProduto, precoProduto, quantidade);
@@ -216,14 +247,22 @@ class _TabProdutosState extends State<TabProdutos> {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
 
-    var url = '${APIConfig.baseURL}${APIConfig
-        .prodtuostesEndpoint}/?search=$query';
+    var url =
+        '${APIConfig.baseURL}${APIConfig.prodtuostesEndpoint}/?search=$query';
 
-    var response = await http.get(
-        Uri.parse(url), headers: {'X-API-KEY': ciKey});
+    var response =
+        await http.get(Uri.parse(url), headers: {'X-API-KEY': ciKey});
 
     if (response.statusCode == 200) {
       Map<String, dynamic> responseData = json.decode(response.body);
+      Map<String, dynamic> data = json.decode(response.body);
+      if (data.containsKey('refresh_token')) {
+        String refreshToken = data['refresh_token'];
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', refreshToken);
+      } else {
+        print('problema com sua sessão, faça login novamente!');
+      }
       List<dynamic> produtos = responseData['result'];
       return produtos;
     } else {
@@ -232,13 +271,13 @@ class _TabProdutosState extends State<TabProdutos> {
     }
   }
 
-  Future<void> _adicionarProduto(int idProdutos, String precoProduto,
-      int quantidade) async {
+  Future<void> _adicionarProduto(
+      int idProdutos, String precoProduto, int quantidade) async {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
 
-    var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget
-        .os['idOs']}/produtos/';
+    var url =
+        '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}/produtos/';
 
     var body = {
       'idProduto': idProdutos,
@@ -255,10 +294,19 @@ class _TabProdutosState extends State<TabProdutos> {
 
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = json.decode(response.body);
+        Map<String, dynamic> data = json.decode(response.body);
+        if (data.containsKey('refresh_token')) {
+          String refreshToken = data['refresh_token'];
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', refreshToken);
+        } else {
+          print('problema com sua sessão, faça login novamente!');
+        }
         bool status = responseData['status'];
 
         if (status) {
           _getProdutosOs();
+          _calctotal;
           ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
             SnackBar(
               content: Text('Produto adicionado com sucesso'),

@@ -36,14 +36,14 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
       thousandSeparator: '.',
       leftSymbol: 'R\$ ',
       initialValue:
-      double.tryParse(widget.product['precoCompra'] ?? '0.00') ?? 0.00,
+          double.tryParse(widget.product['precoCompra'] ?? '0.00') ?? 0.00,
     );
     _productPriceController = MoneyMaskedTextController(
       decimalSeparator: ',',
       thousandSeparator: '.',
       leftSymbol: 'R\$ ',
       initialValue:
-      double.tryParse(widget.product['precoVenda'] ?? '0.00') ?? 0.00,
+          double.tryParse(widget.product['precoVenda'] ?? '0.00') ?? 0.00,
     );
     _productEstoqueController =
         TextEditingController(text: widget.product['estoque'] ?? '');
@@ -66,7 +66,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         title: Text('Editar Produto'),
         actions: [
           IconButton(
-            icon: Icon(_isEditing  ? Icons.edit_note_sharp  : Icons.edit),
+            icon: Icon(_isEditing ? Icons.edit_note_sharp : Icons.edit),
             onPressed: () async {
               Map<String, dynamic> permissionsMap = await _getCiKey();
               List<dynamic> permissoes = permissionsMap['permissoes'];
@@ -79,13 +79,15 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
               }
               if (hasPermissionToEdit) {
                 setState(() {
-                  _isEditing  = !_isEditing;;
+                  _isEditing = !_isEditing;
+                  ;
                 });
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     backgroundColor: Colors.red,
-                    content: Text('Você não tem permissões para editar serviços.'),
+                    content:
+                        Text('Você não tem permissões para editar serviços.'),
                   ),
                 );
               }
@@ -112,14 +114,15 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding:
-                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                    borderSide:
+                        BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -132,16 +135,18 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding:
-                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                    borderSide:
+                        BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
+                keyboardType: TextInputType.number,
               ),
               SizedBox(height: 16.0),
               TextFormField(
@@ -152,16 +157,18 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding:
-                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                    borderSide:
+                        BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
+                keyboardType: TextInputType.number,
               ),
               SizedBox(height: 16.0),
               TextFormField(
@@ -172,16 +179,18 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding:
-                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                    borderSide:
+                        BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
+                keyboardType: TextInputType.number,
               ),
               SizedBox(height: 16.0),
               TextFormField(
@@ -192,16 +201,18 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding:
-                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                    borderSide:
+                        BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
+                keyboardType: TextInputType.number,
               ),
               SizedBox(height: 16.0),
               TextFormField(
@@ -212,48 +223,56 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding:
-                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                    borderSide:
+                        BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
+                keyboardType: TextInputType.number,
               ),
               SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _isEditing
                     ? () async {
-                  String precoCompra = _productPrecoCompraController.text.replaceAll('R\$ ', '').replaceAll('.', '').replaceAll(',', '.');
-                  String precoVenda = _productPriceController.text.replaceAll('R\$ ', '').replaceAll('.', '').replaceAll(',', '.');
+                        String precoCompra = _productPrecoCompraController.text
+                            .replaceAll('R\$ ', '')
+                            .replaceAll('.', '')
+                            .replaceAll(',', '.');
+                        String precoVenda = _productPriceController.text
+                            .replaceAll('R\$ ', '')
+                            .replaceAll('.', '')
+                            .replaceAll(',', '.');
 
-                  Map<String, dynamic> updatedProduct = {
-                    'idProdutos': widget.product['idProdutos'],
-                    'descricao': _productNameController.text,
-                    'codDeBarra': _productCodController.text,
-                    'precoVenda': precoVenda,
-                    'precoCompra': precoCompra,
-                    'unidade': 'UNID',
-                    'estoque': _productEstoqueController.text,
-                    'estoqueMinimo': _productEstoqueMinimoController.text,
-                    'entrada': '',
-                    'saida': '',
-                  };
+                        Map<String, dynamic> updatedProduct = {
+                          'idProdutos': widget.product['idProdutos'],
+                          'descricao': _productNameController.text,
+                          'codDeBarra': _productCodController.text,
+                          'precoVenda': precoVenda,
+                          'precoCompra': precoCompra,
+                          'unidade': 'UNID',
+                          'estoque': _productEstoqueController.text,
+                          'estoqueMinimo': _productEstoqueMinimoController.text,
+                          'entrada': '',
+                          'saida': '',
+                        };
 
-                  bool success = await _updateProduct(updatedProduct);
-                  if (success) {
-                    _showSnackBar('Produto atualizado com sucesso',
-                        backgroundColor: Colors.green,
-                        textColor: Colors.white);
-                  } else {
-                    _showSnackBar('Falha ao atualizar o produto',
-                        backgroundColor: Colors.red,
-                        textColor: Colors.white);
-                  }
-                }
+                        bool success = await _updateProduct(updatedProduct);
+                        if (success) {
+                          _showSnackBar('Produto atualizado com sucesso',
+                              backgroundColor: Colors.green,
+                              textColor: Colors.white);
+                        } else {
+                          _showSnackBar('Falha ao atualizar o produto',
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white);
+                        }
+                      }
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xff2c9b5b),
@@ -284,8 +303,6 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-
-
   Future<bool> _updateProduct(Map<String, dynamic> updatedProduct) async {
     Map<String, dynamic> ciKey = await _getCiKey();
 
@@ -303,6 +320,12 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
       );
       print(jsonEncode(updatedProduct));
       if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        if (data.containsKey('refresh_token')) {
+          String refreshToken = data['refresh_token'];
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', refreshToken);
+        }
         print('Produto atualizado com sucesso');
         return true;
       } else {
@@ -315,5 +338,3 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     }
   }
 }
-
-
