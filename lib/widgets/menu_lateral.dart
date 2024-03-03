@@ -12,10 +12,12 @@ class MenuLateral extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.55, // Defina a largura desejada para o Drawer
+      width: MediaQuery.of(context).size.width *
+          0.55, // Defina a largura desejada para o Drawer
       child: Drawer(
         child: Container(
-          width: MediaQuery.of(context).size.width * 0.1, // Defina a largura desejada para o ListView
+          width: MediaQuery.of(context).size.width *
+              0.1, // Defina a largura desejada para o ListView
           color: Colors.white,
           child: FutureBuilder<Map<String, dynamic>>(
             future: _getUserData(),
@@ -65,7 +67,8 @@ class MenuLateral extends StatelessWidget {
                                 'MAP-OS APP',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: MediaQuery.of(context).size.width * 0.04,
+                                  fontSize:
+                                      MediaQuery.of(context).size.width * 0.04,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -83,7 +86,8 @@ class MenuLateral extends StatelessWidget {
                           'Início',
                           style: TextStyle(
                             color: Colors.black87,
-                            fontSize: MediaQuery.of(context).size.width * 0.044,),
+                            fontSize: MediaQuery.of(context).size.width * 0.044,
+                          ),
                         ),
                         onTap: () {
                           // Implemente a lógica desejada para o Item 1 aqui
@@ -101,7 +105,8 @@ class MenuLateral extends StatelessWidget {
                           'Perfil',
                           style: TextStyle(
                             color: Colors.black87,
-                            fontSize: MediaQuery.of(context).size.width * 0.044,                          ),
+                            fontSize: MediaQuery.of(context).size.width * 0.044,
+                          ),
                         ),
                         onTap: () {
                           // Implemente a lógica desejada para o Item 2 aqui
@@ -119,7 +124,8 @@ class MenuLateral extends StatelessWidget {
                           'Configurações',
                           style: TextStyle(
                             color: Colors.black87,
-                            fontSize: MediaQuery.of(context).size.width * 0.044,                          ),
+                            fontSize: MediaQuery.of(context).size.width * 0.044,
+                          ),
                         ),
                         onTap: () {
                           // Implemente a lógica desejada para o Item 3 aqui
@@ -142,13 +148,16 @@ class MenuLateral extends StatelessWidget {
                             'Clientes',
                             style: TextStyle(
                               color: Colors.black87,
-                              fontSize: MediaQuery.of(context).size.width * 0.044,                            ),
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.044,
+                            ),
                           ),
                           onTap: () {
                             Navigator.pop(context);
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => ClientesScreen()),
+                              MaterialPageRoute(
+                                  builder: (context) => ClientesScreen()),
                             );
                           },
                         ),
@@ -165,13 +174,16 @@ class MenuLateral extends StatelessWidget {
                             'Serviços',
                             style: TextStyle(
                               color: Colors.black87,
-                              fontSize: MediaQuery.of(context).size.width * 0.044,                            ),
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.044,
+                            ),
                           ),
                           onTap: () {
                             Navigator.pop(context);
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => ServicesScreen()),
+                              MaterialPageRoute(
+                                  builder: (context) => ServicesScreen()),
                             );
                           },
                         ),
@@ -188,17 +200,18 @@ class MenuLateral extends StatelessWidget {
                             'Produtos',
                             style: TextStyle(
                               color: Colors.black87,
-                              fontSize: MediaQuery.of(context).size.width * 0.044,                            ),
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.044,
+                            ),
                           ),
                           onTap: () {
                             Navigator.pop(context);
                             Navigator.push(
-                              context,
+                                context,
                                 PageTransition(
                                   child: ProductsScreen(),
                                   type: PageTransitionType.leftToRight,
-                                )
-                            );
+                                ));
                           },
                         ),
                       ),
@@ -215,7 +228,8 @@ class MenuLateral extends StatelessWidget {
                           'Sair',
                           style: TextStyle(
                             color: Colors.black87,
-                            fontSize: MediaQuery.of(context).size.width * 0.044,                          ),
+                            fontSize: MediaQuery.of(context).size.width * 0.044,
+                          ),
                         ),
                         onTap: () {
                           // Implemente a lógica para o logout aqui
@@ -249,9 +263,8 @@ class MenuLateral extends StatelessWidget {
     // Navega para a tela de login e remove todas as rotas anteriores
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage((){})),
-          (Route<dynamic> route) => false,
+      MaterialPageRoute(builder: (context) => LoginPage(() {})),
+      (Route<dynamic> route) => false,
     );
-
   }
 }

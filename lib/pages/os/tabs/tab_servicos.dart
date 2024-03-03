@@ -31,32 +31,34 @@ class _TabServicosState extends State<TabServicos> {
       body: Center(
         child: osData.isNotEmpty
             ? ListView.builder(
-          itemCount: osData.length,
-          itemBuilder: (context, index) {
-            return Card(
-              child: ListTile(
-                title: Text(osData[index]['nome'] ?? 'NaN'),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Preço: ${osData[index]['preco'] ?? 'NaN'}'),
-                    Text('Qtd.: ${osData[index]['quantidade'] ?? 'NaN'}'),
-                    Text('idp_os: ${osData[index]['idServicos_os'] ?? 'NaN'}'),
-                  ],
-                ),
-                trailing: IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    _deleteServico(int.parse(osData[index]['idServicos_os']));
-                  },
-                ),
-              ),
-            );
-          },
-        )
+                itemCount: osData.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    child: ListTile(
+                      title: Text(osData[index]['nome'] ?? 'NaN'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Preço: ${osData[index]['preco'] ?? 'NaN'}'),
+                          Text('Qtd.: ${osData[index]['quantidade'] ?? 'NaN'}'),
+                          Text(
+                              'idp_os: ${osData[index]['idServicos_os'] ?? 'NaN'}'),
+                        ],
+                      ),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          _deleteServico(
+                              int.parse(osData[index]['idServicos_os']));
+                        },
+                      ),
+                    ),
+                  );
+                },
+              )
             : osData.isEmpty && !_loading
-            ? _buildEmptyServicesWidget()
-            : CircularProgressIndicator(),
+                ? _buildEmptyServicesWidget()
+                : CircularProgressIndicator(),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -84,12 +86,20 @@ class _TabServicosState extends State<TabServicos> {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
 
-    var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}?X-API-KEY=$ciKey';
+    var url =
+        '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}?X-API-KEY=$ciKey';
 
     var response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
+      if (data.containsKey('refresh_token')) {
+        String refreshToken = data['refresh_token'];
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', refreshToken);
+      } else {
+        print('problema com sua sessão, faça login novamente!');
+      }
       if (data.containsKey('result') &&
           data['result'].containsKey('servicos')) {
         setState(() {
@@ -123,7 +133,8 @@ class _TabServicosState extends State<TabServicos> {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
 
-    var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}/servicos/$servicoId';
+    var url =
+        '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}/servicos/$servicoId';
 
     var response = await http.delete(
       Uri.parse(url),
@@ -131,6 +142,14 @@ class _TabServicosState extends State<TabServicos> {
     );
 
     if (response.statusCode == 200) {
+      Map<String, dynamic> data = json.decode(response.body);
+      if (data.containsKey('refresh_token')) {
+        String refreshToken = data['refresh_token'];
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', refreshToken);
+      } else {
+        print('problema com sua sessão, faça login novamente!');
+      }
       ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
         SnackBar(
           content: Text('Serviço excluído com sucesso!'),
@@ -146,7 +165,8 @@ class _TabServicosState extends State<TabServicos> {
 
   Future<void> _mostrarDialogAdicionarServico() async {
     TextEditingController _controller = TextEditingController();
-    TextEditingController _quantityController = TextEditingController(text: '1');
+    TextEditingController _quantityController =
+        TextEditingController(text: '1');
     List<dynamic> servicos = [];
 
     await showDialog(
@@ -179,12 +199,16 @@ class _TabServicosState extends State<TabServicos> {
                       itemBuilder: (context, index) {
                         return ListTile(
                           title: Text(servicos[index]['nome'] ?? 'NaN'),
-                          subtitle: Text(servicos[index]['idServicos'] ?? 'NaN'),
+                          subtitle:
+                              Text(servicos[index]['idServicos'] ?? 'NaN'),
                           onTap: () {
                             try {
-                              int idServico = int.parse(servicos[index]['idServicos']);
-                              double preco = double.parse(servicos[index]['preco'] ?? '0');
-                              int quantidade = int.parse(_quantityController.text);
+                              int idServico =
+                                  int.parse(servicos[index]['idServicos']);
+                              double preco =
+                                  double.parse(servicos[index]['preco'] ?? '0');
+                              int quantidade =
+                                  int.parse(_quantityController.text);
                               _adicionarServico(idServico, quantidade, preco);
                               Navigator.of(context).pop();
                             } catch (e) {
@@ -203,11 +227,13 @@ class _TabServicosState extends State<TabServicos> {
       },
     );
   }
+
   Future<List<dynamic>> _buscarServicos(String query) async {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
 
-    var url = '${APIConfig.baseURL}${APIConfig.servicossEndpoint}/?search=$query';
+    var url =
+        '${APIConfig.baseURL}${APIConfig.servicossEndpoint}/?search=$query';
 
     var response = await http.get(
       Uri.parse(url),
@@ -215,6 +241,14 @@ class _TabServicosState extends State<TabServicos> {
     );
 
     if (response.statusCode == 200) {
+      Map<String, dynamic> data = json.decode(response.body);
+      if (data.containsKey('refresh_token')) {
+        String refreshToken = data['refresh_token'];
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', refreshToken);
+      } else {
+        print('problema com sua sessão, faça login novamente!');
+      }
       Map<String, dynamic> responseData = json.decode(response.body);
       List<dynamic> servicos = responseData['result'];
       return servicos;
@@ -224,11 +258,13 @@ class _TabServicosState extends State<TabServicos> {
     }
   }
 
-  Future<void> _adicionarServico(int idServico, int quantidade, double preco) async {
+  Future<void> _adicionarServico(
+      int idServico, int quantidade, double preco) async {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
 
-    var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}/servicos/';
+    var url =
+        '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}/servicos/';
 
     var body = {
       'idServico': idServico,
@@ -244,6 +280,14 @@ class _TabServicosState extends State<TabServicos> {
       );
 
       if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        if (data.containsKey('refresh_token')) {
+          String refreshToken = data['refresh_token'];
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', refreshToken);
+        } else {
+          print('problema com sua sessão, faça login novamente!');
+        }
         Map<String, dynamic> responseData = json.decode(response.body);
         bool status = responseData['status'];
 

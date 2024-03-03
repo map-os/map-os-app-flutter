@@ -28,21 +28,21 @@ class _TabAnexosState extends State<TabAnexos> {
     return _loading
         ? Center(child: CircularProgressIndicator())
         : osData.isNotEmpty
-        ? ListView.builder(
-      itemCount: osData.length,
-      itemBuilder: (BuildContext context, int index) {
-        return ExpansionTile(
-          title: Text(' Anexo: ${osData[index]['idAnexos']}'),
-          children: [
-            Image.network(
-                '${osData[index]['url']}/${osData[index]['anexo']}'),
-          ],
-        );
-      },
-    )
-        : Center(
-      child: Text('Nenhum anexo encontrado'),
-    );
+            ? ListView.builder(
+                itemCount: osData.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ExpansionTile(
+                    title: Text(' Anexo: ${osData[index]['idAnexos']}'),
+                    children: [
+                      Image.network(
+                          '${osData[index]['url']}/${osData[index]['anexo']}'),
+                    ],
+                  );
+                },
+              )
+            : Center(
+                child: Text('Nenhum anexo encontrado'),
+              );
   }
 
   Future<Map<String, dynamic>> _getCiKey() async {
@@ -68,6 +68,13 @@ class _TabAnexosState extends State<TabAnexos> {
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
+      if (data.containsKey('refresh_token')) {
+        String refreshToken = data['refresh_token'];
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', refreshToken);
+      } else {
+        print('problema com sua sessão, faça login novamente!');
+      }
       if (data.containsKey('result') && data['result'].containsKey('anexos')) {
         setState(() {
           osData = data['result']['anexos'];

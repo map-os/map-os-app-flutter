@@ -8,11 +8,11 @@ import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
 // import 'package:mapos_app/pages/os/os_add.dart';
 import 'package:page_transition/page_transition.dart';
 
-
 class OsScreen extends StatefulWidget {
   @override
   _OsScreenState createState() => _OsScreenState();
 }
+
 class _OsScreenState extends State<OsScreen> {
   int _selectedIndex = 4;
   List<dynamic> os = [];
@@ -44,6 +44,13 @@ class _OsScreenState extends State<OsScreen> {
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
+      if (data.containsKey('refresh_token')) {
+        String refreshToken = data['refresh_token'];
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', refreshToken);
+      } else {
+        print('problema com sua sessão, faça login novamente!');
+      }
       if (data.containsKey('result')) {
         List<dynamic> newOs = data['result'];
         setState(() {
@@ -75,11 +82,13 @@ class _OsScreenState extends State<OsScreen> {
   void _filterOs(String searchText) {
     setState(() {
       filteredOs = os
-          .where((os) =>
-          os['nomeCliente'].toLowerCase().contains(searchText.toLowerCase()))
+          .where((os) => os['nomeCliente']
+              .toLowerCase()
+              .contains(searchText.toLowerCase()))
           .toList();
     });
   }
+
   Color _getStatusColor(String status) {
     String statusLowerCase = status.toLowerCase().trim();
 
@@ -102,137 +111,152 @@ class _OsScreenState extends State<OsScreen> {
         return Colors.grey;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: !isSearching ? Text('Ordens de Serviço') : TextField(
-          controller: searchController,
-          style: TextStyle(color: Colors.white),
-          onChanged: (value) {
-            _filterOs(value);
-          },
-          decoration: InputDecoration(
-            hintText: 'Pesquisar...',
-            hintStyle: TextStyle(color: Colors.white),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide.none,
-            ),
-            filled: true,
-            fillColor: Color(0xff56596e),
-            contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          ),
-        ),
+        title: !isSearching
+            ? Text('Ordens de Serviço')
+            : TextField(
+                controller: searchController,
+                style: TextStyle(color: Colors.white),
+                onChanged: (value) {
+                  _filterOs(value);
+                },
+                decoration: InputDecoration(
+                  hintText: 'Pesquisar...',
+                  hintStyle: TextStyle(color: Colors.white),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Color(0xff56596e),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                ),
+              ),
         actions: <Widget>[
           isSearching
               ? IconButton(
-            icon: Icon(Icons.cancel),
-            onPressed: () {
-              _stopSearch();
-            },
-          )
+                  icon: Icon(Icons.cancel),
+                  onPressed: () {
+                    _stopSearch();
+                  },
+                )
               : IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              _startSearch();
-            },
-          ),
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    _startSearch();
+                  },
+                ),
         ],
       ),
       body: filteredOs.isEmpty
           ? Center(
-        child: CircularProgressIndicator(),
-      )
-          :ListView.builder(
-        itemCount: filteredOs.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 1.0), // Ajuste os valores de padding vertical conforme necessário
-            child: Card(
-              margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 10.0), // Defina a margem externa dos cartões
-              child: ListTile(
-                onTap: () async {
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                      child: OsManager(os: filteredOs[index]),
-                      type: PageTransitionType.leftToRight,
-                    ),
-                  );
-                },
-
-                contentPadding: EdgeInsets.all(8.0),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFF333649),
-                            borderRadius: BorderRadius.circular(8.0),
+              child: CircularProgressIndicator(),
+            )
+          : ListView.builder(
+              itemCount: filteredOs.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical:
+                          1.0), // Ajuste os valores de padding vertical conforme necessário
+                  child: Card(
+                    margin: EdgeInsets.symmetric(
+                        vertical: 4.0,
+                        horizontal:
+                            10.0), // Defina a margem externa dos cartões
+                    child: ListTile(
+                      onTap: () async {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            child: OsManager(os: filteredOs[index]),
+                            type: PageTransitionType.leftToRight,
                           ),
-                          padding: EdgeInsets.all(10.0),
-                          child: Center(
+                        );
+                      },
+                      contentPadding: EdgeInsets.all(8.0),
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF333649),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                padding: EdgeInsets.all(10.0),
+                                child: Center(
+                                  child: Text(
+                                    '${filteredOs[index]['idOs']}',
+                                    style: TextStyle(
+                                      fontSize:
+                                          (MediaQuery.of(context).size.width *
+                                              0.040),
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 16.0),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${filteredOs[index]['nomeCliente']}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize:
+                                          (MediaQuery.of(context).size.width *
+                                              0.040),
+                                    ),
+                                  ),
+                                  Text(
+                                    'Inicio: ${filteredOs[index]['dataInicial'] ?? 0}',
+                                    style: TextStyle(
+                                      fontSize:
+                                          (MediaQuery.of(context).size.width *
+                                              0.0350),
+                                    ),
+                                  ),
+                                  Text(
+                                    'Limite: ${filteredOs[index]['dataFinal'] ?? 0}',
+                                    style: TextStyle(
+                                      fontSize:
+                                          (MediaQuery.of(context).size.width *
+                                              0.0350),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Container(
                             child: Text(
-                              '${filteredOs[index]['idOs']}',
+                              '${filteredOs[index]['status'] ?? ''}',
                               style: TextStyle(
-                                fontSize: (MediaQuery.of(context).size.width * 0.040),
+                                color: _getStatusColor(
+                                    filteredOs[index]['status'] ?? ''),
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                fontSize:
+                                    (MediaQuery.of(context).size.width * 0.030),
                               ),
                             ),
                           ),
-                        ),
-                        SizedBox(width: 16.0),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${filteredOs[index]['nomeCliente']}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: (MediaQuery.of(context).size.width * 0.040),
-                              ),
-                            ),
-                            Text(
-                              'Inicio: ${filteredOs[index]['dataInicial'] ?? 0}',
-                              style: TextStyle(
-                                fontSize: (MediaQuery.of(context).size.width * 0.0350),
-                              ),
-                            ),
-                            Text(
-                              'Limite: ${filteredOs[index]['dataFinal'] ?? 0}',
-                              style: TextStyle(
-                                fontSize: (MediaQuery.of(context).size.width * 0.0350),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Container(
-                      child: Text(
-                        '${filteredOs[index]['status'] ?? ''}',
-                        style: TextStyle(
-                          color: _getStatusColor(filteredOs[index]['status'] ?? ''),
-                          fontWeight: FontWeight.bold,
-                          fontSize: (MediaQuery.of(context).size.width * 0.030),
-                        ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
-
-
-
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           Map<String, dynamic> permissions = await _getCiKey();
@@ -252,13 +276,13 @@ class _OsScreenState extends State<OsScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 backgroundColor: Colors.red,
-                content: Text('Você não tem permissão para adicionar Ordens de Serviço.'),
+                content: Text(
+                    'Você não tem permissão para adicionar Ordens de Serviço.'),
               ),
             );
           }
         },
         child: Icon(Icons.add),
-
       ),
       bottomNavigationBar: BottomNavigationBarWidget(
         activeIndex: _selectedIndex,

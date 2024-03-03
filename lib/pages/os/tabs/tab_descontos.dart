@@ -18,13 +18,14 @@ class _TabDescontosState extends State<TabDescontos> {
   late TextEditingController _valorDescontolController;
   late TextEditingController _tipoDescontoController;
 
-
   @override
   void initState() {
     super.initState();
     _descontoController = TextEditingController(text: widget.os['desconto']);
-    _valorDescontolController = TextEditingController(text: widget.os['valor_desconto']);
-    _tipoDescontoController = TextEditingController(text: widget.os['tipo_desconto']);
+    _valorDescontolController =
+        TextEditingController(text: widget.os['valor_desconto']);
+    _tipoDescontoController =
+        TextEditingController(text: widget.os['tipo_desconto']);
   }
 
   @override
@@ -44,23 +45,22 @@ class _TabDescontosState extends State<TabDescontos> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             SizedBox(height: 8.0),
             TextFormField(
               controller: _descontoController,
-              decoration: InputDecoration(labelText: 'Data entrada'),
+              decoration: InputDecoration(labelText: 'Desconto'),
               style: TextStyle(fontSize: 16.0),
             ),
             SizedBox(height: 8.0),
-            TextFormField(
-              controller: _valorDescontolController,
-              decoration: InputDecoration(labelText: 'Prev. Saída'),
-              style: TextStyle(fontSize: 16.0),
-            ),
+            // TextFormField(
+            //   controller: _valorDescontolController,
+            //   decoration: InputDecoration(labelText: 'Prev. Saída'),
+            //   style: TextStyle(fontSize: 16.0),
+            // ),
             SizedBox(height: 8.0),
             TextFormField(
               controller: _tipoDescontoController,
-              decoration: InputDecoration(labelText: 'Responsável'),
+              decoration: InputDecoration(labelText: 'Tipo de Desconto'),
               style: TextStyle(fontSize: 16.0),
             ),
             SizedBox(height: 8.0),
@@ -96,13 +96,15 @@ class _TabDescontosState extends State<TabDescontos> {
       );
     }
   }
+
   Future<bool> _updateOS(Map<String, dynamic> updatedOS) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String ciKey = prefs.getString('token') ?? '';
     String permissoesString = prefs.getString('permissoes') ?? '[]';
     List<dynamic> permissoes = jsonDecode(permissoesString);
 
-    var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
+    var url =
+        '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
     print(url);
     try {
       var response = await http.put(
@@ -115,6 +117,14 @@ class _TabDescontosState extends State<TabDescontos> {
       );
 
       if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        if (data.containsKey('refresh_token')) {
+          String refreshToken = data['refresh_token'];
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', refreshToken);
+        } else {
+          print('problema com sua sessão, faça login novamente!');
+        }
         print('OS atualizada com sucesso');
         return true;
       } else {

@@ -45,7 +45,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color(0xff484b62),
         boxShadow: [
           // BoxShadow(
           //   color: Colors.grey.withOpacity(0.5),

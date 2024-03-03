@@ -13,6 +13,7 @@ class ServicoEditScreen extends StatefulWidget {
   @override
   _ServicoEditScreenState createState() => _ServicoEditScreenState();
 }
+
 class _ServicoEditScreenState extends State<ServicoEditScreen> {
   late TextEditingController _nomeServicoController;
   late TextEditingController _descricaoServicoController;
@@ -30,10 +31,8 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
       decimalSeparator: ',',
       thousandSeparator: '.',
       leftSymbol: 'R\$ ',
-      initialValue:
-      double.tryParse(widget.servico['preco'] ?? '0.00') ?? 0.00,
+      initialValue: double.tryParse(widget.servico['preco'] ?? '0.00') ?? 0.00,
     );
-
   }
 
   Future<Map<String, dynamic>> _getCiKey() async {
@@ -72,7 +71,8 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     backgroundColor: Colors.red,
-                    content: Text('Você não tem permissões para editar serviços.'),
+                    content:
+                        Text('Você não tem permissões para editar serviços.'),
                   ),
                 );
               }
@@ -98,17 +98,22 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Nome',
                   labelStyle: TextStyle(color: Color(0xff333649)),
-                  prefixIcon: Icon(Icons.construction_outlined, color: Color(0xff333649)),
+                  prefixIcon: Icon(Icons.construction_outlined,
+                      color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderRadius:
+                        BorderRadius.circular(10.0), // Define o raio do border
                     borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                    borderRadius:
+                        BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide:
+                        BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
@@ -120,54 +125,63 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Descricao',
                   labelStyle: TextStyle(color: Color(0xff333649)),
-                  prefixIcon: Icon(Icons.description_outlined, color: Color(0xff333649)),
+                  prefixIcon: Icon(Icons.description_outlined,
+                      color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
+                    borderRadius:
+                        BorderRadius.circular(10.0), // Define o raio do border
                     borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                    borderRadius:
+                        BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide:
+                        BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16.0),
-              TextFormField(
+              TextField(
                 controller: _precoServicoController,
                 enabled: _editingEnabled,
                 style: TextStyle(color: Colors.grey[700]),
                 decoration: InputDecoration(
                   labelText: 'Valor',
                   labelStyle: TextStyle(color: Color(0xff333649)),
-                  prefixIcon: Icon(Icons.attach_money, color: Color(0xff333649)),
+                  prefixIcon:
+                      Icon(Icons.attach_money, color: Color(0xff333649)),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide:
+                        BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
+                keyboardType: TextInputType.number,
               ),
               SizedBox(height: 16.0),
-
-            ElevatedButton(
+              ElevatedButton(
                 onPressed: _editingEnabled ? _saveChanges : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xff2c9b5b),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                    minimumSize: Size(200, 50),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xff2c9b5b),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
                   ),
-                child: Text('Salvar Alterações',
+                  minimumSize: Size(200, 50),
+                ),
+                child: Text(
+                  'Salvar Alterações',
                   style: TextStyle(fontSize: 18.0, color: Colors.white),
                 ),
               ),
@@ -179,7 +193,10 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
   }
 
   void _saveChanges() async {
-    String preco = _precoServicoController.text.replaceAll('R\$ ', '').replaceAll('.', '').replaceAll(',', '.');
+    String preco = _precoServicoController.text
+        .replaceAll('R\$ ', '')
+        .replaceAll('.', '')
+        .replaceAll(',', '.');
 
     Map<String, dynamic> updatedServico = {
       'idServicos': widget.servico['idServico'],
@@ -208,8 +225,6 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-
-
   Future<bool> _updateServico(Map<String, dynamic> updatedServico) async {
     Map<String, dynamic> ciKey = await _getCiKey();
 
@@ -227,6 +242,14 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
       );
 
       if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        if (data.containsKey('refresh_token')) {
+          String refreshToken = data['refresh_token'];
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', refreshToken);
+        } else {
+          print('problema com sua sessão, faça login novamente!');
+        }
         print('Serviço atualizado com sucesso');
         return true;
       } else {

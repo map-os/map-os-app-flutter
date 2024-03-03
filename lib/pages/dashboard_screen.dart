@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mapos_app/main.dart';
 import 'package:mapos_app/pages/clients/clients_screen.dart';
 import 'package:mapos_app/pages/services/services_screen.dart';
 import 'package:mapos_app/widgets/menu_lateral.dart';
@@ -10,12 +11,12 @@ import 'package:mapos_app/config/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:mapos_app/pages/os/os_screen.dart';
-import 'package:mapos_app/widgets/tab_home_os_aberto.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
 }
+
 Future<Map<String, dynamic>> _getCiKey() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String ciKey = prefs.getString('token') ?? '';
@@ -23,6 +24,7 @@ Future<Map<String, dynamic>> _getCiKey() async {
   List<dynamic> permissoes = jsonDecode(permissoesString);
   return {'ciKey': ciKey, 'permissoes': permissoes};
 }
+
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 2;
   int countOs = 0;
@@ -33,8 +35,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int vendas = 0;
 
   Future<void> _getData() async {
-    Map<String, dynamic> keyAndPermissions = await _getCiKey();
-    String ciKey = keyAndPermissions['ciKey'] ?? '';
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String ciKey = prefs.getString('token') ?? '';
 
     var url = '${APIConfig.baseURL}${APIConfig.indexEndpoint}?X-API-KEY=$ciKey';
 
@@ -51,11 +53,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
           garantias = data['result']['garantia'] ?? 0;
           vendas = data['result']['vendas'] ?? 0;
         });
+
+        if (data.containsKey('refresh_token')) {
+          String refreshToken = data['refresh_token'];
+          await prefs.setString('token', refreshToken);
+        }
       } else {
-        print('Key "result" not found in API response');
+        print(data['message']);
       }
     } else {
-      print('Failed to load data');
+      _logout(context);
     }
   }
 
@@ -86,39 +93,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 children: [
                   Padding(
-                    padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
+                    padding: EdgeInsets.all(
+                        MediaQuery.of(context).size.width * 0.03),
                     child: GridView.count(
                       shrinkWrap: true,
-                      crossAxisSpacing: (MediaQuery.of(context).size.width * 0.020),
+                      crossAxisSpacing:
+                          (MediaQuery.of(context).size.width * 0.020),
                       crossAxisCount: 3,
                       mainAxisSpacing: 9.0,
                       childAspectRatio: 0.99,
                       children: [
                         _buildCard(
-                            'Clientes', Boxicons.bx_group, clientes.toString(), () {
+                            'Clientes', Boxicons.bx_group, clientes.toString(),
+                            () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) =>
-                                ClientesScreen()),
+                            MaterialPageRoute(
+                                builder: (context) => ClientesScreen()),
                           );
                         }),
-                        _buildCard('Serviços', Boxicons.bx_wrench,
-                            servicos.toString(), () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) =>
-                                    ServicesScreen()),
-                              );
-                            }),
-                        _buildCard('Produtos', Boxicons.bx_basket,
-                            produtos.toString(), () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) =>
-                                    ProductsScreen()),
-                              );
-                            }),
-                        _buildCard('O.S', Boxicons.bx_file, countOs.toString(), () {
+                        _buildCard(
+                            'Serviços', Boxicons.bx_wrench, servicos.toString(),
+                            () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ServicesScreen()),
+                          );
+                        }),
+                        _buildCard(
+                            'Produtos', Boxicons.bx_basket, produtos.toString(),
+                            () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProductsScreen()),
+                          );
+                        }),
+                        _buildCard('O.S', Boxicons.bx_file, countOs.toString(),
+                            () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => OsScreen()),
@@ -126,20 +139,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         }),
                         _buildCard('Garantias', Boxicons.bx_receipt,
                             garantias.toString(), () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) =>
-                                    ServicesScreen()),
-                              );
-                            }),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ServicesScreen()),
+                          );
+                        }),
                         _buildCard('Vendas', Icons.shopping_cart_outlined,
                             vendas.toString(), () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) =>
-                                    ServicesScreen()),
-                              );
-                            }),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ServicesScreen()),
+                          );
+                        }),
                       ],
                     ),
                   ),
@@ -161,9 +174,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-
-  Widget _buildCard(String title, IconData icon, String data,
-      Function() onTap) {
+  Widget _buildCard(
+      String title, IconData icon, String data, Function() onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -174,45 +186,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
           color: Colors.white,
         ),
         child: Padding(
-          padding: EdgeInsets.all(MediaQuery
-              .of(context)
-              .size
-              .width * 0.04),
+          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.04),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 icon,
-                size: (MediaQuery
-                    .of(context)
-                    .size
-                    .width * 0.09),
+                size: (MediaQuery.of(context).size.width * 0.09),
                 color: Color(0xff333649),
               ),
-              SizedBox(height: (MediaQuery
-                  .of(context)
-                  .size
-                  .width * 0.001)),
+              SizedBox(height: (MediaQuery.of(context).size.width * 0.001)),
               Text(
                 title,
-                style: TextStyle(fontSize: (MediaQuery
-                    .of(context)
-                    .size
-                    .width * 0.04),
+                style: TextStyle(
+                    fontSize: (MediaQuery.of(context).size.width * 0.04),
                     fontWeight: FontWeight.bold,
                     color: Color(0xff333649)),
               ),
-              SizedBox(height: (MediaQuery
-                  .of(context)
-                  .size
-                  .width * 0.001)),
+              SizedBox(height: (MediaQuery.of(context).size.width * 0.001)),
               Text(
                 data,
-                style: TextStyle(fontSize: (MediaQuery
-                    .of(context)
-                    .size
-                    .width * 0.05), fontWeight: FontWeight.bold, color: Color(
-                    0xff333649)),
+                style: TextStyle(
+                    fontSize: (MediaQuery.of(context).size.width * 0.05),
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xff333649)),
               ),
             ],
           ),
@@ -226,4 +223,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _selectedIndex = index;
     });
   }
+}
+
+Future<Map<String, dynamic>> _getUserData() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String ciKey = prefs.getString('token') ?? '';
+  String permissoesString = prefs.getString('permissoes') ?? '[]';
+  List<dynamic> permissoes = jsonDecode(permissoesString);
+  return {'ci_key': ciKey, 'permissoes': permissoes};
+}
+
+void _logout(BuildContext context) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  // Limpa os dados de autenticação
+  await prefs.remove('token');
+  await prefs.remove('permissoes');
+  // Navega para a tela de login e remove todas as rotas anteriores
+  Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(builder: (context) => LoginPage(() {})),
+    (Route<dynamic> route) => false,
+  );
 }
