@@ -1,8 +1,8 @@
 class APIConfig {
-  static const String appVersion = '0.0.2';
-  static const String baseURL = 'https://sistema.assitecac.com/index.php/api';
+  static const String appVersion = '0.1.0Beta';
+  static const String baseURL = 'URL_API';
   static const String apiKey =
-      '8e57e4a265b2f5e108ae03fb8433c0a91b0aafae864a4e5d5d618495673c0280';
+      'ACCESS_TOKEN_API';
 
   //ENDPOITNS
   static const String indexEndpoint = '';
