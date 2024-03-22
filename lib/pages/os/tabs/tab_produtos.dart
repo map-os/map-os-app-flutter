@@ -4,7 +4,11 @@ import 'package:mapos_app/config/constants.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mapos_app/providers/calcTotal.dart';
-
+/*
+SANTT -- 2024
+TODOS OS PRINTS SERÃO REMOVIDOS E SUBSTITUIDOS POR SNACKBAR --
+github.com/Fesantt
+*/
 class TabProdutos extends StatefulWidget {
   final Map<String, dynamic> os;
 
@@ -108,20 +112,20 @@ class _TabProdutosState extends State<TabProdutos> {
           data['result'].containsKey('produtos')) {
         setState(() {
           osData = data['result']['produtos'];
-          _loading = false; // Stop loading indicator
+          _loading = false;
         });
       } else {
         setState(() {
           osData = [];
-          _loading = false; // Stop loading indicator
+          _loading = false;
         });
-        print('Key "items" not found in API response');
+        print('Item não encontrado');
       }
     } else {
       setState(() {
-        _loading = false; // Stop loading indicator
+        _loading = false;
       });
-      print('Failed to load os');
+      print('Falha ao carregar OS');
     }
   }
 
@@ -162,15 +166,12 @@ class _TabProdutosState extends State<TabProdutos> {
             duration: Duration(seconds: 2),
           ),
         );
-        // Após excluir o produto com sucesso, chame a função para recalcular o total
-        _getProdutosOs(); // Chama a função para recarregar a lista de produtos
-        _calctotal; // Chama a função para recalcular o total
+        _getProdutosOs();
+        _calctotal;
       } else {
-        // Lógica para lidar com erros de exclusão do produto
       }
     } catch (e) {
-      print('Exception during product deletion: $e');
-      // Lógica para lidar com exceções durante a exclusão do produto
+      print('Erro durante a exclusão $e');
     }
   }
 
@@ -195,7 +196,7 @@ class _TabProdutosState extends State<TabProdutos> {
                     decoration: InputDecoration(hintText: 'Pesquisar produtos'),
                     onChanged: (value) async {
                       produtos = await _buscarProdutos(value);
-                      setState(() {}); // Update the state to reflect changes
+                      setState(() {});
                     },
                   ),
                   SizedBox(height: 10),
@@ -227,7 +228,6 @@ class _TabProdutosState extends State<TabProdutos> {
                             } catch (e) {
                               print(
                                   'Erro ao converter ID do produto para inteiro: $e');
-                              // Lidar com o erro aqui, como exibir uma mensagem para o usuário
                             }
                           },
                         );
@@ -242,7 +242,6 @@ class _TabProdutosState extends State<TabProdutos> {
       },
     );
   }
-
   Future<List<dynamic>> _buscarProdutos(String query) async {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
@@ -266,7 +265,7 @@ class _TabProdutosState extends State<TabProdutos> {
       List<dynamic> produtos = responseData['result'];
       return produtos;
     } else {
-      print('Failed to fetch products');
+      print('Falha ao carregar produtos!');
       return []; // Retorna uma lista vazia em caso de falha
     }
   }

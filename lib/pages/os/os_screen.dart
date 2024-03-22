@@ -7,7 +7,11 @@ import 'package:mapos_app/pages/os/os_view.dart';
 import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
 // import 'package:mapos_app/pages/os/os_add.dart';
 import 'package:page_transition/page_transition.dart';
-
+/*
+SANTT -- 2024
+TODOS OS PRINTS SERÃO REMOVIDOS E SUBSTITUIDOS POR SNACKBAR --
+github.com/Fesantt
+*/
 class OsScreen extends StatefulWidget {
   @override
   _OsScreenState createState() => _OsScreenState();
@@ -164,12 +168,12 @@ class _OsScreenState extends State<OsScreen> {
                 return Padding(
                   padding: const EdgeInsets.symmetric(
                       vertical:
-                          1.0), // Ajuste os valores de padding vertical conforme necessário
+                          1.0),
                   child: Card(
                     margin: EdgeInsets.symmetric(
                         vertical: 4.0,
                         horizontal:
-                            10.0), // Defina a margem externa dos cartões
+                            10.0),
                     child: ListTile(
                       onTap: () async {
                         Navigator.push(

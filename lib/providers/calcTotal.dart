@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:mapos_app/config/constants.dart'; // Importe o arquivo com a configuração da API
+import 'package:mapos_app/config/constants.dart';
 
 class OsCalculator {
   late double _calctotal;
@@ -17,7 +17,6 @@ class OsCalculator {
         Map<String, dynamic> data = json.decode(response.body);
         if (data.containsKey('refresh_token')) {
           String refreshToken = data['refresh_token'];
-          print(refreshToken);
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('token', refreshToken);
         }

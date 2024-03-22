@@ -1,28 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:mapos_app/main.dart';
-import 'package:mapos_app/pages/clients/clients_screen.dart';
-import 'package:mapos_app/pages/services/services_screen.dart';
-import 'package:mapos_app/widgets/menu_lateral.dart';
-import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
-import 'package:mapos_app/pages/products/products_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-import 'package:mapos_app/config/constants.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_boxicons/flutter_boxicons.dart';
+import 'package:mapos_app/pages/clients/clients_screen.dart';
 import 'package:mapos_app/pages/os/os_screen.dart';
+import 'package:mapos_app/pages/products/products_screen.dart';
+import 'package:mapos_app/pages/services/services_screen.dart';
+import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
+import 'package:mapos_app/widgets/menu_lateral.dart';
+import 'package:mapos_app/models/dashboardModel.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
-}
-
-Future<Map<String, dynamic>> _getCiKey() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String ciKey = prefs.getString('token') ?? '';
-  String permissoesString = prefs.getString('permissoes') ?? '[]';
-  List<dynamic> permissoes = jsonDecode(permissoesString);
-  return {'ciKey': ciKey, 'permissoes': permissoes};
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
@@ -34,42 +22,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int garantias = 0;
   int vendas = 0;
 
-  Future<void> _getData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String ciKey = prefs.getString('token') ?? '';
-
-    var url = '${APIConfig.baseURL}${APIConfig.indexEndpoint}?X-API-KEY=$ciKey';
-
-    var response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      Map<String, dynamic> data = json.decode(response.body);
-      if (data.containsKey('result')) {
-        setState(() {
-          countOs = data['result']['countOs'] ?? 0;
-          clientes = data['result']['clientes'] ?? 0;
-          produtos = data['result']['produtos'] ?? 0;
-          servicos = data['result']['servicos'] ?? 0;
-          garantias = data['result']['garantia'] ?? 0;
-          vendas = data['result']['vendas'] ?? 0;
-        });
-
-        if (data.containsKey('refresh_token')) {
-          String refreshToken = data['refresh_token'];
-          await prefs.setString('token', refreshToken);
-        }
-      } else {
-        print(data['message']);
-      }
-    } else {
-      _logout(context);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    _getData();
+    _fetchData();
+  }
+
+  void _fetchData() async {
+    DashboardData dashboardData = DashboardData();
+    await dashboardData.fetchData(context);
+
+    setState(() {
+      countOs = dashboardData.countOs;
+      clientes = dashboardData.clientes;
+      produtos = dashboardData.produtos;
+      servicos = dashboardData.servicos;
+      garantias = dashboardData.garantias;
+      vendas = dashboardData.vendas;
+    });
   }
 
   @override
@@ -223,25 +193,4 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _selectedIndex = index;
     });
   }
-}
-
-Future<Map<String, dynamic>> _getUserData() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String ciKey = prefs.getString('token') ?? '';
-  String permissoesString = prefs.getString('permissoes') ?? '[]';
-  List<dynamic> permissoes = jsonDecode(permissoesString);
-  return {'ci_key': ciKey, 'permissoes': permissoes};
-}
-
-void _logout(BuildContext context) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  // Limpa os dados de autenticação
-  await prefs.remove('token');
-  await prefs.remove('permissoes');
-  // Navega para a tela de login e remove todas as rotas anteriores
-  Navigator.pushAndRemoveUntil(
-    context,
-    MaterialPageRoute(builder: (context) => LoginPage(() {})),
-    (Route<dynamic> route) => false,
-  );
 }

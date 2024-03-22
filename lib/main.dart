@@ -56,7 +56,7 @@ class _MyAppState extends State<MyApp> {
         // Defina a cor da AppBar no tema escuro aqui
         appBarTheme: AppBarTheme(
           color: Color(
-              0xff333649), // Defina a cor desejada da AppBar no tema escuro
+              0xff333649),
         ),
       ),
       themeMode: _themeMode,
@@ -116,16 +116,16 @@ class _LoginPageState extends State<LoginPage> {
         Uri.parse('${APIConfig.baseURL}${APIConfig.loginEndpoint}'),
         headers: {
           'Content-Type':
-              'application/json', // Define o tipo de conteúdo como JSON
-          'X-API-KEY': APIConfig.apiKey,
+              'application/json',
         },
-        body: json.encode(loginData), // Serializa os dados em JSON
+        body: json.encode(loginData),
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['status'] == true) {
-          String ciKey = data['result']['ci_key'];
+          String ciKey = data['result']['access_token'];
+
           List<dynamic> permissoesList = data['result']['permissions'];
           String permissoes = jsonEncode(permissoesList);
           SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -322,7 +322,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 SizedBox(height: 0),
                 Text(
-                  'Desenvolvido por \n Julio Lobo & \n Felipe Santt',
+                  'Desenvolvido por \n Felipe Santt & \n Julio Lobo',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Theme.of(context).brightness == Brightness.light
