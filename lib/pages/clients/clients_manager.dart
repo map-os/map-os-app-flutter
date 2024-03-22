@@ -5,7 +5,11 @@ import 'package:mapos_app/config/constants.dart';
 import 'dart:convert';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:mapos_app/main.dart';
-
+/*
+SANTT -- 2024
+TODOS OS PRINTS SERÃO REMOVIDOS E SUBSTITUIDOS POR SNACKBAR --
+github.com/Fesantt
+*/
 class ClienteEditScreen extends StatefulWidget {
   final Map<String, dynamic> cliente;
 

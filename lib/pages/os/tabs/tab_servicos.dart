@@ -3,7 +3,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/config/constants.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
+/*
+SANTT -- 2024
+TODOS OS PRINTS SERÃO REMOVIDOS E SUBSTITUIDOS POR SNACKBAR --
+github.com/Fesantt
+*/
 class TabServicos extends StatefulWidget {
   final Map<String, dynamic> os;
 

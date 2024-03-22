@@ -3,7 +3,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:mapos_app/config/constants.dart';
-
+/*
+SANTT -- 2024
+TODOS OS PRINTS SERÃO REMOVIDOS E SUBSTITUIDOS POR SNACKBAR --
+github.com/Fesantt
+*/
 class TabDescontos extends StatefulWidget {
   final Map<String, dynamic> os;
 

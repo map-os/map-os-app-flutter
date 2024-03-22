@@ -119,6 +119,11 @@ class _ClientesScreenState extends State<ClientesScreen> {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
+        if (responseData.containsKey('refresh_token')) {
+          String newToken = responseData['refresh_token'];
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', newToken);
+        }
         final List<dynamic> data = responseData['result'];
         setState(() {
           filteredClientes = List.from(data);

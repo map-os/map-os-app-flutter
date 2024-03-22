@@ -84,7 +84,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
     setState(() {
       filteredServices = services
           .where((service) =>
-              service['nome'].toLowerCase().contains(searchText.toLowerCase()))
+          service['nome'].toLowerCase().contains(searchText.toLowerCase()))
           .toList();
     });
   }
@@ -97,111 +97,111 @@ class _ServicesScreenState extends State<ServicesScreen> {
         title: !isSearching
             ? Text('Serviços')
             : TextField(
-                controller: searchController,
-                style: TextStyle(color: Colors.white),
-                onChanged: (value) {
-                  _filterServices(value);
-                },
-                decoration: InputDecoration(
-                  hintText: 'Pesquisar...',
-                  hintStyle: TextStyle(color: Colors.white),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: Color(0xffe79a24),
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                ),
-              ),
+          controller: searchController,
+          style: TextStyle(color: Colors.white),
+          onChanged: (value) {
+            _filterServices(value);
+          },
+          decoration: InputDecoration(
+            hintText: 'Pesquisar...',
+            hintStyle: TextStyle(color: Colors.white),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: Color(0xffe79a24),
+            contentPadding:
+            EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          ),
+        ),
         actions: <Widget>[
           isSearching
               ? IconButton(
-                  icon: Icon(Icons.cancel),
-                  onPressed: () {
-                    _stopSearch();
-                  },
-                )
+            icon: Icon(Icons.cancel),
+            onPressed: () {
+              _stopSearch();
+            },
+          )
               : IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () {
-                    _startSearch();
-                  },
-                ),
+            icon: Icon(Icons.search),
+            onPressed: () {
+              _startSearch();
+            },
+          ),
         ],
       ),
       body: RefreshIndicator(
         onRefresh: _getServices,
         child: filteredServices.isEmpty
             ? Center(
-                child: CircularProgressIndicator(),
-              )
+          child: CircularProgressIndicator(),
+        )
             : ListView.builder(
-                itemCount: filteredServices.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(1.0),
-                    child: Card(
-                      child: ListTile(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ServicoEditScreen(
-                                servico: filteredServices[index],
-                              ),
+          itemCount: filteredServices.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Padding(
+              padding: const EdgeInsets.all(1.0),
+              child: Card(
+                child: ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ServicoEditScreen(
+                          servico: filteredServices[index],
+                        ),
+                      ),
+                    );
+                  },
+                  contentPadding: EdgeInsets.all(16.0),
+                  title: Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xFF333649),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        padding: EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Text(
+                            '${filteredServices[index]['idServicos']}',
+                            style: TextStyle(
+                              fontSize:
+                              MediaQuery.of(context).size.width *
+                                  0.04, // 4% da largura da tela
+                              color: Colors.white,
                             ),
-                          );
-                        },
-                        contentPadding: EdgeInsets.all(16.0),
-                        title: Row(
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 16.0),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Color(0xFF333649),
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              padding: EdgeInsets.all(8.0),
-                              child: Center(
-                                child: Text(
-                                  '${filteredServices[index]['idServicos']}',
-                                  style: TextStyle(
-                                    fontSize:
-                                        MediaQuery.of(context).size.width *
-                                            0.04, // 4% da largura da tela
-                                    color: Colors.white,
-                                  ),
-                                ),
+                            Text(
+                              '${filteredServices[index]['nome']}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize:
+                                MediaQuery.of(context).size.width *
+                                    0.04, // 4% da largura da tela
                               ),
                             ),
-                            SizedBox(width: 16.0),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${filteredServices[index]['nome']}',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize:
-                                          MediaQuery.of(context).size.width *
-                                              0.04, // 4% da largura da tela
-                                    ),
-                                  ),
-                                  Text(
-                                    'Valor: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(double.parse(filteredServices[index]['preco']))}',
-                                  ),
-                                ],
-                              ),
+                            Text(
+                              'Valor: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(double.parse(filteredServices[index]['preco']))}',
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  );
-                },
+                    ],
+                  ),
+                ),
               ),
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -223,7 +223,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
               SnackBar(
                 backgroundColor: Colors.red,
                 content:
-                    Text('Você não tem permissão para adicionar clientes.'),
+                Text('Você não tem permissão para adicionar clientes.'),
               ),
             );
           }

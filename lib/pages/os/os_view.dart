@@ -7,7 +7,10 @@ import 'package:mapos_app/pages/os/tabs/tab_produtos.dart';
 import 'package:mapos_app/pages/os/tabs/tab_servicos.dart';
 import 'package:mapos_app/providers/calcTotal.dart';
 import 'package:intl/intl.dart';
-
+/*
+SANTT
+github.com/Fesantt/mapos-flutter-app
+*/
 class OsManager extends StatefulWidget {
   final Map<String, dynamic> os;
 
