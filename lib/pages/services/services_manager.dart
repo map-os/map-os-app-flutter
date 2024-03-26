@@ -107,7 +107,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
+                    borderSide: BorderSide(color: Color(0xff333960), width: 2.0),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -133,8 +133,8 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                       EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
                     borderRadius:
-                        BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
+                    BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333960), width: 2.0),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -159,13 +159,13 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide.none,
+                    borderRadius:
+                    BorderRadius.circular(10.0), // Define o raio do border
+                    borderSide: BorderSide(color: Color(0xff333960), width: 2.0),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide:
-                        BorderSide(color: Color(0xff333649), width: 2.0),
+                    borderSide: BorderSide(color: Color(0xff333960), width: 2.0),
                   ),
                 ),
                 keyboardType: TextInputType.number,
@@ -240,16 +240,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
         },
         body: jsonEncode(updatedServico),
       );
-
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.body);
-        if (data.containsKey('refresh_token')) {
-          String refreshToken = data['refresh_token'];
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', refreshToken);
-        } else {
-          print('problema com sua sessão, faça login novamente!');
-        }
         print('Serviço atualizado com sucesso');
         return true;
       } else {

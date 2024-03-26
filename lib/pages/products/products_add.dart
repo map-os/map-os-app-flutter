@@ -276,14 +276,6 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
         body: jsonEncode(newProduct),
       );
       if (response.statusCode == 201) {
-        Map<String, dynamic> data = json.decode(response.body);
-        if (data.containsKey('refresh_token')) {
-          String refreshToken = data['refresh_token'];
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', refreshToken);
-        } else {
-          print('problema com sua sessão, faça login novamente!');
-        }
         print('Produto adicionado com sucesso');
         return true;
       } else {

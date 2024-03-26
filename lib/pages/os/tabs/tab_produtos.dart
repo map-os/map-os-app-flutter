@@ -93,21 +93,16 @@ class _TabProdutosState extends State<TabProdutos> {
 
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
-
+    Map<String, String> headers = {
+      'X-API-KEY': ciKey,
+    };
     var url =
-        '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}?X-API-KEY=$ciKey';
+        '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
 
-    var response = await http.get(Uri.parse(url));
+    var response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
-      if (data.containsKey('refresh_token')) {
-        String refreshToken = data['refresh_token'];
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', refreshToken);
-      } else {
-        print('problema com sua sessão, faça login novamente!');
-      }
       if (data.containsKey('result') &&
           data['result'].containsKey('produtos')) {
         setState(() {
@@ -178,7 +173,7 @@ class _TabProdutosState extends State<TabProdutos> {
   Future<void> _mostrarDialogAdicionarProduto() async {
     TextEditingController _controller = TextEditingController();
     TextEditingController _quantityController =
-        TextEditingController(text: '1'); // Controller for quantity input
+    TextEditingController(text: '1'); // Controller for quantity input
     List<dynamic> produtos = [];
 
     await showDialog(
@@ -188,53 +183,57 @@ class _TabProdutosState extends State<TabProdutos> {
           builder: (context, setState) {
             return AlertDialog(
               title: Text('Adicionar Produto'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(hintText: 'Pesquisar produtos'),
-                    onChanged: (value) async {
-                      produtos = await _buscarProdutos(value);
-                      setState(() {});
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  TextFormField(
-                    controller: _quantityController,
-                    decoration: InputDecoration(hintText: 'Quantidade'),
-                    keyboardType: TextInputType.number,
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: produtos.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(produtos[index]['descricao'] ?? 'NaN'),
-                          subtitle:
-                              Text(produtos[index]['idProdutos'] ?? 'NaN'),
-                          onTap: () {
-                            try {
-                              int idProduto =
-                                  int.parse(produtos[index]['idProdutos']);
-                              String precoProduto =
-                                  produtos[index]['precoVenda'] ?? '';
-                              int quantidade =
-                                  int.parse(_quantityController.text);
-
-                              _adicionarProduto(
-                                  idProduto, precoProduto, quantidade);
-                              Navigator.of(context).pop();
-                            } catch (e) {
-                              print(
-                                  'Erro ao converter ID do produto para inteiro: $e');
-                            }
-                          },
-                        );
+              content: Container(
+                width: 300, // largura fixa
+                height: 400,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: _controller,
+                      decoration: InputDecoration(hintText: 'Pesquisar produtos'),
+                      onChanged: (value) async {
+                        produtos = await _buscarProdutos(value);
+                        setState(() {});
                       },
                     ),
-                  ),
-                ],
+                    SizedBox(height: 10),
+                    TextFormField(
+                      controller: _quantityController,
+                      decoration: InputDecoration(hintText: 'Quantidade'),
+                      keyboardType: TextInputType.number,
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: produtos.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(produtos[index]['descricao'] ?? 'NaN'),
+                            subtitle:
+                            Text(produtos[index]['idProdutos'] ?? 'NaN'),
+                            onTap: () {
+                              try {
+                                int idProduto =
+                                int.parse(produtos[index]['idProdutos']);
+                                String precoProduto =
+                                    produtos[index]['precoVenda'] ?? '';
+                                int quantidade =
+                                int.parse(_quantityController.text);
+
+                                _adicionarProduto(
+                                    idProduto, precoProduto, quantidade);
+                                Navigator.of(context).pop();
+                              } catch (e) {
+                                print(
+                                    'Erro ao converter ID do produto para inteiro: $e');
+                              }
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -242,6 +241,7 @@ class _TabProdutosState extends State<TabProdutos> {
       },
     );
   }
+
   Future<List<dynamic>> _buscarProdutos(String query) async {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
@@ -281,7 +281,7 @@ class _TabProdutosState extends State<TabProdutos> {
     var body = {
       'idProduto': idProdutos,
       'preco': precoProduto,
-      'quantidade': quantidade.toString(), // Convertendo para String
+      'quantidade': quantidade.toString(),
     };
 
     try {
@@ -293,14 +293,6 @@ class _TabProdutosState extends State<TabProdutos> {
 
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = json.decode(response.body);
-        Map<String, dynamic> data = json.decode(response.body);
-        if (data.containsKey('refresh_token')) {
-          String refreshToken = data['refresh_token'];
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', refreshToken);
-        } else {
-          print('problema com sua sessão, faça login novamente!');
-        }
         bool status = responseData['status'];
 
         if (status) {

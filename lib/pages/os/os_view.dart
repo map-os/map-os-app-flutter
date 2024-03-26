@@ -5,16 +5,13 @@ import 'package:mapos_app/pages/os/tabs/tab_descontos.dart';
 import 'package:mapos_app/pages/os/tabs/tab_detalhes.dart';
 import 'package:mapos_app/pages/os/tabs/tab_produtos.dart';
 import 'package:mapos_app/pages/os/tabs/tab_servicos.dart';
-import 'package:mapos_app/providers/calcTotal.dart';
+import 'package:mapos_app/providers/calcTotal.dart'; // provider onde é feito o calculo da ordem de serviço
 import 'package:intl/intl.dart';
-/*
-SANTT
-github.com/Fesantt/mapos-flutter-app
-*/
+
 class OsManager extends StatefulWidget {
   final Map<String, dynamic> os;
 
-  OsManager({required this.os});
+  const OsManager({required this.os, Key? key}) : super(key: key); // Add const constructor
 
   @override
   _OsManagerState createState() => _OsManagerState();
@@ -23,7 +20,7 @@ class OsManager extends StatefulWidget {
 class _OsManagerState extends State<OsManager> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late int _selectedIndex;
-  double _calctotal = 0.0;
+  String _calctotal = '0.0'; // Initializing with a default value as a String
   late OsCalculator osCalculator;
 
   @override
@@ -48,12 +45,17 @@ class _OsManagerState extends State<OsManager> with SingleTickerProviderStateMix
     super.dispose();
   }
 
-  // Função para inicializar o cálculo total
-  void _initializeCalcTotal() async {
-    await osCalculator.getCalcTotal(widget.os);
-    setState(() {
-      _calctotal = osCalculator.calcTotal;
-    });
+  Future<void> _initializeCalcTotal() async {
+    try {
+      await osCalculator.getCalcTotal(widget.os);
+      setState(() {
+        _calctotal = osCalculator.calcTotal; // Assign the calcTotal directly
+      });
+    } catch (error) {
+      // Handle potential errors during calculation retrieval
+      print('Error fetching calcTotal: $error');
+      // Consider notifying the user or taking appropriate actions (e.g., displaying an error message)
+    }
   }
 
   @override
@@ -63,9 +65,9 @@ class _OsManagerState extends State<OsManager> with SingleTickerProviderStateMix
         title: Row(
           children: [
             Text('OS ${widget.os['idOs']}'),
-            SizedBox(width: 10),
+            const SizedBox(width: 20),
             Text(
-              _formatCurrency(_calctotal),
+              _formatCurrency(_calctotal), // No need to convert to double
             ),
           ],
         ),
@@ -73,12 +75,13 @@ class _OsManagerState extends State<OsManager> with SingleTickerProviderStateMix
       body: Column(
         children: [
           Container(
-            color: Color(0xff333649),
+            height: 60,
+            color: const Color(0xff333649), // Use const for unchanging colors
             child: TabBar(
               controller: _tabController,
               indicator: BoxDecoration(
-                color: Color(0xffffffff),
-                borderRadius: BorderRadius.circular(100),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(50),
               ),
               indicatorSize: TabBarIndicatorSize.tab,
               indicatorWeight: 2,
@@ -121,7 +124,8 @@ class _OsManagerState extends State<OsManager> with SingleTickerProviderStateMix
     );
   }
 }
-String _formatCurrency(double amount) {
+
+String _formatCurrency(String amount) {
   final formatter = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
-  return formatter.format(amount);
+  return formatter.format(double.parse(amount)); // Format currency from String amount
 }

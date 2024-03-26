@@ -405,12 +405,6 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
       print(data);
       print(response.statusCode);
       if (response.statusCode == 201) {
-        Map<String, dynamic> data = json.decode(response.body);
-        if (data.containsKey('refresh_token')) {
-          String refreshToken = data['refresh_token'];
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', refreshToken);
-        }
         _showSnackBar('Cliente adicionado com sucesso',
             backgroundColor: Colors.green, textColor: Colors.white);
         _clearFields(); // Limpia los campos después de agregar el cliente

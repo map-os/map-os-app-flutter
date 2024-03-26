@@ -19,7 +19,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   ThemeMode _themeMode = ThemeMode.light;
-
   void toggleTheme() {
     setState(() {
       _themeMode =
@@ -96,8 +95,84 @@ class _LoginPageState extends State<LoginPage> {
           type: PageTransitionType.bottomToTop,
         ),
       );
+    } else {
+      // Verifica se baseURL está presente
+      String? baseURL = prefs.getString('baseURL');
+      if (baseURL == null || baseURL.isEmpty) {
+        _showBaseUrlInputDialog(context);
+      }
     }
   }
+
+  _showBaseUrlInputDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        String newBaseUrl = '';
+        bool isButtonEnabled = false;
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(
+                'URL do MAP-OS não definida',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    'Defina a URL do seu MAP-OS, lembre-se de não adicionar / no final da URL, faça como esta no exemplo ',
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        newBaseUrl = value;
+                        isButtonEnabled = newBaseUrl.isNotEmpty;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Ex: https://mapos.com.br',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: isButtonEnabled
+                      ? () async {
+                    SharedPreferences prefs =
+                    await SharedPreferences.getInstance();
+                    prefs.setString('baseURL', newBaseUrl);
+                    Navigator.of(context).pop();
+                    print(newBaseUrl);
+                  }
+                      : null,
+                  child: Text(
+                    'Salvar',
+                    style: TextStyle(
+                      color: isButtonEnabled ? Colors.blue : Colors.grey,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
 
   Future<void> _login() async {
     try {
@@ -107,16 +182,25 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
+      // Inicializa a baseURL se ainda não estiver inicializada
+      if (APIConfig.baseURL == null) {
+        await APIConfig.initBaseURL();
+        if (APIConfig.baseURL == null) {
+          _showBaseUrlInputDialog(context);
+          showSnackBar('Erro: URL do seu MAP-OS não foi definida');
+          return;
+        }
+      }
+
       final Map<String, dynamic> loginData = {
         'email': _usernameController.text,
         'password': _passwordController.text,
       };
-
       final response = await http.post(
         Uri.parse('${APIConfig.baseURL}${APIConfig.loginEndpoint}'),
+
         headers: {
-          'Content-Type':
-              'application/json',
+          'Content-Type': 'application/json',
         },
         body: json.encode(loginData),
       );
@@ -166,6 +250,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           Column(
@@ -207,7 +292,7 @@ class _LoginPageState extends State<LoginPage> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(
                                 10.0), // Define o raio do border
-                            borderSide: BorderSide.none, // Remove a linha preta
+                            borderSide:  BorderSide(color: Color(0xff333960), width: 2.0), // Remove a linha preta
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(
@@ -263,7 +348,7 @@ class _LoginPageState extends State<LoginPage> {
                               vertical: 5.0, horizontal: 9.0),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide.none,
+                            borderSide:  BorderSide(color: Color(0xff333960), width: 2.0),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
@@ -371,21 +456,25 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-          Positioned(
-            top: 20,
-            right: 20,
-            child: IconButton(
-              icon: Icon(
-                Theme.of(context).brightness == Brightness.light
-                    ? Icons.sunny
-                    : Icons.dark_mode,
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Colors.white
-                    : Colors.black,
+          SafeArea(
+            child: Padding(
+              padding: EdgeInsets.only(top: 20, right: 20),
+              child: Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  icon: Icon(
+                    Theme.of(context).brightness == Brightness.light
+                        ? Icons.sunny
+                        : Icons.dark_mode,
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.white
+                        : Colors.black,
+                  ),
+                  onPressed: widget.toggleTheme,
+                ),
               ),
-              onPressed: widget.toggleTheme,
             ),
-          ),
+          )
         ],
       ),
     );

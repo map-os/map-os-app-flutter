@@ -53,11 +53,14 @@ class _ClientesScreenState extends State<ClientesScreen> {
   Future<void> _getClientes({int page = 0}) async {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
+    Map<String, String> headers = {
+      'X-API-KEY': ciKey,
+    };
 
     var url =
-        '${APIConfig.baseURL}${APIConfig.clientesEndpoint}?X-API-KEY=$ciKey&page=$page&per_page=20';
+        '${APIConfig.baseURL}${APIConfig.clientesEndpoint}';
 
-    var response = await http.get(Uri.parse(url));
+    var response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
@@ -76,11 +79,6 @@ class _ClientesScreenState extends State<ClientesScreen> {
         _logout(context);
       }
 
-      if (data.containsKey('refresh_token')) {
-        String newToken = data['refresh_token'];
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', newToken);
-      }
     } else {
       print('Falha ao carregar clientes');
     }
@@ -112,18 +110,16 @@ class _ClientesScreenState extends State<ClientesScreen> {
     try {
       final Map<String, dynamic> keyAndPermissions = await _getCiKey();
       final String ciKey = keyAndPermissions['ciKey'] ?? '';
-
+      Map<String, String> headers = {
+        'X-API-KEY': ciKey,
+      };
       final url =
-          '${APIConfig.baseURL}${APIConfig.clientesEndpoint}?X-API-KEY=$ciKey&search=$searchText';
-      final response = await http.get(Uri.parse(url));
+          '${APIConfig.baseURL}${APIConfig.clientesEndpoint}?search=$searchText';
+      final response = await http.get(Uri.parse(url), headers: headers);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        if (responseData.containsKey('refresh_token')) {
-          String newToken = responseData['refresh_token'];
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', newToken);
-        }
+
         final List<dynamic> data = responseData['result'];
         setState(() {
           filteredClientes = List.from(data);

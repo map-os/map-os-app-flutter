@@ -7,6 +7,7 @@ import 'package:mapos_app/pages/services/services_screen.dart';
 import 'package:mapos_app/pages/products/products_screen.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
+import 'package:mapos_app/pages/profile/profile_screen.dart';
 
 class MenuLateral extends StatelessWidget {
   @override
@@ -109,9 +110,12 @@ class MenuLateral extends StatelessWidget {
                           ),
                         ),
                         onTap: () {
-                          // Implemente a lógica desejada para o Item 2 aqui
                           Navigator.pop(context);
-                          // Navegar para a tela de perfil
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProfileScreen()),
+                          );
                         },
                       ),
                       ListTile(
