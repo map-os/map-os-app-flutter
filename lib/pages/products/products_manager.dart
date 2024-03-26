@@ -318,14 +318,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         },
         body: jsonEncode(updatedProduct),
       );
-      print(jsonEncode(updatedProduct));
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.body);
-        if (data.containsKey('refresh_token')) {
-          String refreshToken = data['refresh_token'];
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', refreshToken);
-        }
         print('Produto atualizado com sucesso');
         return true;
       } else {

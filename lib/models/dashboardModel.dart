@@ -14,6 +14,13 @@ class DashboardData {
   int vendas = 0;
 
   Future<void> fetchData(BuildContext context) async {
+    // Inicializa a baseURL se ainda não estiver inicializada
+    if (APIConfig.baseURL == null) {
+      await APIConfig.initBaseURL();
+      if (APIConfig.baseURL == null) {
+        return;
+      }
+    }
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String ciKey = prefs.getString('token') ?? '';
     Map<String, String> headers = {
@@ -23,7 +30,6 @@ class DashboardData {
     var url = '${APIConfig.baseURL}${APIConfig.indexEndpoint}';
 
     var response = await http.get(Uri.parse(url), headers: headers);
-  print(response.body);
 
     if (response.statusCode == 200) {
 
@@ -35,7 +41,6 @@ class DashboardData {
         servicos = data['result']['servicos'] ?? 0;
         garantias = data['result']['garantia'] ?? 0;
         vendas = data['result']['vendas'] ?? 0;
-
       } else {
         print(data['message']);
       }

@@ -37,20 +37,16 @@ class _ServicesScreenState extends State<ServicesScreen> {
   Future<void> _getServices() async {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
+    Map<String, String> headers = {
+      'X-API-KEY': ciKey,
+    };
 
     var url =
-        '${APIConfig.baseURL}${APIConfig.servicossEndpoint}?X-API-KEY=$ciKey';
-    var response = await http.get(Uri.parse(url));
+        '${APIConfig.baseURL}${APIConfig.servicossEndpoint}';
+    var response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
-      if (data.containsKey('refresh_token')) {
-        String refreshToken = data['refresh_token'];
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', refreshToken);
-      } else {
-        print('problema com sua sessão, faça login novamente!');
-      }
       if (data.containsKey('result')) {
         List<dynamic> newServices = data['result'];
         setState(() {

@@ -89,11 +89,13 @@ class _TabServicosState extends State<TabServicos> {
 
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
-
+    Map<String, String> headers = {
+      'X-API-KEY': ciKey,
+    };
     var url =
         '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}?X-API-KEY=$ciKey';
 
-    var response = await http.get(Uri.parse(url));
+    var response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
@@ -166,11 +168,10 @@ class _TabServicosState extends State<TabServicos> {
       print('Failed to delete service');
     }
   }
-
   Future<void> _mostrarDialogAdicionarServico() async {
     TextEditingController _controller = TextEditingController();
     TextEditingController _quantityController =
-        TextEditingController(text: '1');
+    TextEditingController(text: '1');
     List<dynamic> servicos = [];
 
     await showDialog(
@@ -178,52 +179,56 @@ class _TabServicosState extends State<TabServicos> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            return AlertDialog(
+            return AlertDialog( // Movido o AlertDialog aqui
               title: Text('Adicionar Serviço'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(hintText: 'Pesquisar serviços'),
-                    onChanged: (value) async {
-                      servicos = await _buscarServicos(value);
-                      setState(() {});
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  TextFormField(
-                    controller: _quantityController,
-                    decoration: InputDecoration(hintText: 'Quantidade'),
-                    keyboardType: TextInputType.number,
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: servicos.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(servicos[index]['nome'] ?? 'NaN'),
-                          subtitle:
-                              Text(servicos[index]['idServicos'] ?? 'NaN'),
-                          onTap: () {
-                            try {
-                              int idServico =
-                                  int.parse(servicos[index]['idServicos']);
-                              double preco =
-                                  double.parse(servicos[index]['preco'] ?? '0');
-                              int quantidade =
-                                  int.parse(_quantityController.text);
-                              _adicionarServico(idServico, quantidade, preco);
-                              Navigator.of(context).pop();
-                            } catch (e) {
-                              print('Error adding service: $e');
-                            }
-                          },
-                        );
+              content: Container(
+                width: 300, // largura fixa
+                height: 400,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: _controller,
+                      decoration: InputDecoration(hintText: 'Pesquisar serviços'),
+                      onChanged: (value) async {
+                        servicos = await _buscarServicos(value);
+                        setState(() {});
                       },
                     ),
-                  ),
-                ],
+                    SizedBox(height: 10),
+                    TextFormField(
+                      controller: _quantityController,
+                      decoration: InputDecoration(hintText: 'Quantidade'),
+                      keyboardType: TextInputType.number,
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: servicos.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(servicos[index]['nome'] ?? 'NaN'),
+                            subtitle:
+                            Text(servicos[index]['idServicos'] ?? 'NaN'),
+                            onTap: () {
+                              try {
+                                int idServico =
+                                int.parse(servicos[index]['idServicos']);
+                                double preco =
+                                double.parse(servicos[index]['preco'] ?? '0');
+                                int quantidade =
+                                int.parse(_quantityController.text);
+                                _adicionarServico(idServico, quantidade, preco);
+                                Navigator.of(context).pop();
+                              } catch (e) {
+                                print('Error adding service: $e');
+                              }
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -232,17 +237,18 @@ class _TabServicosState extends State<TabServicos> {
     );
   }
 
+
   Future<List<dynamic>> _buscarServicos(String query) async {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
-
+    Map<String, String> headers = {
+      'X-API-KEY': ciKey,
+    };
     var url =
         '${APIConfig.baseURL}${APIConfig.servicossEndpoint}/?search=$query';
 
     var response = await http.get(
-      Uri.parse(url),
-      headers: {'X-API-KEY': ciKey},
-    );
+      Uri.parse(url), headers: headers);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);

@@ -78,15 +78,15 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
                 labelStyle: TextStyle(
@@ -105,15 +105,15 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
               ),
@@ -128,15 +128,15 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
               ),
@@ -149,15 +149,15 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
               ),
@@ -172,15 +172,15 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
               ),
@@ -193,15 +193,15 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
               ),
@@ -215,15 +215,15 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
               ),
@@ -237,15 +237,15 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
               ),
@@ -259,15 +259,15 @@ class _TabDetalhesState extends State<TabDetalhes> {
                 filled: true,
                 fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                 border: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide.none, // Remove a linha preta
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius:
-                      BorderRadius.circular(10.0), // Define o raio do border
+                  BorderRadius.circular(10.0), // Define o raio do border
                   borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                 ),
               ),

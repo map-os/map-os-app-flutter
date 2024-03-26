@@ -179,22 +179,10 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
         },
         body: jsonEncode(newServico),
       );
-
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.body);
-        if (data.containsKey('refresh_token')) {
-          String refreshToken = data['refresh_token'];
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', refreshToken);
-        } else {
-          print('problema com sua sessão, faça login novamente!');
         }
         print('Serviço adicionado com sucesso');
         return true;
-      } else {
-        print('Falha ao adicionar o serviço: ${response.reasonPhrase}');
-        return false;
-      }
     } catch (error) {
       print('Erro ao enviar solicitação POST: $error');
       return false;

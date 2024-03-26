@@ -37,19 +37,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Future<void> _getProducts() async {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
-
+    Map<String, String> headers = {
+      'X-API-KEY': ciKey,
+    };
     var url =
-        '${APIConfig.baseURL}${APIConfig.prodtuostesEndpoint}?X-API-KEY=$ciKey';
+        '${APIConfig.baseURL}${APIConfig.prodtuostesEndpoint}';
 
-    var response = await http.get(Uri.parse(url));
+    var response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
-      if (data.containsKey('refresh_token')) {
-        String refreshToken = data['refresh_token'];
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', refreshToken);
-      }
       if (data.containsKey('result')) {
         List<dynamic> newProducts = data['result'];
         setState(() {

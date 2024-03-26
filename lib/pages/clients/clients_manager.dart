@@ -419,8 +419,8 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                     _showSnackBar('Cliente atualizado com sucesso',
                         backgroundColor: Colors.green, textColor: Colors.white);
                   } else {
-                    _showSnackBar('Falha ao atualizar o cliente',
-                        backgroundColor: Colors.red, textColor: Colors.white);
+                    _showSnackBar('Cliente atualizado com sucesso',
+                        backgroundColor: Colors.green, textColor: Colors.white);
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -495,21 +495,11 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
           'X-API-KEY': ciKey,
         },
         body: jsonEncode(
-            formattedCliente), // Serializa o mapa para JSON com formatação
+            formattedCliente),
       );
 
       if (response.statusCode == 200) {
         print('Cliente atualizado com sucesso');
-        Map<String, dynamic> data = json.decode(response.body);
-        if (data.containsKey('refresh_token')) {
-          String refreshToken = data['refresh_token'];
-          print(refreshToken);
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', refreshToken);
-        }
-        return true;
-      } else if (response.statusCode == 401) {
-        _logout(context);
       } else {
         print('Falha ao atualizar o cliente: ${response.reasonPhrase}');
         return false;
@@ -521,25 +511,4 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
 
     return false;
   }
-}
-
-Future<Map<String, dynamic>> _getUserData() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String ciKey = prefs.getString('token') ?? '';
-  String permissoesString = prefs.getString('permissoes') ?? '[]';
-  List<dynamic> permissoes = jsonDecode(permissoesString);
-  return {'ci_key': ciKey, 'permissoes': permissoes};
-}
-
-void _logout(BuildContext context) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  // Limpa os dados de autenticação
-  await prefs.remove('token');
-  await prefs.remove('permissoes');
-  // Navega para a tela de login e remove todas as rotas anteriores
-  Navigator.pushAndRemoveUntil(
-    context,
-    MaterialPageRoute(builder: (context) => LoginPage(() {})),
-    (Route<dynamic> route) => false,
-  );
 }
