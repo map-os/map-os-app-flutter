@@ -7,6 +7,7 @@ import 'package:mapos_app/pages/os/os_view.dart';
 import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
 // import 'package:mapos_app/pages/os/os_add.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:intl/intl.dart';
 /*
 SANTT -- 2024
 TODOS OS PRINTS SERÃO REMOVIDOS E SUBSTITUIDOS POR SNACKBAR --
@@ -155,107 +156,100 @@ class _OsScreenState extends State<OsScreen> {
       ),
       body: filteredOs.isEmpty
           ? Center(
-              child: CircularProgressIndicator(),
-            )
+        child: CircularProgressIndicator(),
+      )
           : ListView.builder(
-              itemCount: filteredOs.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical:
-                          1.0),
-                  child: Card(
-                    margin: EdgeInsets.symmetric(
-                        vertical: 4.0,
-                        horizontal:
-                            10.0),
-                    child: ListTile(
-                      onTap: () async {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            child: OsManager(os: filteredOs[index]),
-                            type: PageTransitionType.leftToRight,
+        itemCount: filteredOs.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+                vertical: 1.0),
+            child: Card(
+              margin: EdgeInsets.symmetric(
+                  vertical: 4.0,
+                  horizontal: 10.0),
+              child: ListTile(
+                onTap: () async {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      child: OsManager(os: filteredOs[index]),
+                      type: PageTransitionType.leftToRight,
+                    ),
+                  );
+                },
+                contentPadding: EdgeInsets.all(8.0),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFF333649),
+                            borderRadius: BorderRadius.circular(8.0),
                           ),
-                        );
-                      },
-                      contentPadding: EdgeInsets.all(8.0),
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Color(0xFF333649),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                padding: EdgeInsets.all(10.0),
-                                child: Center(
-                                  child: Text(
-                                    '${filteredOs[index]['idOs']}',
-                                    style: TextStyle(
-                                      fontSize:
-                                          (MediaQuery.of(context).size.width *
-                                              0.040),
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 16.0),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${filteredOs[index]['nomeCliente']}',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize:
-                                          (MediaQuery.of(context).size.width *
-                                              0.040),
-                                    ),
-                                  ),
-                                  Text(
-                                    'Inicio: ${filteredOs[index]['dataInicial'] ?? 0}',
-                                    style: TextStyle(
-                                      fontSize:
-                                          (MediaQuery.of(context).size.width *
-                                              0.0350),
-                                    ),
-                                  ),
-                                  Text(
-                                    'Limite: ${filteredOs[index]['dataFinal'] ?? 0}',
-                                    style: TextStyle(
-                                      fontSize:
-                                          (MediaQuery.of(context).size.width *
-                                              0.0350),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Container(
+                          padding: EdgeInsets.all(10.0),
+                          child: Center(
                             child: Text(
-                              '${filteredOs[index]['status'] ?? ''}',
+                              '${filteredOs[index]['idOs']}',
                               style: TextStyle(
-                                color: _getStatusColor(
-                                    filteredOs[index]['status'] ?? ''),
+                                fontSize: (MediaQuery.of(context).size.width *
+                                    0.040),
                                 fontWeight: FontWeight.bold,
-                                fontSize:
-                                    (MediaQuery.of(context).size.width * 0.030),
+                                color: Colors.white,
                               ),
                             ),
                           ),
-                        ],
+                        ),
+                        SizedBox(width: 16.0),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${filteredOs[index]['nomeCliente']}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: (MediaQuery.of(context).size.width *
+                                    0.040),
+                              ),
+                            ),
+                            Text(
+                              'Inicio: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(filteredOs[index]['dataInicial'] ?? '0'))}',
+                              style: TextStyle(
+                                fontSize: (MediaQuery.of(context).size.width *
+                                    0.0350),
+                              ),
+                            ),
+                            Text(
+                              'Limite: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(filteredOs[index]['dataFinal'] ?? '0'))}',
+                              style: TextStyle(
+                                fontSize: (MediaQuery.of(context).size.width *
+                                    0.0350),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Container(
+                      child: Text(
+                        '${filteredOs[index]['status'] ?? ''}',
+                        style: TextStyle(
+                          color: _getStatusColor(
+                              filteredOs[index]['status'] ?? ''),
+                          fontWeight: FontWeight.bold,
+                          fontSize: (MediaQuery.of(context).size.width * 0.030),
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  ],
+                ),
+              ),
             ),
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           Map<String, dynamic> permissions = await _getCiKey();

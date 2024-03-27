@@ -7,6 +7,7 @@ import 'package:mapos_app/pages/services/services_screen.dart';
 import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
 import 'package:mapos_app/widgets/menu_lateral.dart';
 import 'package:mapos_app/models/dashboardModel.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -26,6 +27,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     _fetchData();
+    _requestPermissions();
   }
 
   void _fetchData() async {
@@ -40,6 +42,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       garantias = dashboardData.garantias;
       vendas = dashboardData.vendas;
     });
+  }
+
+  void _requestPermissions() async {
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
   }
 
   @override
@@ -68,61 +77,61 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     child: GridView.count(
                       shrinkWrap: true,
                       crossAxisSpacing:
-                          (MediaQuery.of(context).size.width * 0.020),
+                      (MediaQuery.of(context).size.width * 0.020),
                       crossAxisCount: 3,
                       mainAxisSpacing: 9.0,
                       childAspectRatio: 0.99,
                       children: [
                         _buildCard(
                             'Clientes', Boxicons.bx_group, clientes.toString(),
-                            () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ClientesScreen()),
-                          );
-                        }),
+                                () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ClientesScreen()),
+                              );
+                            }),
                         _buildCard(
                             'Serviços', Boxicons.bx_wrench, servicos.toString(),
-                            () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ServicesScreen()),
-                          );
-                        }),
+                                () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ServicesScreen()),
+                              );
+                            }),
                         _buildCard(
                             'Produtos', Boxicons.bx_basket, produtos.toString(),
-                            () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ProductsScreen()),
-                          );
-                        }),
+                                () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProductsScreen()),
+                              );
+                            }),
                         _buildCard('O.S', Boxicons.bx_file, countOs.toString(),
-                            () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => OsScreen()),
-                          );
-                        }),
+                                () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => OsScreen()),
+                              );
+                            }),
                         _buildCard('Garantias', Boxicons.bx_receipt,
                             garantias.toString(), () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ServicesScreen()),
-                          );
-                        }),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ServicesScreen()),
+                              );
+                            }),
                         _buildCard('Vendas', Icons.shopping_cart_outlined,
                             vendas.toString(), () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ServicesScreen()),
-                          );
-                        }),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ServicesScreen()),
+                              );
+                            }),
                       ],
                     ),
                   ),

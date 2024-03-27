@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/config/constants.dart';
 import 'dart:convert';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:open_file/open_file.dart';
 
 class TabAnexos extends StatefulWidget {
   final Map<String, dynamic> os;
@@ -35,19 +36,39 @@ class _TabAnexosState extends State<TabAnexos> {
         : osData.isNotEmpty
         ? GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, // Dois itens por linha
+        crossAxisCount: 2,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
       ),
       itemCount: osData.length,
       itemBuilder: (BuildContext context, int index) {
+        String fileExtension = osData[index]['anexo'].split('.').last.toLowerCase();
+        Widget fileWidget;
+        if (fileExtension == 'jpg' || fileExtension == 'jpeg' || fileExtension == 'png') {
+          fileWidget = GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FullScreenImage(
+                    imageUrl: '${osData[index]['url']}/${osData[index]['anexo']}',
+                  ),
+                ),
+              );
+            },
+            child: Image.network('${osData[index]['url']}/${osData[index]['anexo']}'),
+          );
+        } else if (fileExtension == 'pdf') {
+          fileWidget = Image.asset('lib/assets/images/pdf.png');
+        } else {
+          fileWidget = Icon(Icons.insert_drive_file); // Ícone padrão para outros tipos de arquivos
+        }
         return Card(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Expanded(
-                child: Image.network(
-                    '${osData[index]['url']}/${osData[index]['anexo']}'),
+                child: fileWidget,
               ),
               ButtonBar(
                 alignment: MainAxisAlignment.center,
@@ -60,7 +81,6 @@ class _TabAnexosState extends State<TabAnexos> {
                   ),
                   IconButton(
                     onPressed: () {
-                      // Adicione aqui a lógica para excluir o anexo
                       _excluirAnexo(osData[index]['idAnexos']);
                     },
                     icon: Icon(Icons.delete),
@@ -77,7 +97,9 @@ class _TabAnexosState extends State<TabAnexos> {
     );
   }
 
-  Future<Map<String, dynamic>> _getCiKey() async {
+
+
+  Future<Map<String, dynamic>> _getCiKeyAndPermissions() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String ciKey = prefs.getString('token') ?? '';
     String permissoesString = prefs.getString('permissoes') ?? '[]';
@@ -90,48 +112,57 @@ class _TabAnexosState extends State<TabAnexos> {
       _loading = true;
     });
 
-    Map<String, dynamic> keyAndPermissions = await _getCiKey();
-    String ciKey = keyAndPermissions['ciKey'] ?? '';
-    Map<String, String> headers = {
-      'X-API-KEY': ciKey,
-    };
-    var url =
-        '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}?X-API-KEY=$ciKey';
+    try {
+      Map<String, dynamic> keyAndPermissions =
+      await _getCiKeyAndPermissions();
+      String ciKey = keyAndPermissions['ciKey'] ?? '';
+      Map<String, String> headers = {'X-API-KEY': ciKey};
+      var url =
+          '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget
+          .os['idOs']}?X-API-KEY=$ciKey';
 
-    var response = await http.get(Uri.parse(url), headers: headers);
+      var response = await http.get(Uri.parse(url), headers: headers);
 
-    if (response.statusCode == 200) {
-      Map<String, dynamic> data = json.decode(response.body);
-      if (data.containsKey('refresh_token')) {
-        String refreshToken = data['refresh_token'];
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', refreshToken);
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        if (data.containsKey('refresh_token')) {
+          String refreshToken = data['refresh_token'];
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', refreshToken);
+        } else {
+          print('problema com sua sessão, faça login novamente!');
+        }
+        if (data.containsKey('result') &&
+            data['result'].containsKey('anexos')) {
+          setState(() {
+            osData = data['result']['anexos'];
+            _loading = false;
+          });
+        } else {
+          setState(() {
+            osData = [];
+            _loading = false;
+          });
+          print('Key "anexos" not found in API response');
+        }
       } else {
-        print('problema com sua sessão, faça login novamente!');
-      }
-      if (data.containsKey('result') && data['result'].containsKey('anexos')) {
         setState(() {
-          osData = data['result']['anexos'];
           _loading = false;
         });
-      } else {
-        setState(() {
-          osData = [];
-          _loading = false;
-        });
-        print('Key "anexos" not found in API response');
+        print('Failed to load os');
       }
-    } else {
+    } catch (e) {
       setState(() {
         _loading = false;
       });
-      print('Failed to load os');
+      print('Error: $e');
     }
   }
 
   void initializeNotifications() {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    var initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettingsAndroid = AndroidInitializationSettings(
+        '@mipmap/ic_launcher');
     var initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
     );
@@ -144,7 +175,6 @@ class _TabAnexosState extends State<TabAnexos> {
     try {
       var response = await http.get(Uri.parse('$url/$fileName'));
       if (response.statusCode == 200) {
-
         Directory? directory = await getExternalStorageDirectory();
         String downloadPath = '/storage/emulated/0/Download';
 
@@ -186,8 +216,52 @@ class _TabAnexosState extends State<TabAnexos> {
     );
   }
 
-  void _excluirAnexo(String idAnexo) {
-    // Adicione aqui a lógica para excluir o anexo
-    print('Excluindo anexo com id $idAnexo');
+  Future<void> _excluirAnexo(idAnexos) async {
+    try {
+      Map<String, dynamic> keyAndPermissions = await _getCiKeyAndPermissions();
+      String ciKey = keyAndPermissions['ciKey'] ?? '';
+
+      var url =
+          '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget
+          .os['idOs']}/anexos/$idAnexos';
+
+      var response = await http.delete(
+        Uri.parse(url),
+        headers: {'X-API-KEY': ciKey},
+      );
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        {
+          print('problema com sua sessão, faça login novamente!');
+        }
+        // ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
+        //   SnackBar(
+        //     content: Text('Produto excluído com sucesso!'),
+        //     backgroundColor: Colors.green,
+        //     duration: Duration(seconds: 2),
+        //   ),
+        // );
+        _getProdutosOs();
+      } else {}
+    } catch (e) {
+      print('Erro durante a exclusão $e');
+    }
+  }
+}
+
+class FullScreenImage extends StatelessWidget {
+  final String imageUrl;
+
+  const FullScreenImage({required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Center(
+        child: Image.network(imageUrl),
+      ),
+    );
   }
 }
