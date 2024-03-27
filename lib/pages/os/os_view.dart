@@ -7,6 +7,7 @@ import 'package:mapos_app/pages/os/tabs/tab_produtos.dart';
 import 'package:mapos_app/pages/os/tabs/tab_servicos.dart';
 import 'package:mapos_app/providers/calcTotal.dart'; // provider onde é feito o calculo da ordem de serviço
 import 'package:intl/intl.dart';
+import 'package:flutter_boxicons/flutter_boxicons.dart';
 
 class OsManager extends StatefulWidget {
   final Map<String, dynamic> os;
@@ -75,20 +76,24 @@ class _OsManagerState extends State<OsManager> with SingleTickerProviderStateMix
       body: Column(
         children: [
           Container(
-            height: 60,
+            height: 50,
             color: const Color(0xff333649), // Use const for unchanging colors
             child: TabBar(
               controller: _tabController,
               indicator: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(50),
+                borderRadius: BorderRadius.circular(
+                    50), // Adjust border radius as needed
               ),
               indicatorSize: TabBarIndicatorSize.tab,
-              indicatorWeight: 2,
+              indicatorPadding: EdgeInsets.symmetric(horizontal: 12),
+              // Adjust horizontal padding
+              indicatorWeight: 1,
+              // Adjust the thickness of the indicator
               unselectedLabelColor: Colors.white,
-              labelColor: Colors.deepOrange,
+              labelColor: Color(0xff333649),
               tabs: [
-                _buildTab(Icons.details, 0),
+                _buildTab(Boxicons.bxs_file, 0),
                 _buildTab(Icons.local_offer, 1),
                 _buildTab(Icons.shopping_cart, 2),
                 _buildTab(Icons.room_service, 3),
@@ -119,13 +124,12 @@ class _OsManagerState extends State<OsManager> with SingleTickerProviderStateMix
     return Tab(
       icon: Icon(
         iconData,
-        size: 18,
+        size: 30,
       ),
     );
   }
 }
-
-String _formatCurrency(String amount) {
+  String _formatCurrency(String amount) {
   final formatter = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
   return formatter.format(double.parse(amount)); // Format currency from String amount
 }

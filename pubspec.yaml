@@ -50,6 +50,7 @@ dependencies:
   path_provider: ^2.1.2
   flutter_local_notifications: ^17.0.0
   open_file: ^3.3.2
+  permission_handler: ^11.3.0
 
 
 
@@ -75,6 +76,7 @@ flutter:
     - lib/assets/images/logo-two.png
     - lib/assets/images/login.svg
     - lib/assets/images/login-two.png
+    - lib/assets/images/pdf.png
   fonts:
     - family: CustomIcons
       fonts:

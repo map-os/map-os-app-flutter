@@ -45,7 +45,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Color(0xff484b62),
+        color: Color(0xffffff),
         boxShadow: [
           // BoxShadow(
           //   color: Colors.grey.withOpacity(0.5),
@@ -59,11 +59,11 @@ class BottomNavigationBarWidget extends StatelessWidget {
         activeIndex: activeIndex,
         onTap: _handleTap,
         activeIcons: [
-          Icon(Icons.shopping_cart, color: Color(0xfffb880a)),
-          Icon(Icons.construction, color: Color(0xfffb880a)),
-          Icon(Icons.home, color: Color(0xfffb880a)),
-          Icon(Icons.supervisor_account, color: Color(0xfffb880a)),
-          Icon(Icons.description, color: Color(0xfffb880a)),
+          Icon(Icons.shopping_cart, color: Color(0xffffffff)),
+          Icon(Icons.construction, color: Color(0xffffffff)),
+          Icon(Icons.home, color: Color(0xffffffff)),
+          Icon(Icons.supervisor_account, color: Color(0xffffffff)),
+          Icon(Icons.description, color: Color(0xffffffff)),
         ],
         inactiveIcons: [
           Icon(Icons.shopping_cart_outlined, color: Colors.white),
