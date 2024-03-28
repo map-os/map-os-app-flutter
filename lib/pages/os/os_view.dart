@@ -96,7 +96,7 @@ class _OsManagerState extends State<OsManager> with SingleTickerProviderStateMix
                 _buildTab(Boxicons.bxs_file, 0),
                 _buildTab(Icons.local_offer, 1),
                 _buildTab(Icons.shopping_cart, 2),
-                _buildTab(Icons.room_service, 3),
+                _buildTab(Boxicons.bxs_wrench, 3),
                 _buildTab(Icons.attach_file, 4),
                 _buildTab(Icons.note, 5),
               ],

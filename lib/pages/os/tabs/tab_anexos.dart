@@ -37,8 +37,8 @@ class _TabAnexosState extends State<TabAnexos> {
         ? GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
+        crossAxisSpacing: 1,
+        mainAxisSpacing: 1,
       ),
       itemCount: osData.length,
       itemBuilder: (BuildContext context, int index) {
@@ -58,6 +58,7 @@ class _TabAnexosState extends State<TabAnexos> {
             },
             child: Image.network('${osData[index]['url']}/${osData[index]['anexo']}'),
           );
+
         } else if (fileExtension == 'pdf') {
           fileWidget = Image.asset('lib/assets/images/pdf.png');
         } else {
@@ -78,12 +79,28 @@ class _TabAnexosState extends State<TabAnexos> {
                       _downloadFile(osData[index]['url'], osData[index]['anexo']);
                     },
                     icon: Icon(Icons.file_download),
+                    color: Colors.green[700],
                   ),
                   IconButton(
                     onPressed: () {
                       _excluirAnexo(osData[index]['idAnexos']);
                     },
                     icon: Icon(Icons.delete),
+                    color: Colors.red,
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FullScreenImage(
+                            imageUrl: '${osData[index]['url']}/${osData[index]['anexo']}',
+                          ),
+                        ),
+                      );
+                    },
+                    icon: Icon(Icons.remove_red_eye),
+                    color: Colors.blue,
                   ),
                 ],
               ),
@@ -125,13 +142,6 @@ class _TabAnexosState extends State<TabAnexos> {
 
       if (response.statusCode == 200) {
         Map<String, dynamic> data = json.decode(response.body);
-        if (data.containsKey('refresh_token')) {
-          String refreshToken = data['refresh_token'];
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', refreshToken);
-        } else {
-          print('problema com sua sessão, faça login novamente!');
-        }
         if (data.containsKey('result') &&
             data['result'].containsKey('anexos')) {
           setState(() {
@@ -186,7 +196,7 @@ class _TabAnexosState extends State<TabAnexos> {
 
         File file = File(filePath);
         await file.writeAsBytes(response.bodyBytes);
-        print('Arquivo baixado com sucesso em: $filePath');
+        print('Arquivo baixado com sucesso na Pasta Dowload');
 
         await _showDownloadNotification(filePath);
       } else {
@@ -211,7 +221,7 @@ class _TabAnexosState extends State<TabAnexos> {
     await flutterLocalNotificationsPlugin.show(
       0,
       'Download Concluído',
-      'Arquivo baixado em: $filePath',
+      'Arquivo baixado na pasta Dowload',
       platformChannelSpecifics,
     );
   }

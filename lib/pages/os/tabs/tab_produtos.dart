@@ -4,6 +4,7 @@ import 'package:mapos_app/config/constants.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mapos_app/providers/calcTotal.dart';
+import 'package:flutter_boxicons/flutter_boxicons.dart';
 /*
 SANTT -- 2024
 TODOS OS PRINTS SERÃO REMOVIDOS E SUBSTITUIDOS POR SNACKBAR --
@@ -38,35 +39,78 @@ class _TabProdutosState extends State<TabProdutos> {
       body: Center(
         child: osData.isNotEmpty
             ? ListView.builder(
-                itemCount: osData.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: ListTile(
-                      title: Text(osData[index]['descricao'] ?? 'NaN'),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              'Valor: ${osData[index]['precoVenda'] ?? 'NaN'}'),
-                          Text('Qtd: ${osData[index]['quantidade'] ?? 'NaN'}'),
-                          Text(
-                              'idp_os: ${osData[index]['idProdutos_os'] ?? 'NaN'}'),
-                        ],
+          itemCount: osData.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2.0),
+              child: Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Container(
+                  height: 90, // Altura do card
+                  child: Stack(
+                    children: [
+                      ListTile(
+                        contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16),
+                        title: Text(
+                          osData[index]['descricao'] ?? 'NaN',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 1),
+                            Text(
+                              'Valor: ${osData[index]['precoVenda'] ?? 'NaN'}',
+                            ),
+                            SizedBox(height: 1),
+                            Text(
+                              'Qtd: ${osData[index]['quantidade'] ?? 'NaN'}',
+                            ),
+                          ],
+                        ),
                       ),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          _deleteProduto(
-                              int.parse(osData[index]['idProdutos_os']));
-                        },
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          height: 100, // Mesma altura do card
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.only(
+                              // topLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10),
+                              topRight: Radius.circular(10),
+                            ),
+                          ),
+                          child: IconButton(
+                            icon: Icon(Boxicons.bxs_trash),
+                            color: Colors.white,
+                            onPressed: () {
+                              _deleteProduto(
+                                int.parse(
+                                    osData[index]['idProdutos_os']),
+                              );
+                            },
+                          ),
+                        ),
                       ),
-                    ),
-                  );
-                },
-              )
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        )
             : osData.isEmpty && !_loading
-                ? _buildEmptyProductsWidget()
-                : CircularProgressIndicator(),
+            ? _buildEmptyProductsWidget()
+            : CircularProgressIndicator(),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -76,6 +120,8 @@ class _TabProdutosState extends State<TabProdutos> {
       ),
     );
   }
+
+
 
   Widget _buildEmptyProductsWidget() {
     return Center(

@@ -3,11 +3,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:mapos_app/config/constants.dart';
-/*
-SANTT -- 2024
-TODOS OS PRINTS SERÃO REMOVIDOS E SUBSTITUIDOS POR SNACKBAR --
-github.com/Fesantt
-*/
+import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:mapos_app/providers/calcTotal.dart';
+
 class TabDetalhes extends StatefulWidget {
   final Map<String, dynamic> os;
 
@@ -18,347 +17,376 @@ class TabDetalhes extends StatefulWidget {
 }
 
 class _TabDetalhesState extends State<TabDetalhes> {
+  late String UsuariosId;
+  late String ClientesId;
+  late TextEditingController _idOsController;
+  late TextEditingController _nomeClienteController;
   late TextEditingController _dataInicialController;
   late TextEditingController _dataFinalController;
-  late TextEditingController _responsavelController;
   late TextEditingController _statusController;
-  late TextEditingController _descricaoController;
+  late TextEditingController _descricaoProdutoController;
   late TextEditingController _defeitoController;
+  late TextEditingController _observacoesController;
   late TextEditingController _laudoTecnicoController;
-  late TextEditingController _nomeClienteController;
-  late TextEditingController _celularClienteController;
+  late HtmlEditorController _htmlEditorController;
+  late HtmlEditorController _htmlDefeitoController;
+  late HtmlEditorController  _htmlLaudoController;
+  late String observacoesHTML;
+  late String defeitoHTML;
+  late String laudoHTML;
+  String? _selectedStatus;
 
   @override
   void initState() {
     super.initState();
-    _dataInicialController =
-        TextEditingController(text: widget.os['dataInicial']);
-    _dataFinalController = TextEditingController(text: widget.os['dataFinal']);
-    _responsavelController = TextEditingController(text: widget.os['nome']);
-    _statusController = TextEditingController(text: widget.os['status']);
-    _descricaoController =
-        TextEditingController(text: widget.os['descricaoProduto']);
-    _defeitoController = TextEditingController(text: widget.os['defeito']);
-    _laudoTecnicoController =
-        TextEditingController(text: widget.os['laudoTecnico']);
-    _nomeClienteController =
-        TextEditingController(text: widget.os['nomeCliente']);
-    _celularClienteController =
-        TextEditingController(text: widget.os['celular_cliente']);
+    _getOs();
+    _idOsController = TextEditingController();
+    _nomeClienteController = TextEditingController();
+    _dataInicialController = TextEditingController();
+    _dataFinalController = TextEditingController();
+    _statusController = TextEditingController();
+    _descricaoProdutoController = TextEditingController();
+    _defeitoController = TextEditingController();
+    _observacoesController = TextEditingController();
+    _laudoTecnicoController = TextEditingController();
+    _htmlEditorController = HtmlEditorController();
+    _htmlDefeitoController = HtmlEditorController();
+    _htmlLaudoController = HtmlEditorController();
+    observacoesHTML = ''; // Inicialize a variável observacoesHTML
+    defeitoHTML = '';
+    laudoHTML = '';
+
   }
 
   @override
   void dispose() {
+    _idOsController.dispose();
+    _nomeClienteController.dispose();
     _dataInicialController.dispose();
     _dataFinalController.dispose();
-    _responsavelController.dispose();
     _statusController.dispose();
-    _descricaoController.dispose();
+    _descricaoProdutoController.dispose();
     _defeitoController.dispose();
+    _observacoesController.dispose();
     _laudoTecnicoController.dispose();
-    _nomeClienteController.dispose();
-    _celularClienteController.dispose();
+    observacoesHTML.toString();
+    defeitoHTML.toString();
     super.dispose();
+  }
+
+  Future<void> _getOs() async {
+    Map<String, dynamic> keyAndPermissions = await _getCiKey();
+    String ciKey = keyAndPermissions['ciKey'] ?? '';
+    Map<String, String> headers = {
+      'X-API-KEY': ciKey,
+    };
+    var url =
+        '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
+
+    var response = await http.get(Uri.parse(url), headers: headers);
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = json.decode(response.body);
+      if (data.containsKey('result')) {
+        setState(() {
+          UsuariosId = data['result']['usuarios_id'];
+          ClientesId = data['result']['clientes_id'];
+          _idOsController.text = data['result']['idOs'];
+          _nomeClienteController.text = data['result']['nomeCliente'];
+          _dataInicialController.text = data['result']['dataInicial'];
+          _dataFinalController.text = data['result']['dataFinal'];
+          _statusController.text = data['result']['status'];
+          _descricaoProdutoController.text = data['result']['descricaoProduto'];
+          _defeitoController.text = data['result']['defeito'];
+          _observacoesController.text = data['result']['observacoes'];
+          _laudoTecnicoController.text = data['result']['laudoTecnico'];
+        });
+      } else {
+        print('Key "result" not found in API response');
+      }
+    } else {
+      print('Failed to load OS');
+    }
+  }
+
+  void _salvarDados() async {
+    Map<String, dynamic> keyAndPermissions = await _getCiKey();
+    String ciKey = keyAndPermissions['ciKey'] ?? '';
+    Map<String, String> headers = {
+      'X-API-KEY': ciKey,
+      'Content-Type': 'application/json',
+    };
+    Map<String, dynamic> requestBody = {
+      'dataInicial': _dataInicialController.text,
+      'dataFinal': _dataFinalController.text,
+      'status': _selectedStatus,
+      'clientes_id': ClientesId,
+      'usuarios_id': UsuariosId,
+      'descricaoProduto': observacoesHTML,
+      'defeito': defeitoHTML,
+      'observacoes': '',
+      'laudoTecnico': laudoHTML,
+    };
+
+    var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
+    print(jsonEncode(requestBody));
+    var response = await http.put(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(requestBody), // Atribuir o corpo à requisição PUT
+    );
+
+    if (response.statusCode == 200) {
+      // Requisição bem-sucedida, faça o que for necessário
+      print('Dados salvos com sucesso!');
+    } else {
+      // Requisição falhou
+      print('Falha ao salvar os dados. Código de status: ${response.body}');
+    }
+  }
+  Future<Map<String, dynamic>> _getCiKey() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String ciKey = prefs.getString('token') ?? '';
+    String permissoesString = prefs.getString('permissoes') ?? '[]';
+    List<dynamic> permissoes = jsonDecode(permissoesString);
+    return {'ciKey': ciKey, 'permissoes': permissoes};
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextFormField(
-              controller: _nomeClienteController,
-              enabled: false,
-              style: TextStyle(color: Colors.black),
-              decoration: InputDecoration(
-                labelText: 'Cliente',
-                filled: true,
-                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding:
-                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
-                border: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide.none, // Remove a linha preta
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
-                ),
-                labelStyle: TextStyle(
-                  color: Colors
-                      .black, // Cor do texto quando o campo está desabilitado
-                ),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _celularClienteController,
-              enabled: false,
-              style: TextStyle(color: Colors.black),
-              decoration: InputDecoration(
-                labelText: 'Celular Cliente',
-                filled: true,
-                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding:
-                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
-                border: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide.none, // Remove a linha preta
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
-                ),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _dataInicialController,
-              enabled: false,
-              style: TextStyle(color: Colors.black),
-              decoration: InputDecoration(
-                labelText: 'Entrada',
-                filled: true,
-                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding:
-                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
-                border: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide.none, // Remove a linha preta
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
-                ),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _dataFinalController,
-              decoration: InputDecoration(
-                labelText: 'Prev. Saída',
-                filled: true,
-                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding:
-                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
-                border: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide.none, // Remove a linha preta
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
-                ),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _responsavelController,
-              enabled: false,
-              style: TextStyle(color: Colors.black),
-              decoration: InputDecoration(
-                labelText: 'Responsavel',
-                filled: true,
-                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding:
-                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
-                border: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide.none, // Remove a linha preta
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
-                ),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _statusController,
-              decoration: InputDecoration(
-                labelText: 'Status',
-                filled: true,
-                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding:
-                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
-                border: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide.none, // Remove a linha preta
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
-                ),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _descricaoController,
-              maxLines: 5,
-              decoration: InputDecoration(
-                labelText: 'Descrição',
-                filled: true,
-                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding:
-                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
-                border: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide.none, // Remove a linha preta
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
-                ),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _defeitoController,
-              maxLines: 5,
-              decoration: InputDecoration(
-                labelText: 'Defeito',
-                filled: true,
-                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding:
-                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
-                border: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide.none, // Remove a linha preta
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
-                ),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _laudoTecnicoController,
-              maxLines: 5,
-              decoration: InputDecoration(
-                labelText: 'Laudo Técnico',
-                filled: true,
-                fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                contentPadding:
-                EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
-                border: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide.none, // Remove a linha preta
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10.0), // Define o raio do border
-                  borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
-                ),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            Center(
-              child: ElevatedButton(
-                onPressed: _atualizarOS,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xff2c9b5b),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  minimumSize: Size(200, 50),
-                ),
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Container(
+                alignment: Alignment.centerLeft,
                 child: Text(
-                  'Atualizar OS',
-                  style: TextStyle(fontSize: 18.0, color: Colors.white),
+                  'Cliente: ' + _nomeClienteController.text,
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.left,
                 ),
               ),
-            ),
-          ],
+              Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Entrada: ' + _dataInicialController.text,
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+              ),
+              Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Prev. Saída: ' + _dataFinalController.text,
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+              ),
+              SizedBox(height: 16.0),
+              DropdownButtonFormField<String>(
+                value: _selectedStatus,
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedStatus = newValue;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: _statusController.text,
+                  filled: true,
+                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+                  ),
+                ),
+                items: <String>[
+                  'Aberto',
+                  'Orçamento',
+                  'Aprovado',
+                  'Negociação',
+                  'Em Andamento',
+                  'Aguardando Peças',
+                  'Finalizado',
+                  'Cancelado',
+                  'Faturado',
+                ]
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+              SizedBox(height: 16.0),
+              Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Descrição: ',
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Color(0xffb9dbfd),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: HtmlEditor(
+                  controller: _htmlEditorController,
+                  htmlEditorOptions: HtmlEditorOptions(
+                    hint: "Digite a descrição...",
+                    initialText: _descricaoProdutoController.text,
+                  ),
+                  otherOptions: OtherOptions(
+                    height: 200,
+                  ),
+                  htmlToolbarOptions: HtmlToolbarOptions(
+                    defaultToolbarButtons: [
+                      FontButtons(
+                        clearAll: false,
+                        strikethrough: false,
+                        subscript: false,
+                        superscript: false,
+                      ),
+                      ColorButtons(), // Adicione o ColorButtons aqui
+                      ParagraphButtons(
+                        alignCenter: true,
+                        decreaseIndent: false,
+                        caseConverter: false,
+                        textDirection: false,
+                        increaseIndent: false,
+                        lineHeight: false,
+                      )
+                    ],
+                    toolbarPosition: ToolbarPosition.aboveEditor,
+                  ),
+                ),
+              ),
+              SizedBox(height: 16.0),
+              Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Defeito: ',
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Color(0xffb9dbfd),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: HtmlEditor(
+                  controller: _htmlDefeitoController,
+                  htmlEditorOptions: HtmlEditorOptions(
+                    hint: "Digite o defeito aqui ...",
+                    initialText: _defeitoController.text,
+                  ),
+                  otherOptions: OtherOptions(
+                    height: 200,
+                  ),
+                  htmlToolbarOptions: HtmlToolbarOptions(
+                    defaultToolbarButtons: [
+                      FontButtons(
+                        clearAll: false,
+                        strikethrough: false,
+                        subscript: false,
+                        superscript: false,
+                      ),
+                      ColorButtons(), // Adicione o ColorButtons aqui
+                      ParagraphButtons(
+                        alignCenter: true,
+                        decreaseIndent: false,
+                        caseConverter: false,
+                        textDirection: false,
+                        increaseIndent: false,
+                        lineHeight: false,
+                      )
+                    ],
+                    toolbarPosition: ToolbarPosition.aboveEditor,
+                  ),
+                ),
+              ),
+              SizedBox(height: 16.0),
+              Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Laudo Técnico: ',
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Color(0xffb9dbfd),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: HtmlEditor(
+                  controller: _htmlLaudoController,
+                  htmlEditorOptions: HtmlEditorOptions(
+                    hint: "Digite o Laudo Técnico aqui ...",
+                    initialText: _laudoTecnicoController.text,
+                  ),
+                  otherOptions: OtherOptions(
+                    height: 200,
+                  ),
+                  htmlToolbarOptions: HtmlToolbarOptions(
+                    defaultToolbarButtons: [
+                      FontButtons(
+                        clearAll: false,
+                        strikethrough: false,
+                        subscript: false,
+                        superscript: false,
+                      ),
+                      ColorButtons(), // Adicione o ColorButtons aqui
+                      ParagraphButtons(
+                        alignCenter: true,
+                        decreaseIndent: false,
+                        caseConverter: false,
+                        textDirection: false,
+                        increaseIndent: false,
+                        lineHeight: false,
+                      )
+                    ],
+                    toolbarPosition: ToolbarPosition.aboveEditor,
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  observacoesHTML = await _htmlEditorController.getText();
+                  defeitoHTML = await _htmlDefeitoController.getText();
+                  laudoHTML = await _htmlLaudoController.getText();
+                  _salvarDados();
+                },
+                child: Text('Salvar'),
+              ),
+
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // Função para atualizar a OS
-  void _atualizarOS() async {
-    Map<String, dynamic> dadosAtualizados = {
-      'nomeCliente': _nomeClienteController.text,
-      'celular_cliente': _celularClienteController.text,
-      'dataInicial': _dataInicialController.text,
-      'dataFinal': _dataFinalController.text,
-      'nome': _responsavelController.text,
-      'status': _statusController.text,
-      'descricaoProduto': _descricaoController.text,
-      'defeito': _defeitoController.text,
-      'laudoTecnico': _laudoTecnicoController.text,
-    };
-
-    bool sucesso = await _updateOS(dadosAtualizados);
-
-    if (sucesso) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('OS atualizada com sucesso')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Falha ao atualizar a OS')),
-      );
-    }
-  }
-
-  Future<bool> _updateOS(Map<String, dynamic> updatedOS) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String ciKey = prefs.getString('token') ?? '';
-    String permissoesString = prefs.getString('permissoes') ?? '[]';
-    List<dynamic> permissoes = jsonDecode(permissoesString);
-
-    var url =
-        '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
-    print(url);
-    try {
-      var response = await http.put(
-        Uri.parse(url),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'X-API-KEY': ciKey,
-        },
-        body: jsonEncode(updatedOS),
-      );
-
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.body);
-        if (data.containsKey('refresh_token')) {
-          String refreshToken = data['refresh_token'];
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', refreshToken);
-        } else {
-          print('problema com sua sessão, faça login novamente!');
-        }
-        print('OS atualizada com sucesso');
-        return true;
-      } else {
-        print('Falha ao atualizar a OS: ${response.reasonPhrase}');
-        return false;
-      }
-    } catch (error) {
-      print('Erro ao enviar solicitação PUT: $error');
-      return false;
-    }
-  }
 }

@@ -71,7 +71,6 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -93,7 +92,6 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -116,7 +114,6 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -139,7 +136,6 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -162,7 +158,6 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -185,7 +180,6 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:

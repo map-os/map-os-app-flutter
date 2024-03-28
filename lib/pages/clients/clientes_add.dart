@@ -67,7 +67,6 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -91,7 +90,6 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -116,7 +114,6 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -141,7 +138,6 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -166,7 +162,6 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -190,7 +185,6 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -213,7 +207,6 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                       EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -236,7 +229,6 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                       EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -258,7 +250,6 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                       EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -282,7 +273,6 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -306,7 +296,6 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -330,7 +319,6 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:

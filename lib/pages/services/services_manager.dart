@@ -159,6 +159,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
+
                     borderRadius:
                     BorderRadius.circular(10.0), // Define o raio do border
                     borderSide: BorderSide(color: Color(0xff333960), width: 2.0),
