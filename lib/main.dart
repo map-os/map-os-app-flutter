@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Login MAP-OS',
+      title: 'MAP-OS',
       theme: ThemeData.light().copyWith(
           appBarTheme: AppBarTheme(
         color: Color(0xff333649),

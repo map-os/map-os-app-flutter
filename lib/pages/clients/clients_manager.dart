@@ -97,7 +97,6 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -123,7 +122,6 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -149,7 +147,6 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -176,7 +173,6 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -202,7 +198,6 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -228,7 +223,6 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -253,7 +247,6 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -280,7 +273,6 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -305,7 +297,6 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -332,7 +323,6 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -357,7 +347,6 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -382,7 +371,6 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:

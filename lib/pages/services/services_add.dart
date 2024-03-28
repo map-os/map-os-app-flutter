@@ -52,7 +52,6 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -75,7 +74,6 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
@@ -98,7 +96,6 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
                   border: OutlineInputBorder(
                     borderRadius:
                         BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide.none, // Remove a linha preta
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:

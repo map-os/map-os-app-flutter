@@ -8,18 +8,42 @@ import 'package:mapos_app/pages/products/products_screen.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:mapos_app/pages/profile/profile_screen.dart';
+import 'package:mapos_app/config/constants.dart';
+import 'package:http/http.dart' as http;
 
-class MenuLateral extends StatelessWidget {
+class MenuLateral extends StatefulWidget {
+  @override
+  _MenuLateralState createState() => _MenuLateralState();
+}
+
+class _MenuLateralState extends State<MenuLateral> {
+  String _imageUrl = '';
+  String _appName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEmitenteData();
+  }
+
+  Future<void> _loadEmitenteData() async {
+    try {
+      await _getEmitente();
+    } catch (e) {
+      print('Erro ao carregar dados do emissor: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width *
-          0.55, // Defina a largura desejada para o Drawer
+    return ClipRect(
       child: Drawer(
+        width: MediaQuery.of(context).size.height * 0.3,
         child: Container(
-          width: MediaQuery.of(context).size.width *
-              0.1, // Defina a largura desejada para o ListView
-          color: Colors.white,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10), // Aqui definimos as bordas quadradas
+            color: Colors.white,
+          ),
           child: FutureBuilder<Map<String, dynamic>>(
             future: _getUserData(),
             builder: (context, snapshot) {
@@ -29,7 +53,6 @@ class MenuLateral extends StatelessWidget {
                 if (snapshot.hasError) {
                   return Text('Erro: ${snapshot.error}');
                 } else {
-                  // String ciKey = snapshot.data?['ci_key'] ?? '';
                   List<dynamic> permissoes = snapshot.data?['permissoes'] ?? [];
                   bool temPermissaoCliente = false;
                   bool temPermissaoServicos = false;
@@ -49,35 +72,42 @@ class MenuLateral extends StatelessWidget {
 
                   return ListView(
                     padding: EdgeInsets.zero,
+                    // Evitar bordas arredondadas no ListView
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
                     children: <Widget>[
-                      DrawerHeader(
+                      Container(
+                        height: MediaQuery.of(context).size.height * 0.25,
                         decoration: BoxDecoration(
                           color: Color(0xff333649),
-                          image: DecorationImage(
+
+                          image: _imageUrl.isNotEmpty
+                          ? DecorationImage(
+                          image: NetworkImage(_imageUrl),
+                          fit: BoxFit.cover,
+                          )
+                              : DecorationImage(
                             image: AssetImage("lib/assets/images/logo-two.png"),
                             fit: BoxFit.cover,
                           ),
                         ),
+
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                'MAP-OS APP',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize:
-                                      MediaQuery.of(context).size.width * 0.04,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                          padding: const EdgeInsets.all(1.0),
+                          child: Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Text(_appName,
+                              style: TextStyle(
+                                color: Colors.grey[800],
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
                       ListTile(
+                        minVerticalPadding: 10.0,
                         leading: Icon(
                           Boxicons.bxs_home,
                           color: Color(0xff333649),
@@ -87,7 +117,7 @@ class MenuLateral extends StatelessWidget {
                           'Início',
                           style: TextStyle(
                             color: Colors.black87,
-                            fontSize: MediaQuery.of(context).size.width * 0.044,
+                            fontSize: 16,
                           ),
                         ),
                         onTap: () {
@@ -106,7 +136,7 @@ class MenuLateral extends StatelessWidget {
                           'Perfil',
                           style: TextStyle(
                             color: Colors.black87,
-                            fontSize: MediaQuery.of(context).size.width * 0.044,
+                            fontSize: 16,
                           ),
                         ),
                         onTap: () {
@@ -114,7 +144,8 @@ class MenuLateral extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ProfileScreen()),
+                              builder: (context) => ProfileScreen(),
+                            ),
                           );
                         },
                       ),
@@ -128,7 +159,7 @@ class MenuLateral extends StatelessWidget {
                           'Configurações',
                           style: TextStyle(
                             color: Colors.black87,
-                            fontSize: MediaQuery.of(context).size.width * 0.044,
+                            fontSize: 16,
                           ),
                         ),
                         onTap: () {
@@ -152,8 +183,7 @@ class MenuLateral extends StatelessWidget {
                             'Clientes',
                             style: TextStyle(
                               color: Colors.black87,
-                              fontSize:
-                                  MediaQuery.of(context).size.width * 0.044,
+                              fontSize: 16,
                             ),
                           ),
                           onTap: () {
@@ -161,7 +191,8 @@ class MenuLateral extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ClientesScreen()),
+                                builder: (context) => ClientesScreen(),
+                              ),
                             );
                           },
                         ),
@@ -178,8 +209,7 @@ class MenuLateral extends StatelessWidget {
                             'Serviços',
                             style: TextStyle(
                               color: Colors.black87,
-                              fontSize:
-                                  MediaQuery.of(context).size.width * 0.044,
+                              fontSize: 16,
                             ),
                           ),
                           onTap: () {
@@ -187,7 +217,8 @@ class MenuLateral extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ServicesScreen()),
+                                builder: (context) => ServicesScreen(),
+                              ),
                             );
                           },
                         ),
@@ -204,18 +235,18 @@ class MenuLateral extends StatelessWidget {
                             'Produtos',
                             style: TextStyle(
                               color: Colors.black87,
-                              fontSize:
-                                  MediaQuery.of(context).size.width * 0.044,
+                              fontSize: 16,
                             ),
                           ),
                           onTap: () {
                             Navigator.pop(context);
                             Navigator.push(
-                                context,
-                                PageTransition(
-                                  child: ProductsScreen(),
-                                  type: PageTransitionType.leftToRight,
-                                ));
+                              context,
+                              PageTransition(
+                                child: ProductsScreen(),
+                                type: PageTransitionType.leftToRight,
+                              ),
+                            );
                           },
                         ),
                       ),
@@ -232,7 +263,7 @@ class MenuLateral extends StatelessWidget {
                           'Sair',
                           style: TextStyle(
                             color: Colors.black87,
-                            fontSize: MediaQuery.of(context).size.width * 0.044,
+                            fontSize: 16,
                           ),
                         ),
                         onTap: () {
@@ -258,6 +289,37 @@ class MenuLateral extends StatelessWidget {
     List<dynamic> permissoes = jsonDecode(permissoesString);
     return {'ci_key': ciKey, 'permissoes': permissoes};
   }
+
+  Future<void> _getEmitente({int page = 0}) async {
+    Map<String, dynamic> keyAndPermissions = await _getUserData();
+    String ciKey = keyAndPermissions['ci_key'] ?? ''; // Correção aqui
+    Map<String, String> headers = {
+      'X-API-KEY': ciKey,
+    };
+
+    var url = '${APIConfig.baseURL}${APIConfig.emitenteEndpoint}?page=$page'; // Adicionei o parâmetro de página se necessário
+
+    var response = await http.get(Uri.parse(url), headers: headers);
+
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = json.decode(response.body);
+      if (data.containsKey('result')) {
+
+        setState(() {
+          _imageUrl = data['result']['emitente']['url_logo'];
+          _appName = data['result']['appName'];
+
+        });
+      } else {
+        // Lidar com a resposta sem 'url_logo'
+      }
+    } else {
+      print('Falha ao carregar emitentes');
+    }
+  }
+
+
 
   void _logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

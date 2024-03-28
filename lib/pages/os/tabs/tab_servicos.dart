@@ -27,7 +27,6 @@ class _TabServicosState extends State<TabServicos> {
     super.initState();
     _getOs();
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,34 +34,75 @@ class _TabServicosState extends State<TabServicos> {
       body: Center(
         child: osData.isNotEmpty
             ? ListView.builder(
-                itemCount: osData.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: ListTile(
-                      title: Text(osData[index]['nome'] ?? 'NaN'),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Preço: ${osData[index]['preco'] ?? 'NaN'}'),
-                          Text('Qtd.: ${osData[index]['quantidade'] ?? 'NaN'}'),
-                          Text(
-                              'idp_os: ${osData[index]['idServicos_os'] ?? 'NaN'}'),
-                        ],
+          itemCount: osData.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2.0),
+              child: Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Container(
+                  height: 90, // Altura do card
+                  child: Stack(
+                    children: [
+                      ListTile(
+                        contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16),
+                        title: Text(
+                          osData[index]['nome'] ?? 'NaN',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 1),
+                            Text(
+                              'Preço: ${osData[index]['preco'] ?? 'NaN'}',
+                            ),
+                            SizedBox(height: 1),
+                            Text(
+                              'Qtd: ${osData[index]['quantidade'] ?? 'NaN'}',
+                            ),
+                          ],
+                        ),
                       ),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          _deleteServico(
-                              int.parse(osData[index]['idServicos_os']));
-                        },
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          height: 100, // Mesma altura do card
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.only(
+                              // topLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10),
+                              topRight: Radius.circular(10),
+                            ),
+                          ),
+                          child: IconButton(
+                            icon: Icon(Icons.delete),
+                            color: Colors.white,
+                            onPressed: () {
+                              _deleteServico(int.parse(osData[index]['idServicos_os']));
+                            },
+                          ),
+                        ),
                       ),
-                    ),
-                  );
-                },
-              )
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        )
             : osData.isEmpty && !_loading
-                ? _buildEmptyServicesWidget()
-                : CircularProgressIndicator(),
+            ? _buildEmptyServicesWidget()
+            : CircularProgressIndicator(),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -72,6 +112,7 @@ class _TabServicosState extends State<TabServicos> {
       ),
     );
   }
+
 
   Widget _buildEmptyServicesWidget() {
     return Center(
@@ -99,13 +140,7 @@ class _TabServicosState extends State<TabServicos> {
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
-      if (data.containsKey('refresh_token')) {
-        String refreshToken = data['refresh_token'];
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', refreshToken);
-      } else {
-        print('problema com sua sessão, faça login novamente!');
-      }
+
       if (data.containsKey('result') &&
           data['result'].containsKey('servicos')) {
         setState(() {
