@@ -52,6 +52,9 @@ dependencies:
   permission_handler: ^11.3.0
   webview_flutter: ^4.2.2
   html_editor_enhanced: ^2.5.1
+  file_picker:
+  image_picker: ^0.8.9
+
 
 dev_dependencies:
   flutter_test:

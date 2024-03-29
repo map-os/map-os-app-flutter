@@ -7,8 +7,7 @@ import 'package:mapos_app/providers/calcTotal.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 /*
 SANTT -- 2024
-TODOS OS PRINTS SERÃO REMOVIDOS E SUBSTITUIDOS POR SNACKBAR --
-github.com/Fesantt
+github.com/Fesantt/MAP-OS-APP-FLUTTER
 */
 class TabProdutos extends StatefulWidget {
   final Map<String, dynamic> os;
@@ -85,8 +84,8 @@ class _TabProdutosState extends State<TabProdutos> {
                             color: Colors.red,
                             borderRadius: BorderRadius.only(
                               // topLeft: Radius.circular(10),
-                              bottomRight: Radius.circular(10),
-                              topRight: Radius.circular(10),
+                              bottomRight: Radius.circular(0),
+                              topRight: Radius.circular(0),
                             ),
                           ),
                           child: IconButton(

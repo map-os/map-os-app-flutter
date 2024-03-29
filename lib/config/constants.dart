@@ -22,4 +22,6 @@ class APIConfig {
   static const String usuarioEndpoint = '/index.php/api/usuarios';
   static const String profileEndpoint = '/index.php/api/conta';
   static const String emitenteEndpoint = '/index.php/api/emitente';
+  static const String auditoriaEndpoint = '/index.php/api/audit';
+  static const String anexosEndpoint = '/index.php/api/anexos';
 }

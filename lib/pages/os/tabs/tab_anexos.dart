@@ -7,6 +7,9 @@ import 'package:mapos_app/config/constants.dart';
 import 'dart:convert';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:open_file/open_file.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:http_parser/http_parser.dart' as http_parser;
+import 'package:image_picker/image_picker.dart';
 
 class TabAnexos extends StatefulWidget {
   final Map<String, dynamic> os;
@@ -25,7 +28,7 @@ class _TabAnexosState extends State<TabAnexos> {
   @override
   void initState() {
     super.initState();
-    _getProdutosOs();
+    _getAnexosOs();
     initializeNotifications();
   }
 
@@ -33,88 +36,116 @@ class _TabAnexosState extends State<TabAnexos> {
   Widget build(BuildContext context) {
     return _loading
         ? Center(child: CircularProgressIndicator())
-        : osData.isNotEmpty
-        ? GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 1,
-        mainAxisSpacing: 1,
-      ),
-      itemCount: osData.length,
-      itemBuilder: (BuildContext context, int index) {
-        String fileExtension = osData[index]['anexo'].split('.').last.toLowerCase();
-        Widget fileWidget;
-        if (fileExtension == 'jpg' || fileExtension == 'jpeg' || fileExtension == 'png') {
-          fileWidget = GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FullScreenImage(
-                    imageUrl: '${osData[index]['url']}/${osData[index]['anexo']}',
-                  ),
-                ),
-              );
-            },
-            child: Image.network('${osData[index]['url']}/${osData[index]['anexo']}'),
-          );
-
-        } else if (fileExtension == 'pdf') {
-          fileWidget = Image.asset('lib/assets/images/pdf.png');
-        } else {
-          fileWidget = Icon(Icons.insert_drive_file); // Ícone padrão para outros tipos de arquivos
-        }
-        return Card(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Expanded(
-                child: fileWidget,
-              ),
-              ButtonBar(
-                alignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  IconButton(
-                    onPressed: () {
-                      _downloadFile(osData[index]['url'], osData[index]['anexo']);
-                    },
-                    icon: Icon(Icons.file_download),
-                    color: Colors.green[700],
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      _excluirAnexo(osData[index]['idAnexos']);
-                    },
-                    icon: Icon(Icons.delete),
-                    color: Colors.red,
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => FullScreenImage(
-                            imageUrl: '${osData[index]['url']}/${osData[index]['anexo']}',
+        : Stack(
+      children: [
+        osData.isNotEmpty
+            ? GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 1,
+            mainAxisSpacing: 1,
+          ),
+          itemCount: osData.length,
+          itemBuilder: (BuildContext context, int index) {
+            String fileExtension =
+            osData[index]['anexo']
+                .split('.')
+                .last
+                .toLowerCase();
+            Widget fileWidget;
+            if (fileExtension == 'jpg' ||
+                fileExtension == 'jpeg' ||
+                fileExtension == 'png') {
+              fileWidget = GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          FullScreenImage(
+                            imageUrl:
+                            '${osData[index]['url']}/${osData[index]['anexo']}',
                           ),
-                        ),
-                      );
-                    },
-                    icon: Icon(Icons.remove_red_eye),
-                    color: Colors.blue,
+                    ),
+                  );
+                },
+                child: Image.network(
+                    '${osData[index]['url']}/${osData[index]['anexo']}'),
+              );
+            } else if (fileExtension == 'pdf') {
+              fileWidget = Image.asset('lib/assets/images/pdf.png');
+            } else {
+              fileWidget = Icon(Icons
+                  .insert_drive_file); // Ícone padrão para outros tipos de arquivos
+            }
+            return Card(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Expanded(
+                    child: fileWidget,
+                  ),
+                  ButtonBar(
+                    alignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      IconButton(
+                        onPressed: () {
+                          _downloadFile(osData[index]['url'],
+                              osData[index]['anexo']);
+                        },
+                        icon: Icon(Icons.file_download),
+                        color: Colors.blue[700],
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          _excluirAnexo(osData[index]['idAnexos']);
+                        },
+                        icon: Icon(Icons.delete),
+                        color: Colors.red,
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            );
+          },
+        )
+            : Center(
+          child: Text('Nenhum anexo encontrado'),
+        ),
+        Positioned(
+          bottom: 16,
+          right: 16,
+          child: FloatingActionButton(
+            onPressed: _pickFile,
+            child: Icon(Icons.add),
+            backgroundColor: Color(0xffe9dcfe),
           ),
-        );
-      },
-    )
-        : Center(
-      child: Text('Nenhum anexo encontrado'),
+        ),
+        Positioned(
+          bottom: 100,
+          right: 16,
+          child: FloatingActionButton(
+            onPressed: _takePicture,
+            child: Icon(Icons.camera_alt_rounded),
+            backgroundColor: Color(0xffe9dcfe),
+          ),
+        ),
+      ],
     );
   }
 
-
+  void initializeNotifications() {
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    var initializationSettingsAndroid = AndroidInitializationSettings(
+        '@mipmap/ic_launcher');
+    var initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+    );
+    flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+    );
+  }
 
   Future<Map<String, dynamic>> _getCiKeyAndPermissions() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -124,7 +155,7 @@ class _TabAnexosState extends State<TabAnexos> {
     return {'ciKey': ciKey, 'permissoes': permissoes};
   }
 
-  Future<void> _getProdutosOs() async {
+  Future<void> _getAnexosOs() async {
     setState(() {
       _loading = true;
     });
@@ -134,9 +165,7 @@ class _TabAnexosState extends State<TabAnexos> {
       await _getCiKeyAndPermissions();
       String ciKey = keyAndPermissions['ciKey'] ?? '';
       Map<String, String> headers = {'X-API-KEY': ciKey};
-      var url =
-          '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget
-          .os['idOs']}?X-API-KEY=$ciKey';
+      var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}?X-API-KEY=$ciKey';
 
       var response = await http.get(Uri.parse(url), headers: headers);
 
@@ -146,6 +175,7 @@ class _TabAnexosState extends State<TabAnexos> {
             data['result'].containsKey('anexos')) {
           setState(() {
             osData = data['result']['anexos'];
+
             _loading = false;
           });
         } else {
@@ -167,18 +197,6 @@ class _TabAnexosState extends State<TabAnexos> {
       });
       print('Error: $e');
     }
-  }
-
-  void initializeNotifications() {
-    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    var initializationSettingsAndroid = AndroidInitializationSettings(
-        '@mipmap/ic_launcher');
-    var initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-    );
-    flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-    );
   }
 
   Future<void> _downloadFile(String url, String fileName) async {
@@ -245,22 +263,109 @@ class _TabAnexosState extends State<TabAnexos> {
         {
           print('problema com sua sessão, faça login novamente!');
         }
-        // ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
-        //   SnackBar(
-        //     content: Text('Produto excluído com sucesso!'),
-        //     backgroundColor: Colors.green,
-        //     duration: Duration(seconds: 2),
-        //   ),
-        // );
-        _getProdutosOs();
+        _getAnexosOs();
       } else {}
     } catch (e) {
       print('Erro durante a exclusão $e');
     }
   }
-}
 
-class FullScreenImage extends StatelessWidget {
+  Future<void> _pickFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: [
+          'jpg',
+          'png',
+          'gif',
+          'jpeg',
+          'JPG',
+          'PNG',
+          'GIF',
+          'JPEG',
+          'pdf',
+          'PDF',
+          'cdr',
+          'CDR',
+          'docx',
+          'DOCX',
+          'txt'
+        ],
+      );
+
+      if (result != null) {
+        PlatformFile file = result.files.first;
+
+        print('Arquivo selecionado: ${file.name}');
+
+        await _uploadFile(file);
+      } else {
+        print('Nenhum arquivo selecionado.');
+      }
+    } catch (e) {
+      print('Erro ao selecionar o arquivo: $e');
+    }
+  }
+
+
+  Future<void> _takePicture() async {
+    try {
+      XFile? pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+
+      if (pickedFile != null) {
+        PlatformFile platformFile = PlatformFile(
+          name: pickedFile.name,
+          path: pickedFile.path!,
+          size: (await pickedFile.length()).toInt(),
+        );
+
+        print('Imagem capturada: ${pickedFile.path}');
+        await _uploadFile(platformFile);
+      } else {
+        print('Nenhuma imagem capturada.');
+      }
+    } catch (e) {
+      print('Erro ao capturar a imagem: $e');
+    }
+  }
+
+
+  Future<void> _uploadFile(PlatformFile file) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String ciKey = prefs.getString('token') ?? '';
+
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget
+            .os['idOs']}/anexos'),
+      );
+
+      request.headers['X-API-KEY'] = ciKey;
+
+      request.files.add(
+        http.MultipartFile(
+          'userfile',
+          File(file.path!).readAsBytes().asStream(),
+          file.size,
+          filename: file.name,
+          contentType: http_parser.MediaType.parse('application/octet-stream'),
+        ),
+      );
+      var response = await request.send();
+      if (response.statusCode == 201) {
+        print('Arquivo enviado com sucesso!');
+        _getAnexosOs();
+      } else {
+        print('Erro ao enviar o arquivo: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Erro durante o envio do arquivo: $e');
+    }
+  }
+
+}
+  class FullScreenImage extends StatelessWidget {
   final String imageUrl;
 
   const FullScreenImage({required this.imageUrl});
