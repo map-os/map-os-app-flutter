@@ -102,10 +102,10 @@ class _TabDetalhesState extends State<TabDetalhes> {
           _laudoTecnicoController.text = data['result']['laudoTecnico'];
         });
       } else {
-        print('Key "result" not found in API response');
+        print('API não retornou nenhum dado');
       }
     } else {
-      print('Failed to load OS');
+      print('Falha ao carregar dados');
     }
   }
 
@@ -119,7 +119,7 @@ class _TabDetalhesState extends State<TabDetalhes> {
     Map<String, dynamic> requestBody = {
       'dataInicial': _dataInicialController.text,
       'dataFinal': _dataFinalController.text,
-      'status': _selectedStatus,
+      'status': _selectedStatus ?? _statusController.text,
       'clientes_id': ClientesId,
       'usuarios_id': UsuariosId,
       'descricaoProduto': observacoesHTML,
@@ -192,14 +192,14 @@ class _TabDetalhesState extends State<TabDetalhes> {
               ),
               SizedBox(height: 16.0),
               DropdownButtonFormField<String>(
-                value: _selectedStatus,
+                value: _selectedStatus ?? _statusController.text,
                 onChanged: (newValue) {
                   setState(() {
-                    _selectedStatus = newValue;
+                    _selectedStatus = newValue ?? _statusController.text;
                   });
                 },
                 decoration: InputDecoration(
-                  labelText: _statusController.text,
+                  labelText: 'Status',
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
                   contentPadding:
@@ -244,7 +244,7 @@ class _TabDetalhesState extends State<TabDetalhes> {
               ),
               Container(
                 decoration: BoxDecoration(
-                  color: Color(0xffb9dbfd),
+                  color: Color(0xecf0f1ff),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: HtmlEditor(
@@ -256,6 +256,9 @@ class _TabDetalhesState extends State<TabDetalhes> {
                   otherOptions: OtherOptions(
                     height: 200,
                   ),
+                  callbacks: Callbacks(onInit: () {
+                    _htmlEditorController.editorController!.evaluateJavascript(source: "document.getElementsByClassName('note-editable')[0].style.backgroundColor='#EAF1FD';");
+                  }),
                   htmlToolbarOptions: HtmlToolbarOptions(
                     defaultToolbarButtons: [
                       FontButtons(
@@ -278,6 +281,7 @@ class _TabDetalhesState extends State<TabDetalhes> {
                   ),
                 ),
               ),
+
               SizedBox(height: 16.0),
               Container(
                 alignment: Alignment.centerLeft,
@@ -291,7 +295,7 @@ class _TabDetalhesState extends State<TabDetalhes> {
               ),
               Container(
                 decoration: BoxDecoration(
-                  color: Color(0xffb9dbfd),
+                  color: Color(0xecf0f1ff),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: HtmlEditor(
@@ -303,6 +307,9 @@ class _TabDetalhesState extends State<TabDetalhes> {
                   otherOptions: OtherOptions(
                     height: 200,
                   ),
+                  callbacks: Callbacks(onInit: () {
+                    _htmlDefeitoController.editorController!.evaluateJavascript(source: "document.getElementsByClassName('note-editable')[0].style.backgroundColor='#EAF1FD';");
+                  }),
                   htmlToolbarOptions: HtmlToolbarOptions(
                     defaultToolbarButtons: [
                       FontButtons(
@@ -325,6 +332,7 @@ class _TabDetalhesState extends State<TabDetalhes> {
                   ),
                 ),
               ),
+
               SizedBox(height: 16.0),
               Container(
                 alignment: Alignment.centerLeft,
@@ -338,7 +346,7 @@ class _TabDetalhesState extends State<TabDetalhes> {
               ),
               Container(
                 decoration: BoxDecoration(
-                  color: Color(0xffb9dbfd),
+                  color: Color(0xecf0f1ff),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: HtmlEditor(
@@ -350,6 +358,9 @@ class _TabDetalhesState extends State<TabDetalhes> {
                   otherOptions: OtherOptions(
                     height: 200,
                   ),
+                  callbacks: Callbacks(onInit: () {
+                    _htmlLaudoController.editorController!.evaluateJavascript(source: "document.getElementsByClassName('note-editable')[0].style.backgroundColor='#EAF1FD';");
+                  }),
                   htmlToolbarOptions: HtmlToolbarOptions(
                     defaultToolbarButtons: [
                       FontButtons(
@@ -379,9 +390,18 @@ class _TabDetalhesState extends State<TabDetalhes> {
                   laudoHTML = await _htmlLaudoController.getText();
                   _salvarDados();
                 },
-                child: Text('Salvar'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xff2c9b5b),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  minimumSize: Size(430, 60),
+                ),
+                child: Text(
+                  'Salvar Alterações',
+                  style: TextStyle(fontSize: 18.0, color: Colors.white),
+                ),
               ),
-
             ],
           ),
         ),

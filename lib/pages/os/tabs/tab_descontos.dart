@@ -21,7 +21,7 @@ class _TabDescontosState extends State<TabDescontos> {
   late TextEditingController _descontoController;
   late TextEditingController _valorDescontolController;
   late TextEditingController _tipoDescontoController;
-
+  String _selectedOption = 'real';
   @override
   void initState() {
     super.initState();
@@ -43,6 +43,13 @@ class _TabDescontosState extends State<TabDescontos> {
 
   @override
   Widget build(BuildContext context) {
+    IconData suffixIcon;
+    if (_selectedOption == 'real') {
+      suffixIcon = Icons.attach_money;
+    } else {
+      suffixIcon = Icons.percent;
+    }
+
     return SingleChildScrollView(
       child: Container(
         padding: EdgeInsets.all(16.0),
@@ -50,35 +57,77 @@ class _TabDescontosState extends State<TabDescontos> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 8.0),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.0),
+                border: Border.all(color: Colors.grey.shade400),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.3),
+                    spreadRadius: 2,
+                    blurRadius: 4,
+                    offset: Offset(0, 2), // changes position of shadow
+                  ),
+                ],
+              ),
+              child: DropdownButtonFormField<String>(
+                value: _selectedOption,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedOption = newValue!;
+                  });
+                },
+                items: ['Real', 'Porcento'].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value.toLowerCase(),
+                    child: Text(value),
+                  );
+                }).toList(),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Selecionar',
+                  suffixIcon: Icon(suffixIcon),
+                ),
+              ),
+            ),
+            SizedBox(height: 20.0),
             TextFormField(
               controller: _descontoController,
-              decoration: InputDecoration(labelText: 'Desconto'),
+              decoration: InputDecoration(
+                labelText: 'Desconto',
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                suffixIcon: _selectedOption == 'real'
+                    ? Icon(Icons.attach_money)
+                    : Icon(Icons.percent),
+              ),
               style: TextStyle(fontSize: 16.0),
+              keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 8.0),
-            // TextFormField(
-            //   controller: _valorDescontolController,
-            //   decoration: InputDecoration(labelText: 'Prev. Saída'),
-            //   style: TextStyle(fontSize: 16.0),
-            // ),
-            SizedBox(height: 8.0),
-            TextFormField(
-              controller: _tipoDescontoController,
-              decoration: InputDecoration(labelText: 'Tipo de Desconto'),
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 8.0),
-            SizedBox(height: 16.0),
-            // Botão para atualizar a OS
+            SizedBox(height: 20.0),
             ElevatedButton(
+
               onPressed: _atualizarOS,
-              child: Text('Atualizar OS'),
+
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xff2c9b5b),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                minimumSize: Size(430, 60),
+              ),
+              child: Text(
+                'Adicionar Desconto',
+                style: TextStyle(fontSize: 18.0, color: Colors.white),
+              ),
             ),
           ],
         ),
       ),
     );
   }
+
 
   // Função para atualizar a OS
   void _atualizarOS() async {

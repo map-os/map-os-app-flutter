@@ -5,8 +5,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 /*
 SANTT -- 2024
-TODOS OS PRINTS SERÃO REMOVIDOS E SUBSTITUIDOS POR SNACKBAR --
-github.com/Fesantt
+github.com/Fesantt/MAP-OS-APP-FLUTTER
 */
 class TabServicos extends StatefulWidget {
   final Map<String, dynamic> os;
@@ -80,8 +79,8 @@ class _TabServicosState extends State<TabServicos> {
                             color: Colors.red,
                             borderRadius: BorderRadius.only(
                               // topLeft: Radius.circular(10),
-                              bottomRight: Radius.circular(10),
-                              topRight: Radius.circular(10),
+                              bottomRight: Radius.circular(0),
+                              topRight: Radius.circular(0),
                             ),
                           ),
                           child: IconButton(

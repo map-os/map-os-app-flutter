@@ -10,6 +10,7 @@ import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:mapos_app/pages/profile/profile_screen.dart';
 import 'package:mapos_app/config/constants.dart';
 import 'package:http/http.dart' as http;
+import 'package:mapos_app/pages/audit/audit.dart';
 
 class MenuLateral extends StatefulWidget {
   @override
@@ -57,6 +58,7 @@ class _MenuLateralState extends State<MenuLateral> {
                   bool temPermissaoCliente = false;
                   bool temPermissaoServicos = false;
                   bool temPermissaoProdutos = false;
+                  bool temPermissaoAudit = false;
 
                   for (var permissao in permissoes) {
                     if (permissao['vCliente'] == "1") {
@@ -67,6 +69,9 @@ class _MenuLateralState extends State<MenuLateral> {
                     }
                     if (permissao['vProduto'] == "1") {
                       temPermissaoProdutos = true;
+                    }
+                    if (permissao['cAuditoria'] == "1") {
+                      temPermissaoAudit = true;
                     }
                   }
 
@@ -250,6 +255,33 @@ class _MenuLateralState extends State<MenuLateral> {
                           },
                         ),
                       ),
+                      Visibility(
+                        visible: temPermissaoAudit,
+                        child: ListTile(
+                          leading: Icon(
+                            Boxicons.bxs_time_five,
+                            color: Color(0xff333649),
+                            size: 20,
+                          ),
+                          title: Text(
+                            'Auditoria',
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 16,
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: Audit(),
+                                type: PageTransitionType.leftToRight,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                       Divider(
                         color: Color(0xff333649),
                       ),
@@ -267,7 +299,6 @@ class _MenuLateralState extends State<MenuLateral> {
                           ),
                         ),
                         onTap: () {
-                          // Implemente a lógica para o logout aqui
                           _logout(context);
                         },
                       ),

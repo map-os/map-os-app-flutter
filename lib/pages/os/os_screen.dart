@@ -163,7 +163,7 @@ class _OsScreenState extends State<OsScreen> {
         itemBuilder: (BuildContext context, int index) {
           return Padding(
             padding: const EdgeInsets.symmetric(
-                vertical: 1.0),
+                vertical: 0.0),
             child: Card(
               margin: EdgeInsets.symmetric(
                   vertical: 4.0,
