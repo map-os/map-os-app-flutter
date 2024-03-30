@@ -1,16 +1,7 @@
-# mapos_app
+# APLICATIVO MAP-OS ANDROID
 
 Sistema de gferenciamento de ordens de serviço
 
-## Getting Started
+![Imagem do WhatsApp de 2024-03-30 à(s) 12 38 19_ac855a9e](https://github.com/Fesantt/MAPOS-OS-APP-FLUTTER/assets/33626716/5925784e-f4f5-40a2-99a0-3692f9d0e2e5)
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
