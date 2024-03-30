@@ -39,10 +39,11 @@ https://github.com/juliolobo/api-mapos
 - Adição/edição de ordens de serviço.
 
 
-## Autores
-
-- [@Fesantt](https://www.github.com/Fesantt)
-- [@Juliolobo](https://github.com/juliolobo)
+### Contribuidores
+[![Contribuidores](https://contrib.rocks/image?repo=Fesantt/MAPOS-OS-APP-FLUTTER)](https://github.com/Fesantt/MAPOS-OS-APP-FLUTTER/graphs/contributors)
 
 
+## Autor
+| [<img src="https://avatars.githubusercontent.com/Fesantt?s=115"><br><sub>Ramon Silva</sub>](https://github.com/Fesantt) |
+| :---: |
 
