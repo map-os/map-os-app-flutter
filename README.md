@@ -1,6 +1,9 @@
 # MAP-OS APP
 
-Aplicativo android para o sistema ![Static Badge](https://img.shields.io/badge/MAPOS---?style=flat&color=orange&link=https%3A%2F%2Fgithub.com%2FRamonSilva20%2Fmapos%2F)
+Aplicativo android para o sistema MAP-OS
+```bash
+https://github.com/RamonSilva20/mapos
+```
 
 ## Screenshots
 <img src="https://github.com/Fesantt/MAPOS-OS-APP-FLUTTER/assets/33626716/e489e367-6fe6-41e2-ac3e-bcf96f2947e5" alt="Descrição da imagem" width="200">
@@ -24,9 +27,9 @@ Gerar uma nova Build
 ```
     
 ## API
-
-link da API ![Static Badge](https://img.shields.io/badge/API---?style=flat&color=green&link=https%3A%2F%2Fgithub.com%2Fjuliolobo%2Fapi-mapos)
-
+```bash
+https://github.com/juliolobo/api-mapos
+```
 
 
 ## Autores
