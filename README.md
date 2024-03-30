@@ -44,6 +44,6 @@ https://github.com/juliolobo/api-mapos
 
 
 ## Autor
-| [<img src="https://avatars.githubusercontent.com/Fesantt?s=115"><br><sub>Ramon Silva</sub>](https://github.com/Fesantt) |
+| [<img src="https://avatars.githubusercontent.com/Fesantt?s=115"><br><sub>Felipe Santt</sub>](https://github.com/Fesantt) |
 | :---: |
 
