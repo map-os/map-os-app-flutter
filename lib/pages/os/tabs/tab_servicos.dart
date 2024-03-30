@@ -323,7 +323,7 @@ class _TabServicosState extends State<TabServicos> {
         body: json.encode(body),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         Map<String, dynamic> data = json.decode(response.body);
         if (data.containsKey('refresh_token')) {
           String refreshToken = data['refresh_token'];

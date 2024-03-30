@@ -187,76 +187,109 @@ class _DashboardScreenState extends State<DashboardScreen> {
                  ),
                ),
              ),
-             SizedBox(height: 20),
-             Column(
-               crossAxisAlignment: CrossAxisAlignment.start,
-               children: [
-                 Padding(
-                   padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
-                   child: Text(
-                     'Os em Aberto',
-                     style: TextStyle(
-                       fontWeight: FontWeight.bold,
-                       fontSize: 16.0,
-                     ),
-                   ),
-                 ),
-                 SizedBox(
-                   width: double.infinity,
-                   child: SingleChildScrollView(
-                     scrollDirection: Axis.horizontal,
-                     child: Container(
-                       color: Colors.grey[200], // Cor de fundo da tabela
-                       child: DataTable(
-                         columnSpacing: (MediaQuery.of(context).size.width * 0.070),
-                         headingTextStyle: TextStyle(
-                           fontWeight: FontWeight.bold,
-                           fontSize: 14.0,
-                           color: Colors.black,
+             // Column(
+             //   crossAxisAlignment: CrossAxisAlignment.start,
+             //   children: [
+             //     Padding(
+             //       padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
+             //       child: Text(
+             //         'Os em Aberto',
+             //         style: TextStyle(
+             //           fontWeight: FontWeight.bold,
+             //           fontSize: 16.0,
+             //         ),
+             //       ),
+             //     ),
+             //     // SizedBox(
+             //     //   width: double.infinity,
+             //     //   child: SingleChildScrollView(
+             //     //     scrollDirection: Axis.horizontal,
+             //     //     child: Container(
+             //     //       color: Colors.grey[200], // Cor de fundo da tabela
+             //     //       // child: DataTable(
+             //     //       //   columnSpacing: (MediaQuery.of(context).size.width * 0.070),
+             //     //       //   headingTextStyle: TextStyle(
+             //     //       //     fontWeight: FontWeight.bold,
+             //     //       //     fontSize: 14.0,
+             //     //       //     color: Colors.black,
+             //     //       //   ),
+             //     //       //   dataRowHeight: 48.0,
+             //     //       //   columns: [
+             //     //       //     DataColumn(label: Text('ID')),
+             //     //       //     DataColumn(label: Text('Cliente')),
+             //     //       //     DataColumn(label: Text('Entrada')),
+             //     //       //     DataColumn(label: Text('Data final')),
+             //     //       //   ],
+             //     //       //   rows: osAbertasList.map((os) {
+             //     //       //     final splitData = os.split(' - ');
+             //     //       //     if (splitData.length != 4) {
+             //     //       //       return DataRow(cells: [
+             //     //       //         DataCell(Text('Erro ao processar dados')),
+             //     //       //         DataCell(Text('Erro ao processar dados')),
+             //     //       //         DataCell(Text('Erro ao processar dados')),
+             //     //       //         DataCell(Text('Erro ao processar dados'))
+             //     //       //       ]);
+             //     //       //     }
+             //     //       //     final id = splitData[0];
+             //     //       //     final nomeCompleto = splitData[1];
+             //     //       //     final dataInicial = splitData[2];
+             //     //       //     final dataFinal = splitData[3];
+             //     //       //     final nomeSobrenome = nomeCompleto.split(' ');
+             //     //       //     String nomeFormatado = '';
+             //     //       //     if (nomeSobrenome.length >= 2) {
+             //     //       //       nomeFormatado = '${nomeSobrenome[0]} ${nomeSobrenome[1]}';
+             //     //       //     } else {
+             //     //       //       nomeFormatado = nomeCompleto;
+             //     //       //     }
+             //     //       //
+             //     //       //     return DataRow(cells: [
+             //     //       //       DataCell(Text(id)),
+             //     //       //       DataCell(Text(nomeFormatado)),
+             //     //       //       DataCell(Text(formatarData(dataInicial))),
+             //     //       //       DataCell(Text(formatarData(dataFinal))),
+             //     //       //     ]);
+             //     //       //   }).toList(),
+             //     //       // ),
+             //     //     ),
+             //     //
+             //     //   ),
+             //     // ),
+             //
+             //   ],
+             // ),
+             Container( // Wrap the Stack with a Container
+               height: 250, // Set a fixed height for the Stack
+               child: Stack(
+                 children: [
+                   Positioned(
+                     top: 100,
+                     left: 0,
+                     right: 0,
+                     height: 100,
+                     child: Transform.rotate(
+                       angle: 0,
+                       child: Container(
+                         padding: EdgeInsets.symmetric(vertical: 10),
+                         width: double.infinity, // Ensure the container takes the full width
+                         decoration: BoxDecoration(
+                           color: Colors.red,
+                           borderRadius: BorderRadius.circular(0),
                          ),
-                         dataRowHeight: 48.0,
-                         columns: [
-                           DataColumn(label: Text('ID')),
-                           DataColumn(label: Text('Cliente')),
-                           DataColumn(label: Text('Entrada')),
-                           DataColumn(label: Text('Data final')),
-                         ],
-                         rows: osAbertasList.map((os) {
-                           final splitData = os.split(' - ');
-                           if (splitData.length != 4) {
-                             return DataRow(cells: [
-                               DataCell(Text('Erro ao processar dados')),
-                               DataCell(Text('Erro ao processar dados')),
-                               DataCell(Text('Erro ao processar dados')),
-                               DataCell(Text('Erro ao processar dados'))
-                             ]);
-                           }
-                           final id = splitData[0];
-                           final nomeCompleto = splitData[1];
-                           final dataInicial = splitData[2];
-                           final dataFinal = splitData[3];
-                           final nomeSobrenome = nomeCompleto.split(' ');
-                           String nomeFormatado = '';
-                           if (nomeSobrenome.length >= 2) {
-                             nomeFormatado = '${nomeSobrenome[0]} ${nomeSobrenome[1]}';
-                           } else {
-                             nomeFormatado = nomeCompleto;
-                           }
-
-                           return DataRow(cells: [
-                             DataCell(Text(id)),
-                             DataCell(Text(nomeFormatado)),
-                             DataCell(Text(formatarData(dataInicial))),
-                             DataCell(Text(formatarData(dataFinal))),
-                           ]);
-                         }).toList(),
+                         child: Center(
+                           child: Text(
+                             'Em Breve ',
+                             style: TextStyle(
+                               color: Colors.white,
+                               fontWeight: FontWeight.bold,
+                             ),
+                           ),
+                         ),
                        ),
                      ),
                    ),
-                 ),
-               ],
+                 ],
+               ),
              ),
-
            ],
          ),
        ),
@@ -305,7 +338,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
              ],
            ),
          ),
+
        ),
+
      );
    }
 

@@ -74,9 +74,9 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   TextEditingController _usernameController =
-      TextEditingController(text: 'teste@teste.com');
+      TextEditingController();
   TextEditingController _passwordController =
-      TextEditingController(text: '123456');
+      TextEditingController();
   bool _showPassword = false;
   @override
   void initState() {
@@ -126,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    'Defina a URL do seu MAP-OS, lembre-se de não adicionar / no final da URL, faça como esta no exemplo ',
+                    'Informe a URL do seu MAP-OS. ',
                     style: TextStyle(
                       fontSize: 16,
                     ),
@@ -135,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
                   TextField(
                     onChanged: (value) {
                       setState(() {
-                        newBaseUrl = value;
+                        newBaseUrl = value.trim(); // Remover espaços em branco
                         isButtonEnabled = newBaseUrl.isNotEmpty;
                       });
                     },
@@ -150,8 +150,12 @@ class _LoginPageState extends State<LoginPage> {
                 TextButton(
                   onPressed: isButtonEnabled
                       ? () async {
-                    SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
+                    // Remover a barra no final da URL, se presente
+                    if (newBaseUrl.endsWith('/')) {
+                      newBaseUrl = newBaseUrl.substring(0, newBaseUrl.length - 1);
+                    }
+
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
                     prefs.setString('baseURL', newBaseUrl);
                     Navigator.of(context).pop();
                     print(newBaseUrl);
@@ -226,7 +230,7 @@ class _LoginPageState extends State<LoginPage> {
           showSnackBar('Credenciais inválidas');
         }
       } else {
-        showSnackBar('Erro durante a solicitação: ${response.statusCode}');
+        showSnackBar('Dados invalidos: ${response.statusCode}');
       }
     } catch (e) {
       showSnackBar('Erro durante a solicitação: $e');
@@ -419,7 +423,7 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(height: 0),
                 GestureDetector(
                   onTap: () {
-                    final String url = 'https://github.com/fesantt/';
+                    final String url = 'https://github.com/Fesantt/MAPOS-OS-APP-FLUTTER';
                     _launchURL(url);
                   },
                   child: Icon(
@@ -462,19 +466,18 @@ class _LoginPageState extends State<LoginPage> {
               child: Align(
                 alignment: Alignment.topRight,
                 child: IconButton(
-                  icon: Icon(
-                    Theme.of(context).brightness == Brightness.light
-                        ? Icons.sunny
-                        : Icons.dark_mode,
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Colors.white
-                        : Colors.black,
-                  ),
-                  onPressed: widget.toggleTheme,
+                  icon: Icon(Icons.settings, size: 30), // Adjust size as needed
+                  color: Colors.deepOrange,
+                  onPressed: () {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _showBaseUrlInputDialog(context);
+                    });
+                  },
                 ),
               ),
             ),
           )
+
         ],
       ),
     );
