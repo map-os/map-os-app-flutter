@@ -31,6 +31,13 @@ Gerar uma nova Build
 https://github.com/juliolobo/api-mapos
 ```
 
+## Funcionalidades
+
+- Adição/edição de serviços
+- Adição/edição de produtos
+- Adição/edição de clientes
+- Adição/edição de ordens de serviço.
+
 
 ## Autores
 
@@ -38,12 +45,4 @@ https://github.com/juliolobo/api-mapos
 - [@Juliolobo](https://github.com/juliolobo)
 
 
-
-
-## Funcionalidades
-
-- Adição/edição de serviços
-- Adição/edição de produtos
-- Adição/edição de clientes
-- Adição/edição de ordens de serviço.
 
