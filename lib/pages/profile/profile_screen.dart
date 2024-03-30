@@ -75,15 +75,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         title: Text('Minha conta'),
         actions: [
-          IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => EditProfileScreen(profileData: _profileData)),
-              );
-            },
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.edit),
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => EditProfileScreen(profileData: _profileData)),
+          //     );
+          //   },
+          // ),
         ],
       ),
       body: SingleChildScrollView(

@@ -137,11 +137,21 @@ class _TabDetalhesState extends State<TabDetalhes> {
     );
 
     if (response.statusCode == 200) {
-      // Requisição bem-sucedida, faça o que for necessário
-      print('Dados salvos com sucesso!');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.green,
+          content: Text('OS atualizada com sucesso'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     } else {
-      // Requisição falhou
-      print('Falha ao salvar os dados. Código de status: ${response.body}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Falha ao atualizar OS'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
   Future<Map<String, dynamic>> _getCiKey() async {

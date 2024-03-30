@@ -154,25 +154,25 @@ class _MenuLateralState extends State<MenuLateral> {
                           );
                         },
                       ),
-                      ListTile(
-                        leading: Icon(
-                          Boxicons.bxs_cog,
-                          color: Color(0xff333649),
-                          size: 20,
-                        ),
-                        title: Text(
-                          'Configurações',
-                          style: TextStyle(
-                            color: Colors.black87,
-                            fontSize: 16,
-                          ),
-                        ),
-                        onTap: () {
-                          // Implemente a lógica desejada para o Item 3 aqui
-                          Navigator.pop(context);
-                          // Navegar para a tela de configurações
-                        },
-                      ),
+                      // ListTile(
+                      //   leading: Icon(
+                      //     Boxicons.bxs_cog,
+                      //     color: Color(0xff333649),
+                      //     size: 20,
+                      //   ),
+                      //   title: Text(
+                      //     'Configurações',
+                      //     style: TextStyle(
+                      //       color: Colors.black87,
+                      //       fontSize: 16,
+                      //     ),
+                      //   ),
+                      //   onTap: () {
+                      //     // Implemente a lógica desejada para o Item 3 aqui
+                      //     Navigator.pop(context);
+                      //     // Navegar para a tela de configurações
+                      //   },
+                      // ),
                       Divider(
                         color: Color(0xff333649),
                       ),

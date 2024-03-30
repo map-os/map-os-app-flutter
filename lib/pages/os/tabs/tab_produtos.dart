@@ -336,7 +336,7 @@ class _TabProdutosState extends State<TabProdutos> {
         body: json.encode(body),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         Map<String, dynamic> responseData = json.decode(response.body);
         bool status = responseData['status'];
 

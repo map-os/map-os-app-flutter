@@ -22,6 +22,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
   ScrollController _scrollController = ScrollController();
   int _currentPage = 0; // Página atual
 
+
   @override
   void initState() {
     super.initState();
@@ -255,20 +256,16 @@ class _ClientesScreenState extends State<ClientesScreen> {
                                 Row(
                                   children: [
                                     Text(
-                                      'Cel: ${filteredClientes[index]['celular'] ?? 0}',
+                                      'Cel: ${filteredClientes[index]['celular'].isNotEmpty ? filteredClientes[index]['celular'] : '---'}',
                                       style: TextStyle(
-                                        fontSize:
-                                            MediaQuery.of(context).size.width *
-                                                0.029, // 4% da largura da tela
+                                        fontSize: MediaQuery.of(context).size.width * 0.029,
                                       ),
                                     ),
                                     SizedBox(width: 8.0),
                                     Text(
-                                      'Tel: ${filteredClientes[index]['telefone'] ?? 0}',
+                                      'Tel: ${filteredClientes[index]['telefone'].isNotEmpty ? filteredClientes[index]['telefone'] : '---'}',
                                       style: TextStyle(
-                                        fontSize:
-                                            MediaQuery.of(context).size.width *
-                                                0.029, // 4% da largura da tela
+                                        fontSize: MediaQuery.of(context).size.width * 0.029,
                                       ),
                                     ),
                                   ],
