@@ -11,6 +11,7 @@ import 'package:mapos_app/pages/profile/profile_screen.dart';
 import 'package:mapos_app/config/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:mapos_app/pages/audit/audit.dart';
+import 'package:mapos_app/settings/settings_screen.dart';
 
 class MenuLateral extends StatefulWidget {
   @override
@@ -154,25 +155,29 @@ class _MenuLateralState extends State<MenuLateral> {
                           );
                         },
                       ),
-                      // ListTile(
-                      //   leading: Icon(
-                      //     Boxicons.bxs_cog,
-                      //     color: Color(0xff333649),
-                      //     size: 20,
-                      //   ),
-                      //   title: Text(
-                      //     'Configurações',
-                      //     style: TextStyle(
-                      //       color: Colors.black87,
-                      //       fontSize: 16,
-                      //     ),
-                      //   ),
-                      //   onTap: () {
-                      //     // Implemente a lógica desejada para o Item 3 aqui
-                      //     Navigator.pop(context);
-                      //     // Navegar para a tela de configurações
-                      //   },
-                      // ),
+                      ListTile(
+                        leading: Icon(
+                          Boxicons.bxs_cog,
+                          color: Color(0xff333649),
+                          size: 20,
+                        ),
+                        title: Text(
+                          'Configurações',
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: 16,
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SettingsPage(),
+                            ),
+                          );
+                        },
+                      ),
                       Divider(
                         color: Color(0xff333649),
                       ),
