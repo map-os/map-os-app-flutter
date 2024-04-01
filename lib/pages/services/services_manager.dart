@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:mapos_app/config/constants.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
+import 'package:mapos_app/assets/app_colors.dart';
 
 class ServicoEditScreen extends StatefulWidget {
   final Map<String, dynamic> servico;
@@ -19,9 +20,11 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
   late TextEditingController _descricaoServicoController;
   late TextEditingController _precoServicoController;
   bool _editingEnabled = false;
+  String _currentTheme = 'TemaPrimario'; // Tema padrão
 
   @override
   void initState() {
+    _getTheme();
     super.initState();
     _nomeServicoController =
         TextEditingController(text: widget.servico['nome'] ?? '');
@@ -35,6 +38,14 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
     );
   }
 
+  Future<void> _getTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String theme = prefs.getString('theme') ?? 'TemaPrimario';
+    setState(() {
+      _currentTheme = theme;
+    });
+  }
+
   Future<Map<String, dynamic>> _getCiKey() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String ciKey = prefs.getString('token') ?? '';
@@ -46,11 +57,18 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: _currentTheme == 'TemaPrimario'
+          ? TemaPrimario.backgroundColor
+          : TemaSecundario.backgroundColor,
       appBar: AppBar(
         title: Text('Editar Serviço'),
         actions: [
           IconButton(
-            icon: Icon(_editingEnabled ? Icons.edit_note_sharp : Icons.edit),
+            icon: Icon(_editingEnabled ? Icons.edit_note_sharp : Icons.edit,
+              color: _currentTheme == 'TemaPrimario'
+                  ? TemaPrimario.iconColor
+                  : TemaSecundario.secondaryColor,
+            ),
             onPressed: () async {
               Map<String, dynamic> permissionsMap = await _getCiKey();
               List<dynamic> permissoes = permissionsMap['permissoes'];
@@ -70,9 +88,12 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    backgroundColor: Colors.red,
+                    backgroundColor:   _currentTheme == 'TemaPrimario'
+                      ? TemaPrimario.snackBarBackgrounColorErro
+                      : TemaSecundario.snackBarBackgrounColorErro,
                     content:
-                        Text('Você não tem permissões para editar serviços.'),
+                        Text('Você não tem permissões para editar serviços.',
+                        ),
                   ),
                 );
               }
@@ -88,102 +109,182 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
             children: [
               Text(
                 'ID do Serviço: ${widget.servico['idServicos'] ?? 'N/A'}',
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 16.0),
-              TextFormField(
-                controller: _nomeServicoController,
-                enabled: _editingEnabled,
-                style: TextStyle(color: Colors.grey[700]),
-                decoration: InputDecoration(
-                  labelText: 'Nome',
-                  labelStyle: TextStyle(color: Color(0xff333649)),
-                  prefixIcon: Icon(Icons.construction_outlined,
-                      color: Color(0xff333649)),
-                  filled: true,
-                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
-                  border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xff333960), width: 2.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide:
-                        BorderSide(color: Color(0xff333649), width: 2.0),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16.0),
-              TextFormField(
-                controller: _descricaoServicoController,
-                enabled: _editingEnabled,
-                style: TextStyle(color: Colors.grey[700]),
-                decoration: InputDecoration(
-                  labelText: 'Descricao',
-                  labelStyle: TextStyle(color: Color(0xff333649)),
-                  prefixIcon: Icon(Icons.description_outlined,
-                      color: Color(0xff333649)),
-                  filled: true,
-                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
-                  border: OutlineInputBorder(
-                    borderRadius:
-                    BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xff333960), width: 2.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide:
-                        BorderSide(color: Color(0xff333649), width: 2.0),
-                  ),
-                ),
+                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: _currentTheme == 'TemaPrimario'
+                    ? TemaPrimario.ColorText
+                    : TemaSecundario.ColorText),
               ),
               SizedBox(height: 16.0),
               TextField(
-                controller: _precoServicoController,
+                controller: _nomeServicoController,
                 enabled: _editingEnabled,
-                style: TextStyle(color: Colors.grey[700]),
+                style: TextStyle(color: _currentTheme == 'TemaPrimario'
+                    ? TemaPrimario.ColorText
+                    : TemaSecundario.ColorText,
+                ),
                 decoration: InputDecoration(
-                  labelText: 'Valor',
-                  labelStyle: TextStyle(color: Color(0xff333649)),
-                  prefixIcon:
-                      Icon(Icons.attach_money, color: Color(0xff333649)),
+                  labelText: 'Nome',
+                  labelStyle: TextStyle(color: _currentTheme == 'TemaPrimario'
+                      ? TemaPrimario.labelColor
+                      : TemaSecundario.labelColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18
+                  ),
+                  prefixIcon: Icon(Icons.attach_money, color: _currentTheme == 'TemaPrimario'
+                      ? TemaPrimario.iconColor
+                      : TemaSecundario.iconColor,),
                   filled: true,
-                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  fillColor: _currentTheme == 'TemaPrimario'
+                      ? TemaPrimario.inputColor
+                      : TemaSecundario.inputColor,
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
-
-                    borderRadius:
-                    BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide: BorderSide(color: Color(0xff333960), width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.inputBorderColor
+                        : TemaSecundario.inputBorderColor, width: 2.0), // Cor da borda quando não está em foco
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: Color(0xff333960), width: 2.0),
+                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.inputBorderColor
+                        : TemaSecundario.inputBorderColor, width: 2.0), // Cor da borda quando está em foco
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.inputBorderColor
+                        : TemaSecundario.inputBorderColor, width: 1.0), // Cor da borda quando o campo está habilitado e não está em foco
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.inputBorderColor
+                        : TemaSecundario.inputBorderColor, width: 1.0), // Cor da borda quando o campo está desabilitado
                   ),
                 ),
                 keyboardType: TextInputType.number,
               ),
               SizedBox(height: 16.0),
+              TextField(
+                controller: _descricaoServicoController,
+                enabled: _editingEnabled,
+                style: TextStyle(color: _currentTheme == 'TemaPrimario'
+                    ? TemaPrimario.ColorText
+                    : TemaSecundario.ColorText,
+                ),
+                decoration: InputDecoration(
+                  labelText: 'Descrição',
+                  labelStyle: TextStyle(color: _currentTheme == 'TemaPrimario'
+                      ? TemaPrimario.labelColor
+                      : TemaSecundario.labelColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18
+                  ),
+                  prefixIcon: Icon(Icons.attach_money, color: _currentTheme == 'TemaPrimario'
+                      ? TemaPrimario.iconColor
+                      : TemaSecundario.iconColor,),
+                  filled: true,
+                  fillColor: _currentTheme == 'TemaPrimario'
+                      ? TemaPrimario.inputColor
+                      : TemaSecundario.inputColor,
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.inputBorderColor
+                        : TemaSecundario.inputBorderColor, width: 2.0), // Cor da borda quando não está em foco
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.inputBorderColor
+                        : TemaSecundario.inputBorderColor, width: 2.0), // Cor da borda quando está em foco
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.inputBorderColor
+                        : TemaSecundario.inputBorderColor, width: 1.0), // Cor da borda quando o campo está habilitado e não está em foco
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.inputBorderColor
+                        : TemaSecundario.inputBorderColor, width: 1.0), // Cor da borda quando o campo está desabilitado
+                  ),
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              SizedBox(height: 16.0),
+              TextField(
+                controller: _precoServicoController,
+                enabled: _editingEnabled,
+                style: TextStyle(color: _currentTheme == 'TemaPrimario'
+                    ? TemaPrimario.ColorText
+                    : TemaSecundario.ColorText,
+                ),
+                decoration: InputDecoration(
+                  labelText: 'Valor',
+                  labelStyle: TextStyle(color: _currentTheme == 'TemaPrimario'
+                      ? TemaPrimario.labelColor
+                      : TemaSecundario.labelColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18
+                  ),
+                  prefixIcon: Icon(Icons.attach_money, color: _currentTheme == 'TemaPrimario'
+                      ? TemaPrimario.iconColor
+                      : TemaSecundario.iconColor,),
+                  filled: true,
+                  fillColor: _currentTheme == 'TemaPrimario'
+                ? TemaPrimario.inputColor
+                    : TemaSecundario.inputColor,
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.inputBorderColor
+                        : TemaSecundario.inputBorderColor, width: 2.0), // Cor da borda quando não está em foco
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.inputBorderColor
+                        : TemaSecundario.inputBorderColor, width: 2.0), // Cor da borda quando está em foco
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.inputBorderColor
+                        : TemaSecundario.inputBorderColor, width: 1.0), // Cor da borda quando o campo está habilitado e não está em foco
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.inputBorderColor
+                        : TemaSecundario.inputBorderColor, width: 1.0), // Cor da borda quando o campo está desabilitado
+                  ),
+                ),
+                keyboardType: TextInputType.number,
+              ),
+
+              SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _editingEnabled ? _saveChanges : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xff2c9b5b),
+                  backgroundColor: _currentTheme == 'TemaPrimario'
+                ? TemaPrimario.botaoBackgroudColor
+                    : TemaSecundario.botaoBackgroudColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                   minimumSize: Size(200, 50),
+                  elevation: 2
                 ),
                 child: Text(
                   'Salvar Alterações',
-                  style: TextStyle(fontSize: 18.0, color: Colors.white),
+                  style: TextStyle(fontSize: 18.0, color: _currentTheme == 'TemaPrimario'
+                      ? TemaPrimario.botaoTextColor
+                      : TemaSecundario.botaoTextColor,),
                 ),
               ),
             ],
