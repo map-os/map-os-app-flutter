@@ -7,6 +7,7 @@ import 'package:mapos_app/pages/clients/clients_manager.dart';
 import 'package:mapos_app/pages/clients/clientes_add.dart';
 import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
 import 'package:mapos_app/main.dart';
+import 'package:mapos_app/assets/app_colors.dart';
 
 class ClientesScreen extends StatefulWidget {
   @override
@@ -21,6 +22,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
   TextEditingController searchController = TextEditingController();
   ScrollController _scrollController = ScrollController();
   int _currentPage = 0; // Página atual
+  String _currentTheme = 'TemaSecundario'; // Tema padrão
 
 
   @override
@@ -28,7 +30,9 @@ class _ClientesScreenState extends State<ClientesScreen> {
     super.initState();
     _getClientes();
     _scrollController.addListener(_scrollListener);
+    _getTheme();
   }
+
 
   @override
   void dispose() {
@@ -41,6 +45,14 @@ class _ClientesScreenState extends State<ClientesScreen> {
         _scrollController.position.maxScrollExtent) {
       _getClientes(page: _currentPage + 1);
     }
+  }
+
+  Future<void> _getTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String theme = prefs.getString('theme') ?? 'TemaPrimario';
+    setState(() {
+      _currentTheme = theme;
+    });
   }
 
   Future<Map<String, dynamic>> _getCiKey() async {
@@ -136,6 +148,9 @@ class _ClientesScreenState extends State<ClientesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: _currentTheme == 'TemaPrimario'
+    ? TemaPrimario.listagemBackground
+        : TemaSecundario.listagemBackground,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: !isSearching
@@ -145,20 +160,28 @@ class _ClientesScreenState extends State<ClientesScreen> {
             : TextField(
                 controller: searchController,
                 style: TextStyle(
-                    color: Colors.white,
+                    color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.buscaFont
+                        : TemaSecundario.buscaFont,
                     fontSize: MediaQuery.of(context).size.width * 0.05),
                 onChanged: (value) {
                   _filterClientes(value);
                 },
                 decoration: InputDecoration(
                   hintText: 'Pesquisar...',
-                  hintStyle: TextStyle(color: Colors.white),
+                  hintStyle: TextStyle(
+                      color: _currentTheme == 'TemaPrimario'
+                          ? TemaPrimario.buscaFont
+                          : TemaSecundario.buscaFont,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide.none,
                   ),
                   filled: true, // Preenchimento ativado
-                  fillColor: Color(0xff535772), // Cor de fundo personalizada
+                  fillColor: _currentTheme == 'TemaPrimario'
+                      ? TemaPrimario.buscaBack
+                      : TemaSecundario.buscaBack, // Cor de fundo personalizada
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 ),
@@ -190,6 +213,9 @@ class _ClientesScreenState extends State<ClientesScreen> {
                 return Padding(
                   padding: const EdgeInsets.all(1.0),
                   child: Card(
+                    color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.listagemCard
+                        : TemaSecundario.listagemCard,
                     child: ListTile(
                       onTap: () async {
                         Map<String, dynamic> permissions = await _getCiKey();
@@ -224,7 +250,9 @@ class _ClientesScreenState extends State<ClientesScreen> {
                         children: [
                           Container(
                             decoration: BoxDecoration(
-                              color: Color(0xFF333649),
+                              color: _currentTheme == 'TemaPrimario'
+                                  ? TemaPrimario.backId
+                                  : TemaSecundario.backId,
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                             padding: EdgeInsets.all(8.0),
@@ -234,7 +262,9 @@ class _ClientesScreenState extends State<ClientesScreen> {
                                 style: TextStyle(
                                   fontSize: MediaQuery.of(context).size.width *
                                       0.04, // 4% da largura da tela
-                                  color: Colors.white,
+                                  color: _currentTheme == 'TemaPrimario'
+                                      ? TemaPrimario.idColor
+                                      : TemaSecundario.idColor,
                                 ),
                               ),
                             ),
@@ -251,6 +281,9 @@ class _ClientesScreenState extends State<ClientesScreen> {
                                     fontSize:
                                         MediaQuery.of(context).size.width *
                                             0.04, // 4% da largura da tela
+                                    color: _currentTheme == 'TemaPrimario'
+                                        ? TemaPrimario.listagemTextColor
+                                        : TemaSecundario.listagemTextColor,
                                   ),
                                 ),
                                 Row(
@@ -259,6 +292,9 @@ class _ClientesScreenState extends State<ClientesScreen> {
                                       'Cel: ${filteredClientes[index]['celular'].isNotEmpty ? filteredClientes[index]['celular'] : '---'}',
                                       style: TextStyle(
                                         fontSize: MediaQuery.of(context).size.width * 0.029,
+                                        color: _currentTheme == 'TemaPrimario'
+                                            ? TemaPrimario.listagemTextColor
+                                            : TemaSecundario.listagemTextColor,
                                       ),
                                     ),
                                     SizedBox(width: 8.0),
@@ -266,6 +302,9 @@ class _ClientesScreenState extends State<ClientesScreen> {
                                       'Tel: ${filteredClientes[index]['telefone'].isNotEmpty ? filteredClientes[index]['telefone'] : '---'}',
                                       style: TextStyle(
                                         fontSize: MediaQuery.of(context).size.width * 0.029,
+                                        color: _currentTheme == 'TemaPrimario'
+                                            ? TemaPrimario.listagemTextColor
+                                            : TemaSecundario.listagemTextColor,
                                       ),
                                     ),
                                   ],

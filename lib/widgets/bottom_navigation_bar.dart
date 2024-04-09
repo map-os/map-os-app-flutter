@@ -12,12 +12,6 @@ class BottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('My App'),
-      ),
-      body: Container(
-        // Seu conteúdo da página aqui
-      ),
       bottomNavigationBar: BottomNavigationBarWidget(
         activeIndex: 0,
         context: context, // Pass context here
@@ -44,17 +38,6 @@ class BottomNavigationBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Color(0xffffff),
-        boxShadow: [
-          // BoxShadow(
-          //   color: Colors.grey.withOpacity(0.5),
-          //   spreadRadius: 5,
-          //   blurRadius: 7,
-          //   offset: Offset(0, 3),
-          // ),
-        ],
-      ),
       child: CircleNavBar(
         activeIndex: activeIndex,
         onTap: _handleTap,

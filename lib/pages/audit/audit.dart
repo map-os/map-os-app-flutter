@@ -17,7 +17,7 @@ class _AuditState extends State<Audit> {
   bool _isLoading = false;
   ScrollController _scrollController = ScrollController();
 
-  String _currentTheme = 'TemaPrimario'; // Tema padrão
+  String _currentTheme = 'TemaSecundario'; // Tema padrão
 
   @override
   void initState() {
@@ -155,18 +155,9 @@ class _AuditState extends State<Audit> {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16), // Espaço entre os cards
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            _currentTheme == 'TemaPrimario'
-                ? TemaPrimario.gradienteColor1
-                : TemaSecundario.gradienteColor1,
-            _currentTheme == 'TemaPrimario'
-                ? TemaPrimario.gradienteColor2
-                : TemaSecundario.gradienteColor2,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: _currentTheme == 'TemaPrimario'
+            ? TemaPrimario.listagemCard
+            : TemaSecundario.listagemCard,
 
         borderRadius: BorderRadius.circular(8), // Borda arredondada
       ),

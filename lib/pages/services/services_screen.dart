@@ -93,10 +93,11 @@ class _ServicesScreenState extends State<ServicesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor:  _currentTheme == 'TemaPrimario'
-    ? TemaPrimario.backgroundColor
-        : TemaSecundario.backgroundColor,
+    ? TemaPrimario.listagemBackground
+        : TemaSecundario.listagemBackground,
       appBar: AppBar(
         automaticallyImplyLeading: false,
+
         title: !isSearching
             ? Text('Serviços')
             : TextField(
@@ -111,15 +112,17 @@ class _ServicesScreenState extends State<ServicesScreen> {
           },
           decoration: InputDecoration(
             hintText: 'Pesquisar...',
-            hintStyle: TextStyle(color: Colors.white),
+            hintStyle: TextStyle(color: _currentTheme == 'TemaPrimario'
+                ? TemaPrimario.buscaFont
+                : TemaSecundario.buscaFont),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide.none,
             ),
             filled: true,
             fillColor:   _currentTheme == 'TemaPrimario'
-          ? TemaPrimario.colorBusca
-              : TemaSecundario.colorBusca,
+          ? TemaPrimario.buscaBack
+              : TemaSecundario.buscaBack,
             contentPadding:
             EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           ),
@@ -153,8 +156,8 @@ class _ServicesScreenState extends State<ServicesScreen> {
               padding: const EdgeInsets.all(1.0),
               child: Card(
                 color: _currentTheme == 'TemaPrimario'
-                    ? TemaPrimario.primaryColor
-                    : TemaSecundario.secondaryColor,
+                    ? TemaPrimario.listagemCard
+                    : TemaSecundario.listagemCard,
                 child: ListTile(
                   onTap: () {
                     Navigator.push(
@@ -172,8 +175,8 @@ class _ServicesScreenState extends State<ServicesScreen> {
                       Container(
                         decoration: BoxDecoration(
                           color: _currentTheme == 'TemaPrimario'
-                            ? TemaPrimario.secondaryColor
-                            : TemaSecundario.primaryColor,
+                            ? TemaPrimario.backId
+                            : TemaSecundario.backId,
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         padding: EdgeInsets.all(8.0),
