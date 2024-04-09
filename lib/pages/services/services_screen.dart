@@ -8,6 +8,8 @@ import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
 import 'package:mapos_app/pages/services/services_add.dart';
 import 'package:intl/intl.dart';
 
+import '../../assets/app_colors.dart';
+
 class ServicesScreen extends StatefulWidget {
   @override
   _ServicesScreenState createState() => _ServicesScreenState();
@@ -19,11 +21,13 @@ class _ServicesScreenState extends State<ServicesScreen> {
   List<dynamic> filteredServices = [];
   bool isSearching = false;
   TextEditingController searchController = TextEditingController();
+  String _currentTheme = 'TemaPrimario';
 
   @override
   void initState() {
     super.initState();
     _getServices();
+    _getTheme();
   }
 
   Future<Map<String, dynamic>> _getCiKey() async {
@@ -88,25 +92,37 @@ class _ServicesScreenState extends State<ServicesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor:  _currentTheme == 'TemaPrimario'
+    ? TemaPrimario.listagemBackground
+        : TemaSecundario.listagemBackground,
       appBar: AppBar(
         automaticallyImplyLeading: false,
+
         title: !isSearching
             ? Text('Serviços')
             : TextField(
           controller: searchController,
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: _currentTheme == 'TemaPrimario'
+                ? TemaPrimario.ColorText
+                : TemaSecundario.ColorText,
+          ),
           onChanged: (value) {
             _filterServices(value);
           },
           decoration: InputDecoration(
             hintText: 'Pesquisar...',
-            hintStyle: TextStyle(color: Colors.white),
+            hintStyle: TextStyle(color: _currentTheme == 'TemaPrimario'
+                ? TemaPrimario.buscaFont
+                : TemaSecundario.buscaFont),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide.none,
             ),
             filled: true,
-            fillColor: Color(0xffe79a24),
+            fillColor:   _currentTheme == 'TemaPrimario'
+          ? TemaPrimario.buscaBack
+              : TemaSecundario.buscaBack,
             contentPadding:
             EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           ),
@@ -139,6 +155,9 @@ class _ServicesScreenState extends State<ServicesScreen> {
             return Padding(
               padding: const EdgeInsets.all(1.0),
               child: Card(
+                color: _currentTheme == 'TemaPrimario'
+                    ? TemaPrimario.listagemCard
+                    : TemaSecundario.listagemCard,
                 child: ListTile(
                   onTap: () {
                     Navigator.push(
@@ -155,7 +174,9 @@ class _ServicesScreenState extends State<ServicesScreen> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: Color(0xFF333649),
+                          color: _currentTheme == 'TemaPrimario'
+                            ? TemaPrimario.backId
+                            : TemaSecundario.backId,
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         padding: EdgeInsets.all(8.0),
@@ -166,7 +187,9 @@ class _ServicesScreenState extends State<ServicesScreen> {
                               fontSize:
                               MediaQuery.of(context).size.width *
                                   0.04, // 4% da largura da tela
-                              color: Colors.white,
+                              color: _currentTheme == 'TemaPrimario'
+                                  ? TemaPrimario.ColorText
+                                  : TemaSecundario.ColorTextID,
                             ),
                           ),
                         ),
@@ -183,10 +206,18 @@ class _ServicesScreenState extends State<ServicesScreen> {
                                 fontSize:
                                 MediaQuery.of(context).size.width *
                                     0.04, // 4% da largura da tela
+                                color: _currentTheme == 'TemaPrimario'
+                                    ? TemaPrimario.ColorText
+                                    : TemaSecundario.ColorText,
                               ),
                             ),
                             Text(
                               'Valor: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(double.parse(filteredServices[index]['preco']))}',
+                              style: TextStyle(
+                                color: _currentTheme == 'TemaPrimario'
+                                    ? TemaPrimario.ColorText
+                                    : TemaSecundario.ColorText,
+                              ),
                             ),
                           ],
                         ),
@@ -232,6 +263,14 @@ class _ServicesScreenState extends State<ServicesScreen> {
         onTap: _onItemTapped,
       ),
     );
+  }
+
+  Future<void> _getTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String theme = prefs.getString('theme') ?? 'TemaPrimario';
+    setState(() {
+      _currentTheme = theme;
+    });
   }
 
   void _onItemTapped(int index) {

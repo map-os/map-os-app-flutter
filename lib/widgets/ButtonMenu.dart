@@ -179,6 +179,7 @@ class _CircleNavBarState extends State<CircleNavBar> with TickerProviderStateMix
     double deviceWidth = MediaQuery.of(context).size.width;
 
     return Container(
+      color: Colors.transparent,
       margin: widget.padding,
       width: double.infinity,
       height: widget.height,

@@ -7,7 +7,7 @@ import 'package:mapos_app/pages/dashboard_screen.dart';
 import 'package:mapos_app/config/constants.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:mapos_app/assets/app_colors.dart';
 void main() {
   runApp(MyApp());
 }
@@ -21,41 +21,59 @@ class _MyAppState extends State<MyApp> {
   ThemeMode _themeMode = ThemeMode.light;
   void toggleTheme() {
     setState(() {
+      _getTheme();
       _themeMode =
           _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
     });
   }
 
+  String _currentTheme = 'TemaSecundario';
+  Future<void> _getTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String theme = prefs.getString('theme') ?? 'TemaPrimario';
+    setState(() {
+      _currentTheme = theme;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    _getTheme();
     return MaterialApp(
       title: 'MAP-OS',
       theme: ThemeData.light().copyWith(
           appBarTheme: AppBarTheme(
-        color: Color(0xff333649),
+        color: _currentTheme == 'TemaPrimario'
+            ? TemaPrimario.primaryColor
+            : TemaSecundario.primaryColor,
         iconTheme: IconThemeData(
-          color: Colors.white,
+          color: _currentTheme == 'TemaPrimario'
+              ? TemaPrimario.iconColor
+              : TemaSecundario.iconColor,
         ),
         toolbarTextStyle: TextTheme(
           headline6: TextStyle(
-            color: Colors.white,
+            color: _currentTheme == 'TemaPrimario'
+                ? TemaPrimario.ColorText
+                : TemaSecundario.ColorText,
             fontSize: 20.0,
             fontWeight: FontWeight.bold,
           ),
         ).bodyText2,
         titleTextStyle: TextTheme(
           headline6: TextStyle(
-            color: Colors.white,
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
+            color: _currentTheme == 'TemaPrimario'
+                ? TemaPrimario.ColorText
+                : TemaSecundario.ColorText,
           ),
         ).headline6,
       )),
       darkTheme: ThemeData.dark().copyWith(
         // Defina a cor da AppBar no tema escuro aqui
         appBarTheme: AppBarTheme(
-          color: Color(
-              0xff333649),
+          color: _currentTheme == 'TemaPrimario'
+              ? TemaPrimario.primaryColor
+              : TemaSecundario.primaryColor,
         ),
       ),
       themeMode: _themeMode,
@@ -74,9 +92,9 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   TextEditingController _usernameController =
-      TextEditingController();
+      TextEditingController(text: 'teste@teste.com');
   TextEditingController _passwordController =
-      TextEditingController();
+      TextEditingController(text: '123456');
   bool _showPassword = false;
   @override
   void initState() {
@@ -105,77 +123,94 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   _showBaseUrlInputDialog(BuildContext context) {
-    showDialog(
+    String newBaseUrl = '';
+    bool isButtonEnabled = false;
+
+    showModalBottomSheet(
       context: context,
-      barrierDismissible: false,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (BuildContext context) {
-        String newBaseUrl = '';
-        bool isButtonEnabled = false;
-
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text(
-                'URL do MAP-OS não definida',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
+        return SingleChildScrollView(
+          // Adicionando SingleChildScrollView para rolar o conteúdo quando o teclado aparecer
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              // Adicionando espaço extra abaixo do modal para acomodar o teclado
+              left: 20,
+              right: 20,
+              top: 20,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'URL do MAP-OS não definida',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
                 ),
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    'Informe a URL do seu MAP-OS. ',
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
+                SizedBox(height: 20),
+                Text(
+                  'Informe a URL do seu MAP-OS. ',
+                  style: TextStyle(
+                    fontSize: 16,
                   ),
-                  SizedBox(height: 10),
-                  TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        newBaseUrl = value.trim(); // Remover espaços em branco
-                        isButtonEnabled = newBaseUrl.isNotEmpty;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Ex: https://mapos.com.br',
-                      border: OutlineInputBorder(),
-                    ),
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      newBaseUrl = value.trim(); // Remover espaços em branco
+                      isButtonEnabled = newBaseUrl.isNotEmpty;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Ex: https://mapos.com.br',
+                    border: OutlineInputBorder(),
                   ),
-                ],
-              ),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: isButtonEnabled
-                      ? () async {
-                    // Remover a barra no final da URL, se presente
-                    if (newBaseUrl.endsWith('/')) {
-                      newBaseUrl = newBaseUrl.substring(0, newBaseUrl.length - 1);
-                    }
+                ),
+                SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: isButtonEnabled
+                        ? () async {
+                      // Remover a barra no final da URL, se presente
+                      if (newBaseUrl.endsWith('/')) {
+                        newBaseUrl = newBaseUrl.substring(0, newBaseUrl.length - 1);
+                      }
 
-                    SharedPreferences prefs = await SharedPreferences.getInstance();
-                    prefs.setString('baseURL', newBaseUrl);
-                    Navigator.of(context).pop();
-                    print(newBaseUrl);
-                  }
-                      : null,
-                  child: Text(
-                    'Salvar',
-                    style: TextStyle(
-                      color: isButtonEnabled ? Colors.blue : Colors.grey,
-                      fontWeight: FontWeight.bold,
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      prefs.setString('baseURL', newBaseUrl);
+                      Navigator.of(context).pop();
+                      print(newBaseUrl);
+                    }
+                        : null,
+                    child: Text(
+                      'Salvar',
+                      style: TextStyle(
+                        color: isButtonEnabled ? Colors.blue : Colors.grey,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ),
               ],
-            );
-          },
+            ),
+          ),
         );
       },
     );
   }
+
+
+
 
 
   Future<void> _login() async {
