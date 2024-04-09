@@ -7,6 +7,7 @@ import 'package:mapos_app/pages/products/products_manager.dart';
 import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
 import 'package:mapos_app/pages/products/products_add.dart';
 import 'package:intl/intl.dart';
+import 'package:mapos_app/assets/app_colors.dart';
 
 class ProductsScreen extends StatefulWidget {
   @override
@@ -19,11 +20,21 @@ class _ProductsScreenState extends State<ProductsScreen> {
   List<dynamic> filteredProducts = [];
   bool isSearching = false;
   TextEditingController searchController = TextEditingController();
+  String _currentTheme = 'TemaSecundario'; // Tema padrão
 
   @override
   void initState() {
     super.initState();
     _getProducts();
+    _getTheme();
+  }
+
+  Future<void> _getTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String theme = prefs.getString('theme') ?? 'TemaPrimario';
+    setState(() {
+      _currentTheme = theme;
+    });
   }
 
   Future<Map<String, dynamic>> _getCiKey() async {
@@ -89,25 +100,38 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: _currentTheme == 'TemaPrimario'
+          ? TemaPrimario.listagemBackground
+          : TemaSecundario.listagemBackground,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: !isSearching
             ? Text('Produtos')
             : TextField(
                 controller: searchController,
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                    color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.buscaFont
+                        : TemaSecundario.buscaFont,
+                ),
                 onChanged: (value) {
                   _filterProducts(value);
                 },
                 decoration: InputDecoration(
                   hintText: 'Pesquisar...',
-                  hintStyle: TextStyle(color: Colors.white),
+                  hintStyle: TextStyle(
+                      color: _currentTheme == 'TemaPrimario'
+                          ? TemaPrimario.buscaFont
+                          : TemaSecundario.buscaFont,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: Color(0xff585c77),
+                  fillColor: _currentTheme == 'TemaPrimario'
+                      ? TemaPrimario.buscaBack
+                      : TemaSecundario.buscaBack,
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 ),
@@ -140,6 +164,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   return Padding(
                     padding: const EdgeInsets.all(1.0),
                     child: Card(
+                      color: _currentTheme == 'TemaPrimario'
+                          ? TemaPrimario.listagemCard
+                          : TemaSecundario.listagemCard,
                       child: ListTile(
                         onTap: () async {
                           Map<String, dynamic> permissions = await _getCiKey();
@@ -174,7 +201,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           children: [
                             Container(
                               decoration: BoxDecoration(
-                                color: Color(0xFF333649),
+                                color: _currentTheme == 'TemaPrimario'
+                               ? TemaPrimario.backId
+                            : TemaSecundario.backId,
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               padding: EdgeInsets.all(8.0),
@@ -185,7 +214,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                     fontSize:
                                         MediaQuery.of(context).size.width *
                                             0.04, // 4% da largura da tela
-                                    color: Colors.white,
+                                    color: _currentTheme == 'TemaPrimario'
+                                        ? TemaPrimario.idColor
+                                        : TemaSecundario.idColor,
                                   ),
                                 ),
                               ),
@@ -201,11 +232,19 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                       fontWeight: FontWeight.bold,
                                       fontSize:
                                           MediaQuery.of(context).size.width *
-                                              0.04, // 4% da largura da tela
+                                              0.04,
+                                      color: _currentTheme == 'TemaPrimario'
+                                          ? TemaPrimario.listagemTextColor
+                                          : TemaSecundario.listagemTextColor,// 4% da largura da tela
                                     ),
                                   ),
                                   Text(
                                     'Valor: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(double.parse(filteredProducts[index]['precoVenda']))}',
+                                    style: TextStyle(
+                                      color: _currentTheme == 'TemaPrimario'
+                                          ? TemaPrimario.listagemTextColor
+                                          : TemaSecundario.listagemTextColor,
+                                    ),
                                   ),
                                 ],
                               ),

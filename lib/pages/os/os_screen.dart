@@ -8,6 +8,7 @@ import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
 // import 'package:mapos_app/pages/os/os_add.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:intl/intl.dart';
+import 'package:mapos_app/assets/app_colors.dart';
 /*
 SANTT -- 2024
 TODOS OS PRINTS SERÃO REMOVIDOS E SUBSTITUIDOS POR SNACKBAR --
@@ -24,11 +25,21 @@ class _OsScreenState extends State<OsScreen> {
   List<dynamic> filteredOs = [];
   bool isSearching = false;
   TextEditingController searchController = TextEditingController();
+  String _currentTheme = 'TemaSecundario'; // Tema padrão
 
   @override
   void initState() {
     super.initState();
     _getOs();
+    _getTheme();
+  }
+
+  Future<void> _getTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String theme = prefs.getString('theme') ?? 'TemaPrimario';
+    setState(() {
+      _currentTheme = theme;
+    });
   }
 
   Future<Map<String, dynamic>> _getCiKey() async {
@@ -115,25 +126,38 @@ class _OsScreenState extends State<OsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: _currentTheme == 'TemaPrimario'
+    ? TemaPrimario.listagemBackground
+        : TemaSecundario.listagemBackground,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: !isSearching
             ? Text('Ordens de Serviço')
             : TextField(
                 controller: searchController,
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                    color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.buscaFont
+                        : TemaSecundario.buscaFont,
+                ),
                 onChanged: (value) {
                   _filterOs(value);
                 },
                 decoration: InputDecoration(
                   hintText: 'Pesquisar...',
-                  hintStyle: TextStyle(color: Colors.white),
+                  hintStyle: TextStyle(
+                      color: _currentTheme == 'TemaPrimario'
+                          ? TemaPrimario.buscaFont
+                          : TemaSecundario.buscaFont,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: Color(0xff56596e),
+                  fillColor: _currentTheme == 'TemaPrimario'
+                      ? TemaPrimario.buscaBack
+                      : TemaSecundario.buscaBack,
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 ),
@@ -165,6 +189,9 @@ class _OsScreenState extends State<OsScreen> {
             padding: const EdgeInsets.symmetric(
                 vertical: 0.0),
             child: Card(
+              color: _currentTheme == 'TemaPrimario'
+                  ? TemaPrimario.listagemCard
+                  : TemaSecundario.listagemCard,
               margin: EdgeInsets.symmetric(
                   vertical: 4.0,
                   horizontal: 10.0),
@@ -186,7 +213,9 @@ class _OsScreenState extends State<OsScreen> {
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            color: Color(0xFF333649),
+                            color: _currentTheme == 'TemaPrimario'
+                ? TemaPrimario.backId
+                    : TemaSecundario.backId,
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           padding: EdgeInsets.all(10.0),
@@ -197,7 +226,9 @@ class _OsScreenState extends State<OsScreen> {
                                 fontSize: (MediaQuery.of(context).size.width *
                                     0.040),
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: _currentTheme == 'TemaPrimario'
+                                    ? TemaPrimario.idColor
+                                    : TemaSecundario.idColor,
                               ),
                             ),
                           ),
@@ -212,6 +243,9 @@ class _OsScreenState extends State<OsScreen> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: (MediaQuery.of(context).size.width *
                                     0.040),
+                                color: _currentTheme == 'TemaPrimario'
+                                    ? TemaPrimario.listagemTextColor
+                                    : TemaSecundario.listagemTextColor,
                               ),
                             ),
                             Text(
@@ -219,6 +253,9 @@ class _OsScreenState extends State<OsScreen> {
                               style: TextStyle(
                                 fontSize: (MediaQuery.of(context).size.width *
                                     0.0350),
+                                color: _currentTheme == 'TemaPrimario'
+                                    ? TemaPrimario.listagemTextColor
+                                    : TemaSecundario.listagemTextColor,
                               ),
                             ),
                             Text(
@@ -226,6 +263,9 @@ class _OsScreenState extends State<OsScreen> {
                               style: TextStyle(
                                 fontSize: (MediaQuery.of(context).size.width *
                                     0.0350),
+                                color: _currentTheme == 'TemaPrimario'
+                                    ? TemaPrimario.listagemTextColor
+                                    : TemaSecundario.listagemTextColor,
                               ),
                             ),
                           ],

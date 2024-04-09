@@ -9,8 +9,9 @@ class OSAberta {
   final String nomeCliente;
   final String dataInicial;
   final String dataFinal;
+  final String status;
 
-  OSAberta({required this.id, required this.nomeCliente, required this.dataInicial, required this.dataFinal});
+  OSAberta({required this.id, required this.nomeCliente, required this.dataInicial, required this.dataFinal, required this.status});
 }
 
 class OSAndamento {
@@ -18,8 +19,9 @@ class OSAndamento {
   final String nomeCliente;
   final String dataInicial;
   final String dataFinal;
+  final String status;
 
-  OSAndamento({required this.id, required this.nomeCliente, required this.dataInicial, required this.dataFinal});
+  OSAndamento({required this.id, required this.nomeCliente, required this.dataInicial, required this.dataFinal, required this.status});
 }
 
 class EstoqueBaixo {
@@ -74,6 +76,7 @@ class DashboardData {
           nomeCliente: os['nomeCliente'].toString(),
           dataInicial: os['dataInicial'].toString(),
           dataFinal: os['dataFinal'].toString(),
+          status: os['status'].toString(),
         ))
             .toList();
         osAndamentoList = data['result']['osAndamento']
@@ -82,6 +85,7 @@ class DashboardData {
           nomeCliente: os['nomeCliente'].toString(),
           dataInicial: os['dataInicial'].toString(),
           dataFinal: os['dataFinal'].toString(),
+          status: os['status'].toString(),
         ))
             .toList();
         estoqueBaixoList = data['result']['estoqueBaixo']

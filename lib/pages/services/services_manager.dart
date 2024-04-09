@@ -20,7 +20,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
   late TextEditingController _descricaoServicoController;
   late TextEditingController _precoServicoController;
   bool _editingEnabled = false;
-  String _currentTheme = 'TemaPrimario'; // Tema padrão
+  String _currentTheme = 'TemaSecundario'; // Tema padrão
 
   @override
   void initState() {
@@ -58,8 +58,8 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _currentTheme == 'TemaPrimario'
-          ? TemaPrimario.backgroundColor
-          : TemaSecundario.backgroundColor,
+          ? TemaPrimario.editbackColor
+          : TemaSecundario.editbackColor,
       appBar: AppBar(
         title: Text('Editar Serviço'),
         actions: [
@@ -67,7 +67,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
             icon: Icon(_editingEnabled ? Icons.edit_note_sharp : Icons.edit,
               color: _currentTheme == 'TemaPrimario'
                   ? TemaPrimario.iconColor
-                  : TemaSecundario.secondaryColor,
+                  : TemaSecundario.iconColor,
             ),
             onPressed: () async {
               Map<String, dynamic> permissionsMap = await _getCiKey();
@@ -162,7 +162,6 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                         : TemaSecundario.inputBorderColor, width: 1.0), // Cor da borda quando o campo está desabilitado
                   ),
                 ),
-                keyboardType: TextInputType.number,
               ),
               SizedBox(height: 16.0),
               TextField(
@@ -213,7 +212,6 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                         : TemaSecundario.inputBorderColor, width: 1.0), // Cor da borda quando o campo está desabilitado
                   ),
                 ),
-                keyboardType: TextInputType.number,
               ),
               SizedBox(height: 16.0),
               TextField(
