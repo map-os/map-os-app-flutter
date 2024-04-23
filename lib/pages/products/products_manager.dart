@@ -93,6 +93,38 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
               }
             },
           ),
+          IconButton(
+            icon: Icon(Icons.delete),
+            color: Colors.red,
+            onPressed: () async {
+              Map<String, dynamic> permissionsMap = await _getCiKey();
+              List<dynamic> permissoes = permissionsMap['permissoes'];
+              bool hasPermissionToDelete = false;
+              for (var permissao in permissoes) {
+                if (permissao['dProduto'] == '1') {
+                  hasPermissionToDelete = true;
+                  break;
+                }
+              }
+              if (hasPermissionToDelete) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.green,
+                    content: Text('Produto Excluido com sucesso'),
+                  ),
+                );
+                _deleteProduct(); // Aqui chama a função para deletar fora do if
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.red,
+                    content: Text('Você não tem permissões para deletar.'),
+                  ),
+                );
+              }
+            },
+          ),
+
         ],
       ),
       body: Padding(
@@ -253,8 +285,8 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                           'unidade': 'UNID',
                           'estoque': _productEstoqueController.text,
                           'estoqueMinimo': _productEstoqueMinimoController.text,
-                          'entrada': '',
-                          'saida': '',
+                          'entrada': '1',
+                          'saida': '1',
                         };
 
                         bool success = await _updateProduct(updatedProduct);
@@ -309,11 +341,13 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         Uri.parse(url),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'X-API-KEY': ciKey['ciKey'],
+          'Authorization': 'Bearer ${ciKey['ciKey']}',
         },
         body: jsonEncode(updatedProduct),
       );
+
       if (response.statusCode == 200) {
+        Navigator.pop(context);
         print('Produto atualizado com sucesso');
         return true;
       } else {
@@ -322,6 +356,35 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
       }
     } catch (error) {
       print('Erro ao enviar solicitação PUT: $error');
+      return false;
+    }
+  }
+  Future<bool> _deleteProduct() async {
+    Map<String, dynamic> ciKey = await _getCiKey();
+
+    var url =
+        '${APIConfig.baseURL}${APIConfig.prodtuostesEndpoint}/${widget.product['idProdutos']}';
+
+    try {
+      var response = await http.delete(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${ciKey['ciKey']}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        Navigator.pop(context);
+        print('Produto Excluido com sucesso');
+
+        return true;
+      } else {
+        print('Falha ao Excluir Produto o produto: ${response.reasonPhrase}');
+        return false;
+      }
+    } catch (error) {
+      print('Erro ao enviar solicitação Delete: $error');
       return false;
     }
   }

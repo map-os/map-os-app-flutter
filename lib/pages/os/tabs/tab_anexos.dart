@@ -164,8 +164,8 @@ class _TabAnexosState extends State<TabAnexos> {
       Map<String, dynamic> keyAndPermissions =
       await _getCiKeyAndPermissions();
       String ciKey = keyAndPermissions['ciKey'] ?? '';
-      Map<String, String> headers = {'X-API-KEY': ciKey};
-      var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}?X-API-KEY=$ciKey';
+      Map<String, String> headers = {'Authorization': 'Bearer $ciKey',};
+      var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
 
       var response = await http.get(Uri.parse(url), headers: headers);
 
@@ -255,14 +255,10 @@ class _TabAnexosState extends State<TabAnexos> {
 
       var response = await http.delete(
         Uri.parse(url),
-        headers: {'X-API-KEY': ciKey},
+        headers: {'Authorization': 'Bearer $ciKey'},
       );
 
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.body);
-        {
-          print('problema com sua sessão, faça login novamente!');
-        }
         _getAnexosOs();
       } else {}
     } catch (e) {
@@ -341,8 +337,7 @@ class _TabAnexosState extends State<TabAnexos> {
             .os['idOs']}/anexos'),
       );
 
-      request.headers['X-API-KEY'] = ciKey;
-
+      request.headers['Authorization'] ='Bearer ${ciKey}';
       request.files.add(
         http.MultipartFile(
           'userfile',

@@ -67,9 +67,8 @@ class _ClientesScreenState extends State<ClientesScreen> {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
     Map<String, String> headers = {
-      'X-API-KEY': ciKey,
+      'Authorization': 'Bearer $ciKey',
     };
-
     var url =
         '${APIConfig.baseURL}${APIConfig.clientesEndpoint}';
 
@@ -124,7 +123,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
       final Map<String, dynamic> keyAndPermissions = await _getCiKey();
       final String ciKey = keyAndPermissions['ciKey'] ?? '';
       Map<String, String> headers = {
-        'X-API-KEY': ciKey,
+        'Authorization': 'Bearer $ciKey',
       };
       final url =
           '${APIConfig.baseURL}${APIConfig.clientesEndpoint}?search=$searchText';
@@ -319,7 +318,9 @@ class _ClientesScreenState extends State<ClientesScreen> {
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 8, left: 5),
+     child:  FloatingActionButton(
         onPressed: () async {
           Map<String, dynamic> permissions = await _getCiKey();
           bool hasPermissionToAdd = false;
@@ -344,7 +345,10 @@ class _ClientesScreenState extends State<ClientesScreen> {
             );
           }
         },
-        child: Icon(Icons.add),
+       child: Icon(Icons.add, color:
+       Color(0xff5fb061)),
+       backgroundColor: Color(0xFFECF6ED),
+      ),
       ),
       bottomNavigationBar: BottomNavigationBarWidget(
         activeIndex: _selectedIndex,

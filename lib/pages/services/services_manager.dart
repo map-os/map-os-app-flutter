@@ -20,7 +20,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
   late TextEditingController _descricaoServicoController;
   late TextEditingController _precoServicoController;
   bool _editingEnabled = false;
-  String _currentTheme = 'TemaSecundario'; // Tema padrão
+  String _currentTheme = 'TemaSecundario';
 
   @override
   void initState() {
@@ -88,12 +88,43 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    backgroundColor:   _currentTheme == 'TemaPrimario'
-                      ? TemaPrimario.snackBarBackgrounColorErro
-                      : TemaSecundario.snackBarBackgrounColorErro,
+                    backgroundColor: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.snackBarBackgrounColorErro
+                        : TemaSecundario.snackBarBackgrounColorErro,
                     content:
-                        Text('Você não tem permissões para editar serviços.',
-                        ),
+                    Text('Você não tem permissões para editar serviços.',
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.delete),
+            color: Colors.red,
+            onPressed: () async {
+              Map<String, dynamic> permissionsMap = await _getCiKey();
+              List<dynamic> permissoes = permissionsMap['permissoes'];
+              bool hasPermissionToDelete = false;
+              for (var permissao in permissoes) {
+                if (permissao['dServiço'] == '1') {
+                  hasPermissionToDelete = true;
+                  break;
+                }
+              }
+              if (hasPermissionToDelete) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.green,
+                    content: Text('Serviço Excluido com sucesso'),
+                  ),
+                );
+                _deleteService(); // Aqui chama a função para deletar fora do if
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.red,
+                    content: Text('Você não tem permissões para Excluir.'),
                   ),
                 );
               }
@@ -109,9 +140,11 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
             children: [
               Text(
                 'ID do Serviço: ${widget.servico['idServicos'] ?? 'N/A'}',
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: _currentTheme == 'TemaPrimario'
-                    ? TemaPrimario.ColorText
-                    : TemaSecundario.ColorText),
+                style: TextStyle(fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                    color: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.ColorText
+                        : TemaSecundario.ColorText),
               ),
               SizedBox(height: 16.0),
               TextField(
@@ -129,37 +162,47 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                       fontWeight: FontWeight.bold,
                       fontSize: 18
                   ),
-                  prefixIcon: Icon(Icons.attach_money, color: _currentTheme == 'TemaPrimario'
+                  prefixIcon: Icon(
+                    Icons.file_present, color: _currentTheme == 'TemaPrimario'
                       ? TemaPrimario.iconColor
                       : TemaSecundario.iconColor,),
                   filled: true,
                   fillColor: _currentTheme == 'TemaPrimario'
                       ? TemaPrimario.inputColor
                       : TemaSecundario.inputColor,
-                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  contentPadding: EdgeInsets.symmetric(
+                      vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
-                        ? TemaPrimario.inputBorderColor
-                        : TemaSecundario.inputBorderColor, width: 2.0), // Cor da borda quando não está em foco
+                    borderSide: BorderSide(
+                        color: _currentTheme == 'TemaPrimario'
+                            ? TemaPrimario.inputBorderColor
+                            : TemaSecundario.inputBorderColor,
+                        width: 2.0), // Cor da borda quando não está em foco
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
-                        ? TemaPrimario.inputBorderColor
-                        : TemaSecundario.inputBorderColor, width: 2.0), // Cor da borda quando está em foco
+                    borderSide: BorderSide(
+                        color: _currentTheme == 'TemaPrimario'
+                            ? TemaPrimario.inputBorderColor
+                            : TemaSecundario.inputBorderColor,
+                        width: 2.0), // Cor da borda quando está em foco
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
-                        ? TemaPrimario.inputBorderColor
-                        : TemaSecundario.inputBorderColor, width: 1.0), // Cor da borda quando o campo está habilitado e não está em foco
+                    borderSide: BorderSide(
+                        color: _currentTheme == 'TemaPrimario'
+                            ? TemaPrimario.inputBorderColor
+                            : TemaSecundario.inputBorderColor,
+                        width: 1.0), // Cor da borda quando o campo está habilitado e não está em foco
                   ),
                   disabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
-                        ? TemaPrimario.inputBorderColor
-                        : TemaSecundario.inputBorderColor, width: 1.0), // Cor da borda quando o campo está desabilitado
+                    borderSide: BorderSide(
+                        color: _currentTheme == 'TemaPrimario'
+                            ? TemaPrimario.inputBorderColor
+                            : TemaSecundario.inputBorderColor,
+                        width: 1.0), // Cor da borda quando o campo está desabilitado
                   ),
                 ),
               ),
@@ -179,37 +222,47 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                       fontWeight: FontWeight.bold,
                       fontSize: 18
                   ),
-                  prefixIcon: Icon(Icons.attach_money, color: _currentTheme == 'TemaPrimario'
+                  prefixIcon: Icon(
+                    Icons.description_sharp, color: _currentTheme == 'TemaPrimario'
                       ? TemaPrimario.iconColor
                       : TemaSecundario.iconColor,),
                   filled: true,
                   fillColor: _currentTheme == 'TemaPrimario'
                       ? TemaPrimario.inputColor
                       : TemaSecundario.inputColor,
-                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  contentPadding: EdgeInsets.symmetric(
+                      vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
-                        ? TemaPrimario.inputBorderColor
-                        : TemaSecundario.inputBorderColor, width: 2.0), // Cor da borda quando não está em foco
+                    borderSide: BorderSide(
+                        color: _currentTheme == 'TemaPrimario'
+                            ? TemaPrimario.inputBorderColor
+                            : TemaSecundario.inputBorderColor,
+                        width: 2.0), // Cor da borda quando não está em foco
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
-                        ? TemaPrimario.inputBorderColor
-                        : TemaSecundario.inputBorderColor, width: 2.0), // Cor da borda quando está em foco
+                    borderSide: BorderSide(
+                        color: _currentTheme == 'TemaPrimario'
+                            ? TemaPrimario.inputBorderColor
+                            : TemaSecundario.inputBorderColor,
+                        width: 2.0), // Cor da borda quando está em foco
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
-                        ? TemaPrimario.inputBorderColor
-                        : TemaSecundario.inputBorderColor, width: 1.0), // Cor da borda quando o campo está habilitado e não está em foco
+                    borderSide: BorderSide(
+                        color: _currentTheme == 'TemaPrimario'
+                            ? TemaPrimario.inputBorderColor
+                            : TemaSecundario.inputBorderColor,
+                        width: 1.0), // Cor da borda quando o campo está habilitado e não está em foco
                   ),
                   disabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
-                        ? TemaPrimario.inputBorderColor
-                        : TemaSecundario.inputBorderColor, width: 1.0), // Cor da borda quando o campo está desabilitado
+                    borderSide: BorderSide(
+                        color: _currentTheme == 'TemaPrimario'
+                            ? TemaPrimario.inputBorderColor
+                            : TemaSecundario.inputBorderColor,
+                        width: 1.0), // Cor da borda quando o campo está desabilitado
                   ),
                 ),
               ),
@@ -226,40 +279,50 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                   labelStyle: TextStyle(color: _currentTheme == 'TemaPrimario'
                       ? TemaPrimario.labelColor
                       : TemaSecundario.labelColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18
                   ),
-                  prefixIcon: Icon(Icons.attach_money, color: _currentTheme == 'TemaPrimario'
+                  prefixIcon: Icon(
+                    Icons.attach_money, color: _currentTheme == 'TemaPrimario'
                       ? TemaPrimario.iconColor
                       : TemaSecundario.iconColor,),
                   filled: true,
                   fillColor: _currentTheme == 'TemaPrimario'
-                ? TemaPrimario.inputColor
-                    : TemaSecundario.inputColor,
-                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                      ? TemaPrimario.inputColor
+                      : TemaSecundario.inputColor,
+                  contentPadding: EdgeInsets.symmetric(
+                      vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
-                        ? TemaPrimario.inputBorderColor
-                        : TemaSecundario.inputBorderColor, width: 2.0), // Cor da borda quando não está em foco
+                    borderSide: BorderSide(
+                        color: _currentTheme == 'TemaPrimario'
+                            ? TemaPrimario.inputBorderColor
+                            : TemaSecundario.inputBorderColor,
+                        width: 2.0), // Cor da borda quando não está em foco
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
-                        ? TemaPrimario.inputBorderColor
-                        : TemaSecundario.inputBorderColor, width: 2.0), // Cor da borda quando está em foco
+                    borderSide: BorderSide(
+                        color: _currentTheme == 'TemaPrimario'
+                            ? TemaPrimario.inputBorderColor
+                            : TemaSecundario.inputBorderColor,
+                        width: 2.0), // Cor da borda quando está em foco
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
-                        ? TemaPrimario.inputBorderColor
-                        : TemaSecundario.inputBorderColor, width: 1.0), // Cor da borda quando o campo está habilitado e não está em foco
+                    borderSide: BorderSide(
+                        color: _currentTheme == 'TemaPrimario'
+                            ? TemaPrimario.inputBorderColor
+                            : TemaSecundario.inputBorderColor,
+                        width: 1.0), // Cor da borda quando o campo está habilitado e não está em foco
                   ),
                   disabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: _currentTheme == 'TemaPrimario'
-                        ? TemaPrimario.inputBorderColor
-                        : TemaSecundario.inputBorderColor, width: 1.0), // Cor da borda quando o campo está desabilitado
+                    borderSide: BorderSide(
+                        color: _currentTheme == 'TemaPrimario'
+                            ? TemaPrimario.inputBorderColor
+                            : TemaSecundario.inputBorderColor,
+                        width: 1.0), // Cor da borda quando o campo está desabilitado
                   ),
                 ),
                 keyboardType: TextInputType.number,
@@ -269,18 +332,19 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
               ElevatedButton(
                 onPressed: _editingEnabled ? _saveChanges : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _currentTheme == 'TemaPrimario'
-                ? TemaPrimario.botaoBackgroudColor
-                    : TemaSecundario.botaoBackgroudColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  minimumSize: Size(200, 50),
-                  elevation: 2
+                    backgroundColor: _currentTheme == 'TemaPrimario'
+                        ? TemaPrimario.botaoBackgroudColor
+                        : TemaSecundario.botaoBackgroudColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                    minimumSize: Size(200, 50),
+                    elevation: 2
                 ),
                 child: Text(
                   'Salvar Alterações',
-                  style: TextStyle(fontSize: 18.0, color: _currentTheme == 'TemaPrimario'
+                  style: TextStyle(
+                    fontSize: 18.0, color: _currentTheme == 'TemaPrimario'
                       ? TemaPrimario.botaoTextColor
                       : TemaSecundario.botaoTextColor,),
                 ),
@@ -330,18 +394,46 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
 
     var url =
         '${APIConfig.baseURL}${APIConfig.servicossEndpoint}/${widget.servico['idServicos']}';
-    print(url);
+
     try {
       var response = await http.put(
         Uri.parse(url),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'X-API-KEY': ciKey['ciKey'],
+          'Authorization': 'Bearer ${ciKey['ciKey']}',
         },
         body: jsonEncode(updatedServico),
       );
       if (response.statusCode == 200) {
         print('Serviço atualizado com sucesso');
+        return true;
+      } else {
+        print('Falha ao atualizar o serviço: ${response.reasonPhrase}');
+        return false;
+      }
+    } catch (error) {
+      print('Erro ao enviar solicitação PUT: $error');
+      return false;
+    }
+  }
+
+  Future<bool> _deleteService() async {
+    Map<String, dynamic> ciKey = await _getCiKey();
+
+    var url =
+        '${APIConfig.baseURL}${APIConfig.servicossEndpoint}/${widget.servico['idServicos']}';
+
+    try {
+      var response = await http.delete(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${ciKey['ciKey']}',
+        },
+      );
+      if (response.statusCode == 200) {
+        print('Serviço atualizado com sucesso');
+        Navigator.pop(context);
         return true;
       } else {
         print('Falha ao atualizar o serviço: ${response.reasonPhrase}');

@@ -480,7 +480,7 @@ class _ClienteEditScreenState extends State<ClienteEditScreen> {
         Uri.parse(url),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'X-API-KEY': ciKey,
+          'Authorization': 'Bearer $ciKey',
         },
         body: jsonEncode(
             formattedCliente),

@@ -5,8 +5,7 @@ import 'package:mapos_app/pages/os/os_screen.dart';
 import 'package:mapos_app/pages/products/products_screen.dart';
 import 'package:mapos_app/pages/services/services_screen.dart';
 import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
-import 'package:mapos_app/widgets/menu_lateral.dart';
-import 'package:mapos_app/models/dashboardModel.dart';
+import 'package:mapos_app/data/dashboardData.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:mapos_app/pages/audit/audit.dart';
 import 'package:intl/intl.dart';
@@ -237,12 +236,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               },
               child: CircleAvatar(
                 radius: 15,
-                backgroundImage: _profileData['url_image_user'] != null
-                    ? Image
-                    .network(_profileData['url_image_user'])
-                    .image
-                    : AssetImage(
-                    'lib/assets/images/profile.png'),
+                backgroundImage: _profileData['url_image_user'] != null &&
+                    (_profileData['url_image_user'].toLowerCase().endsWith('.png') ||
+                        _profileData['url_image_user'].toLowerCase().endsWith('.jpg'))
+                    ? Image.network(_profileData['url_image_user']).image
+                    : AssetImage('lib/assets/images/profile.png'),
               ),
             ),
           ),
@@ -911,7 +909,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
     Map<String, String> headers = {
-      'X-API-KEY': ciKey,
+      'Authorization': 'Bearer $ciKey',
     };
 
     var url = '${APIConfig.baseURL}${APIConfig.profileEndpoint}';
@@ -921,7 +919,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (response.statusCode == 200) {
       var responseData = json.decode(response.body);
       var profileData = responseData['result']['usuario'];
-
+print(profileData);
       // Verifica se existe uma URL de imagem de usuário
       if (profileData.containsKey('url_image_user')) {
         // Carrega a imagem da URL

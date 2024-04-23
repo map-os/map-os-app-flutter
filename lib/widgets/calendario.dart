@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_neat_and_clean_calendar/flutter_neat_and_clean_calendar.dart';
-import 'package:mapos_app/models/dashboardModel.dart'; // Import the DashboardData class
+import 'package:mapos_app/data/dashboardData.dart'; // Import the DashboardData class
 
 class CalendarWidget extends StatefulWidget {
   @override

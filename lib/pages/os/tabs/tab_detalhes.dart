@@ -78,7 +78,7 @@ class _TabDetalhesState extends State<TabDetalhes> {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
     Map<String, String> headers = {
-      'X-API-KEY': ciKey,
+      'Authorization': 'Bearer ${ciKey}',
     };
     var url =
         '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
@@ -113,7 +113,7 @@ class _TabDetalhesState extends State<TabDetalhes> {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
     Map<String, String> headers = {
-      'X-API-KEY': ciKey,
+      'Authorization': 'Bearer ${ciKey}',
       'Content-Type': 'application/json',
     };
     Map<String, dynamic> requestBody = {
@@ -129,7 +129,6 @@ class _TabDetalhesState extends State<TabDetalhes> {
     };
 
     var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
-    print(jsonEncode(requestBody));
     var response = await http.put(
       Uri.parse(url),
       headers: headers,
@@ -202,18 +201,17 @@ class _TabDetalhesState extends State<TabDetalhes> {
               ),
               SizedBox(height: 16.0),
               DropdownButtonFormField<String>(
-                value: _selectedStatus ?? _statusController.text,
+                value: _selectedStatus,
                 onChanged: (newValue) {
                   setState(() {
-                    _selectedStatus = newValue ?? _statusController.text;
+                    _selectedStatus = newValue!;
                   });
                 },
                 decoration: InputDecoration(
                   labelText: 'Status',
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding:
-                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide.none,
@@ -223,7 +221,7 @@ class _TabDetalhesState extends State<TabDetalhes> {
                     borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
-                items: <String>[
+                items: [
                   'Aberto',
                   'Orçamento',
                   'Aprovado',
@@ -233,14 +231,14 @@ class _TabDetalhesState extends State<TabDetalhes> {
                   'Finalizado',
                   'Cancelado',
                   'Faturado',
-                ]
-                    .map<DropdownMenuItem<String>>((String value) {
+                ].map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
                   );
                 }).toList(),
               ),
+
               SizedBox(height: 16.0),
               Container(
                 alignment: Alignment.centerLeft,

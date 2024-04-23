@@ -265,12 +265,13 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
         Uri.parse(url),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'X-API-KEY': ciKey,
+          'Authorization': 'Bearer ${ciKey}',
         },
         body: jsonEncode(newProduct),
       );
       if (response.statusCode == 201) {
         print('Produto adicionado com sucesso');
+        Navigator.pop(context);
         return true;
       } else {
         print('Falha ao adicionar o produto: ${response.reasonPhrase}');

@@ -165,22 +165,23 @@ class _LoginPageState extends State<LoginPage> {
                 TextField(
                   onChanged: (value) {
                     setState(() {
-                      newBaseUrl = value.trim(); // Remover espaços em branco
+                      newBaseUrl = value.trim();
                       isButtonEnabled = newBaseUrl.isNotEmpty;
                     });
                   },
                   decoration: InputDecoration(
-                    hintText: 'Ex: https://mapos.com.br',
+                    hintText: 'Ex: https://mapos.com.br/index.php/api/v1',
+                    hintStyle: TextStyle(fontSize: 12), // Defina o tamanho do texto do hintText aqui
                     border: OutlineInputBorder(),
                   ),
                 ),
+
                 SizedBox(height: 20),
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: isButtonEnabled
                         ? () async {
-                      // Remover a barra no final da URL, se presente
                       if (newBaseUrl.endsWith('/')) {
                         newBaseUrl = newBaseUrl.substring(0, newBaseUrl.length - 1);
                       }

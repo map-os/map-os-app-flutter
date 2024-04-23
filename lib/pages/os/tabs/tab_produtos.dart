@@ -139,7 +139,7 @@ class _TabProdutosState extends State<TabProdutos> {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
     Map<String, String> headers = {
-      'X-API-KEY': ciKey,
+      'Authorization': 'Bearer $ciKey',
     };
     var url =
         '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
@@ -187,7 +187,7 @@ class _TabProdutosState extends State<TabProdutos> {
 
       var response = await http.delete(
         Uri.parse(url),
-        headers: {'X-API-KEY': ciKey},
+        headers: {'Authorization': 'Bearer $ciKey'},
       );
 
       if (response.statusCode == 200) {
@@ -216,10 +216,12 @@ class _TabProdutosState extends State<TabProdutos> {
   }
 
   Future<void> _mostrarDialogAdicionarProduto() async {
-    TextEditingController _controller = TextEditingController();
-    TextEditingController _quantityController =
-    TextEditingController(text: '1'); // Controller for quantity input
     List<dynamic> produtos = [];
+    Map<int, int> quantidades = {};
+
+    produtos.forEach((produto) {
+      quantidades[produto['idProduto']] = 1;
+    });
 
     await showDialog(
       context: context,
@@ -229,48 +231,65 @@ class _TabProdutosState extends State<TabProdutos> {
             return AlertDialog(
               title: Text('Adicionar Produto'),
               content: Container(
-                width: 300, // largura fixa
+                width: 300,
                 height: 400,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextField(
-                      controller: _controller,
-                      decoration: InputDecoration(hintText: 'Pesquisar produtos'),
+                      decoration: const InputDecoration(
+                        hintText: 'Pesquisar produtos',
+                        prefixIcon: Icon(Icons.search),
+                      ),
                       onChanged: (value) async {
                         produtos = await _buscarProdutos(value);
                         setState(() {});
                       },
                     ),
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _quantityController,
-                      decoration: InputDecoration(hintText: 'Quantidade'),
-                      keyboardType: TextInputType.number,
-                    ),
+                    const SizedBox(height: 10),
                     Expanded(
                       child: ListView.builder(
                         itemCount: produtos.length,
                         itemBuilder: (context, index) {
+                          final idProduto = int.tryParse(produtos[index]['idProdutos'].toString()) ?? 0;
+                          final descricao = produtos[index]['descricao'] ?? 'NaN';
+                          final precoProduto = produtos[index]['precoVenda'] ?? '';
+
                           return ListTile(
-                            title: Text(produtos[index]['descricao'] ?? 'NaN'),
-                            subtitle:
-                            Text(produtos[index]['idProdutos'] ?? 'NaN'),
+                            title: Row(
+                              children: [
+                                Expanded(child: Text(descricao)),
+                                IconButton(
+                                  icon: Icon(Icons.remove),
+                                  onPressed: () {
+                                    setState(() {
+                                      final quantidade = quantidades[idProduto] ?? 1; //minimo
+                                      if (quantidade > 1) { // é maior que 1
+                                        quantidades[idProduto] = quantidade - 1;
+                                      }
+                                    });
+                                  },
+                                ),
+
+                                Text(quantidades[idProduto]?.toString() ?? '1'),
+                                IconButton(
+                                  icon: Icon(Icons.add),
+                                  onPressed: () {
+                                    setState(() {
+                                      quantidades[idProduto] ??= 1;
+                                      quantidades[idProduto] = (quantidades[idProduto] ?? 1) + 1;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
                             onTap: () {
                               try {
-                                int idProduto =
-                                int.parse(produtos[index]['idProdutos']);
-                                String precoProduto =
-                                    produtos[index]['precoVenda'] ?? '';
-                                int quantidade =
-                                int.parse(_quantityController.text);
-
-                                _adicionarProduto(
-                                    idProduto, precoProduto, quantidade);
+                                final quantidade = quantidades[idProduto] ?? 1;
+                                _adicionarProduto(idProduto, precoProduto, quantidade);
                                 Navigator.of(context).pop();
                               } catch (e) {
-                                print(
-                                    'Erro ao converter ID do produto para inteiro: $e');
+                                print('Erro ao converter ID do produto para inteiro: $e');
                               }
                             },
                           );
@@ -287,6 +306,8 @@ class _TabProdutosState extends State<TabProdutos> {
     );
   }
 
+
+
   Future<List<dynamic>> _buscarProdutos(String query) async {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
@@ -295,7 +316,7 @@ class _TabProdutosState extends State<TabProdutos> {
         '${APIConfig.baseURL}${APIConfig.prodtuostesEndpoint}/?search=$query';
 
     var response =
-        await http.get(Uri.parse(url), headers: {'X-API-KEY': ciKey});
+        await http.get(Uri.parse(url), headers: {'Authorization': 'Bearer $ciKey',});
 
     if (response.statusCode == 200) {
       Map<String, dynamic> responseData = json.decode(response.body);
@@ -332,7 +353,7 @@ class _TabProdutosState extends State<TabProdutos> {
     try {
       var response = await http.post(
         Uri.parse(url),
-        headers: {'X-API-KEY': ciKey},
+        headers: {'Authorization': 'Bearer $ciKey',},
         body: json.encode(body),
       );
 

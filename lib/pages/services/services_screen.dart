@@ -42,7 +42,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
     Map<String, String> headers = {
-      'X-API-KEY': ciKey,
+      'Authorization': 'Bearer $ciKey',
     };
 
     var url =
@@ -230,7 +230,9 @@ class _ServicesScreenState extends State<ServicesScreen> {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 8, left: 5),
+      child: FloatingActionButton(
         onPressed: () async {
           Map<String, dynamic> permissions = await _getCiKey();
           bool hasPermissionToAdd = false;
@@ -255,7 +257,10 @@ class _ServicesScreenState extends State<ServicesScreen> {
             );
           }
         },
-        child: Icon(Icons.add),
+        child: Icon(Icons.add, color:
+        Color(0xff5fb061)),
+        backgroundColor: Color(0xFFECF6ED),
+      ),
       ),
       bottomNavigationBar: BottomNavigationBarWidget(
         activeIndex: _selectedIndex,

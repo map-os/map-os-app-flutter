@@ -25,7 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
     Map<String, String> headers = {
-      'X-API-KEY': ciKey,
+      'Authorization': 'Bearer $ciKey',
     };
 
     var url = '${APIConfig.baseURL}${APIConfig.profileEndpoint}';
