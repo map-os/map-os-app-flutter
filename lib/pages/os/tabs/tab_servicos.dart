@@ -130,7 +130,7 @@ class _TabServicosState extends State<TabServicos> {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
     Map<String, String> headers = {
-      'X-API-KEY': ciKey,
+      'Authorization': 'Bearer $ciKey',
     };
     var url =
         '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}?X-API-KEY=$ciKey';
@@ -178,7 +178,7 @@ class _TabServicosState extends State<TabServicos> {
 
     var response = await http.delete(
       Uri.parse(url),
-      headers: {'X-API-KEY': ciKey},
+      headers: { 'Authorization': 'Bearer $ciKey'},
     );
 
     if (response.statusCode == 200) {
@@ -203,26 +203,37 @@ class _TabServicosState extends State<TabServicos> {
     }
   }
   Future<void> _mostrarDialogAdicionarServico() async {
-    TextEditingController _controller = TextEditingController();
-    TextEditingController _quantityController =
-    TextEditingController(text: '1');
     List<dynamic> servicos = [];
+    Map<int, int> quantidades = {}; // Mapa para armazenar a quantidade de cada serviço
 
     await showDialog(
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            return AlertDialog( // Movido o AlertDialog aqui
+            void decrementarQuantidade(int idServico) {
+              if (quantidades.containsKey(idServico) && quantidades[idServico]! > 1) {
+                setState(() {
+                  quantidades[idServico] = quantidades[idServico]! - 1;
+                });
+              }
+            }
+
+            void incrementarQuantidade(int idServico) {
+              setState(() {
+                quantidades[idServico] = (quantidades[idServico] ?? 0) + 1;
+              });
+            }
+
+            return AlertDialog(
               title: Text('Adicionar Serviço'),
               content: Container(
-                width: 300, // largura fixa
+                width: 300,
                 height: 400,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextField(
-                      controller: _controller,
                       decoration: InputDecoration(hintText: 'Pesquisar serviços'),
                       onChanged: (value) async {
                         servicos = await _buscarServicos(value);
@@ -230,31 +241,35 @@ class _TabServicosState extends State<TabServicos> {
                       },
                     ),
                     SizedBox(height: 10),
-                    TextFormField(
-                      controller: _quantityController,
-                      decoration: InputDecoration(hintText: 'Quantidade'),
-                      keyboardType: TextInputType.number,
-                    ),
                     Expanded(
                       child: ListView.builder(
                         itemCount: servicos.length,
                         itemBuilder: (context, index) {
+                          final idServico = int.tryParse(servicos[index]['idServicos']) ?? 0;
+                          final quantidade = quantidades[idServico] ?? 0;
+
                           return ListTile(
-                            title: Text(servicos[index]['nome'] ?? 'NaN'),
-                            subtitle:
-                            Text(servicos[index]['idServicos'] ?? 'NaN'),
+                            title: Row(
+                              children: [
+                                Expanded(child: Text(servicos[index]['nome'] ?? 'NaN')),
+                                IconButton(
+                                  icon: Icon(Icons.remove),
+                                  onPressed: () => decrementarQuantidade(idServico),
+                                ),
+                                Text(quantidade.toString()),
+                                IconButton(
+                                  icon: Icon(Icons.add),
+                                  onPressed: () => incrementarQuantidade(idServico),
+                                ),
+                              ],
+                            ),
                             onTap: () {
                               try {
-                                int idServico =
-                                int.parse(servicos[index]['idServicos']);
-                                double preco =
-                                double.parse(servicos[index]['preco'] ?? '0');
-                                int quantidade =
-                                int.parse(_quantityController.text);
+                                final preco = double.tryParse(servicos[index]['preco'] ?? '0') ?? 0.0;
                                 _adicionarServico(idServico, quantidade, preco);
                                 Navigator.of(context).pop();
                               } catch (e) {
-                                print('Error adding service: $e');
+                                print('Erro ao adicionar serviço: $e');
                               }
                             },
                           );
@@ -272,11 +287,12 @@ class _TabServicosState extends State<TabServicos> {
   }
 
 
+
   Future<List<dynamic>> _buscarServicos(String query) async {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
     Map<String, String> headers = {
-      'X-API-KEY': ciKey,
+      'Authorization': 'Bearer $ciKey',
     };
     var url =
         '${APIConfig.baseURL}${APIConfig.servicossEndpoint}/?search=$query';
@@ -285,14 +301,6 @@ class _TabServicosState extends State<TabServicos> {
       Uri.parse(url), headers: headers);
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> data = json.decode(response.body);
-      if (data.containsKey('refresh_token')) {
-        String refreshToken = data['refresh_token'];
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', refreshToken);
-      } else {
-        print('problema com sua sessão, faça login novamente!');
-      }
       Map<String, dynamic> responseData = json.decode(response.body);
       List<dynamic> servicos = responseData['result'];
       return servicos;
@@ -319,7 +327,7 @@ class _TabServicosState extends State<TabServicos> {
     try {
       var response = await http.post(
         Uri.parse(url),
-        headers: {'X-API-KEY': ciKey},
+        headers: {'Authorization': 'Bearer ${ciKey}'},
         body: json.encode(body),
       );
 

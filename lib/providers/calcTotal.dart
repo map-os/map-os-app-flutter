@@ -12,7 +12,7 @@ class OsCalculator {
       final ciKey = await _getCiKey();
 
       final headers = {
-        'X-API-KEY': ciKey,
+        'Authorization': 'Bearer $ciKey',
       };
 
       final url = '${APIConfig.baseURL}${APIConfig.osEndpoint}/${os['idOs']}';

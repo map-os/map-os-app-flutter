@@ -45,7 +45,7 @@ class _AuditState extends State<Audit> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String ciKey = prefs.getString('token') ?? '';
     Map<String, String> headers = {
-      'X-API-KEY': ciKey,
+      'Authorization': 'Bearer $ciKey',
     };
     var url =
         '${APIConfig.baseURL}${APIConfig

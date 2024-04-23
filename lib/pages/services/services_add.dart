@@ -172,13 +172,16 @@ class _ServicoAddScreenState extends State<ServicoAddScreen> {
         Uri.parse(url),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'X-API-KEY': ciKey,
+          'Authorization': 'Bearer ${ciKey}',
         },
         body: jsonEncode(newServico),
       );
       if (response.statusCode == 200) {
         }
-        print('Serviço adicionado com sucesso');
+        // print('Serviço adicionado com sucesso');
+        _nomeServicoController.clear();
+        _descricaoServicoController.clear();
+        _precoServicoController.clear();
         return true;
     } catch (error) {
       print('Erro ao enviar solicitação POST: $error');

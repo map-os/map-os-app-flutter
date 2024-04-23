@@ -54,7 +54,7 @@ class _OsScreenState extends State<OsScreen> {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
     Map<String, String> headers = {
-      'X-API-KEY': ciKey,
+      'Authorization': 'Bearer $ciKey',
     };
     var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}';
 
@@ -238,16 +238,16 @@ class _OsScreenState extends State<OsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${filteredOs[index]['nomeCliente']}',
+                              '${filteredOs[index]['nomeCliente'].split(' ').take(3).join(' ')}',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: (MediaQuery.of(context).size.width *
-                                    0.040),
+                                fontSize: (MediaQuery.of(context).size.width * 0.040),
                                 color: _currentTheme == 'TemaPrimario'
                                     ? TemaPrimario.listagemTextColor
                                     : TemaSecundario.listagemTextColor,
                               ),
                             ),
+
                             Text(
                               'Inicio: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(filteredOs[index]['dataInicial'] ?? '0'))}',
                               style: TextStyle(
@@ -290,7 +290,9 @@ class _OsScreenState extends State<OsScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 8, left: 5),
+      child: FloatingActionButton(
         onPressed: () async {
           Map<String, dynamic> permissions = await _getCiKey();
           bool hasPermissionToAdd = false;
@@ -315,7 +317,10 @@ class _OsScreenState extends State<OsScreen> {
             );
           }
         },
-        child: Icon(Icons.add),
+        child: Icon(Icons.add, color:
+        Color(0xff5fb061)),
+        backgroundColor: Color(0xFFECF6ED),
+      ),
       ),
       bottomNavigationBar: BottomNavigationBarWidget(
         activeIndex: _selectedIndex,

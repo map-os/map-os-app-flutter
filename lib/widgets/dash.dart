@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mapos_app/models/dashboardModel.dart';
+import 'package:mapos_app/data/dashboardData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/assets/app_colors.dart';
 import 'package:intl/intl.dart';

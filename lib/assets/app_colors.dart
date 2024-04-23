@@ -57,10 +57,6 @@ class TemaPrimario {
 
 }
 
-
-
-
-
 class TemaSecundario {
   static Color primaryColor = Color(0xFFEFEFEF);
   static Color secondaryColor = Color(0xFFE0E0E0);
@@ -86,6 +82,7 @@ class TemaSecundario {
   //snack bar----------------------------------------------------------------------
   static Color snackBarBackgrounColorErro = Color(0xFFD70000);
   static Color snackBarBackgrounColorSuccess = Color(0xFF52A200);
+
   //fim snack bar-----------------------------------------------------------------
 
   //edit screens--------------------------------------------------------------------
@@ -97,6 +94,7 @@ class TemaSecundario {
   static Color botaoDisabledColor = Color(0xffa1a1a1);
   static Color borderDash = Colors.transparent;
   static Color editbackColor = Color(0xFFEFEFEF);
+
   //fim edit screens--------------------------------------------------------------
 
   //telas de listagem---------------------------------------------------------------
@@ -108,8 +106,9 @@ class TemaSecundario {
   static Color buscaBack = Color(0xffd0cece);
   static Color buscaFont = Color(0xff171717);
   static Color appBar = Color(0xffffffff);
-  //fim telas de listagem ------------------------------------------------------
+//fim telas de listagem ------------------------------------------------------
 }
+
 class ThemePreferences {
   static const String themeKey = 'theme';
 

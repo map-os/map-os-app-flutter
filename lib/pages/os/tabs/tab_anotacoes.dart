@@ -33,7 +33,7 @@ class _TabAnotacoesState extends State<TabAnotacoes> {
       Map<String, dynamic> keyAndPermissions = await _getCiKeyAndPermissions();
       String ciKey = keyAndPermissions['ciKey'] ?? '';
       Map<String, String> headers = {
-        'X-API-KEY': ciKey,
+        'Authorization': 'Bearer $ciKey',
       };
       var url = Uri.parse('${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}');
       var response = await http.get(url, headers: headers);
@@ -93,7 +93,7 @@ class _TabAnotacoesState extends State<TabAnotacoes> {
     try {
       Map<String, dynamic> keyAndPermissions = await _getCiKeyAndPermissions();
       String ciKey = keyAndPermissions['ciKey'] ?? '';
-      Map<String, String> headers = {'X-API-KEY': ciKey};
+      Map<String, String> headers = {'Authorization': 'Bearer ${ciKey}'};
 
       var url = Uri.parse('${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}/anotacoes');
 
@@ -138,7 +138,7 @@ class _TabAnotacoesState extends State<TabAnotacoes> {
     try {
       Map<String, dynamic> keyAndPermissions = await _getCiKeyAndPermissions();
       String ciKey = keyAndPermissions['ciKey'] ?? '';
-      Map<String, String> headers = {'X-API-KEY': ciKey};
+      Map<String, String> headers = { 'Authorization': 'Bearer $ciKey'};
 
       var url = Uri.parse('${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}/anotacoes/$idAnotacao');
 

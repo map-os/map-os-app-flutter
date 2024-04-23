@@ -377,7 +377,7 @@ class _ClienteAddScreenState extends State<ClienteAddScreen> {
     String ciKey = await _getCiKey();
     var headers = {
       'Content-Type': 'application/json',
-      'X-API-KEY': ciKey,
+      'Authorization': 'Bearer $ciKey',
     };
 
     var url = '${APIConfig.baseURL}${APIConfig.clientesEndpoint}';

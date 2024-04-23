@@ -77,11 +77,11 @@ class _OsManagerState extends State<OsManager> with SingleTickerProviderStateMix
         children: [
           Container(
             height: 50,
-            color: const Color(0xff333649), // Use const for unchanging colors
+            color: const Color(0xffeeeeee),
             child: TabBar(
               controller: _tabController,
               indicator: BoxDecoration(
-                color: Colors.white,
+                color: Color(0xff333649),
                 borderRadius: BorderRadius.circular(
                     50), // Adjust border radius as needed
               ),
@@ -90,8 +90,8 @@ class _OsManagerState extends State<OsManager> with SingleTickerProviderStateMix
               // Adjust horizontal padding
               indicatorWeight: 1,
               // Adjust the thickness of the indicator
-              unselectedLabelColor: Colors.white,
-              labelColor: Color(0xff333649),
+              unselectedLabelColor: Color(0xff333649),
+              labelColor: Color(0xffffffff),
               tabs: [
                 _buildTab(Boxicons.bxs_file, 0),
                 _buildTab(Icons.local_offer, 1),
