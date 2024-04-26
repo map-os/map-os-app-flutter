@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
   String _currentTheme = 'TemaSecundario';
   Future<void> _getTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String theme = prefs.getString('theme') ?? 'TemaPrimario';
+    String theme = prefs.getString('theme') ?? 'TemaSecundario';
     setState(() {
       _currentTheme = theme;
     });

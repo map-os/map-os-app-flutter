@@ -64,42 +64,6 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
         title: Text('Editar Serviço'),
         actions: [
           IconButton(
-            icon: Icon(_editingEnabled ? Icons.edit_note_sharp : Icons.edit,
-              color: _currentTheme == 'TemaPrimario'
-                  ? TemaPrimario.iconColor
-                  : TemaSecundario.iconColor,
-            ),
-            onPressed: () async {
-              Map<String, dynamic> permissionsMap = await _getCiKey();
-              List<dynamic> permissoes = permissionsMap['permissoes'];
-
-              bool hasPermissionToEdit = false;
-
-              for (var permissao in permissoes) {
-                if (permissao['eServico'] == '1') {
-                  hasPermissionToEdit = true;
-                  break;
-                }
-              }
-              if (hasPermissionToEdit) {
-                setState(() {
-                  _editingEnabled = !_editingEnabled;
-                });
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: _currentTheme == 'TemaPrimario'
-                        ? TemaPrimario.snackBarBackgrounColorErro
-                        : TemaSecundario.snackBarBackgrounColorErro,
-                    content:
-                    Text('Você não tem permissões para editar serviços.',
-                    ),
-                  ),
-                );
-              }
-            },
-          ),
-          IconButton(
             icon: Icon(Icons.delete),
             color: Colors.red,
             onPressed: () async {
@@ -107,24 +71,89 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
               List<dynamic> permissoes = permissionsMap['permissoes'];
               bool hasPermissionToDelete = false;
               for (var permissao in permissoes) {
-                if (permissao['dServiço'] == '1') {
+                if (permissao['dProduto'] == '1') {
                   hasPermissionToDelete = true;
                   break;
                 }
               }
               if (hasPermissionToDelete) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: Colors.green,
-                    content: Text('Serviço Excluido com sucesso'),
-                  ),
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      title: Text(
+                        "Confirmar exclusão",
+                        style: TextStyle(
+                          color: Colors.black, // Cor do título
+                          fontWeight: FontWeight.bold, // Texto em negrito
+                          fontSize: 18.0, // Tamanho da fonte
+                        ),
+                      ),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Tem certeza que deseja excluir este produto?",
+                            style: TextStyle(
+                              fontSize: 16.0, // Tamanho da fonte
+                            ),
+                          ),
+                          SizedBox(height: 10), // Espaçamento entre o texto e o campo de entrada
+                          TextField(
+                            decoration: InputDecoration(
+                              hintText: "Digite 'sim' para confirmar",
+                              hintStyle: TextStyle(
+                                color: Colors.grey[400], // Cor do texto de dica
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black), // Cor da borda quando em foco
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey), // Cor da borda quando não está em foco
+                              ),
+                            ),
+                            onChanged: (value) {
+                              if (value.toLowerCase() == 'sim') {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: Colors.green,
+                                    content: Text('Produto Excluído com sucesso'),
+                                  ),
+                                );
+                                _deleteService();
+                                Navigator.of(context).pop(); // Fechar o diálogo após exclusão
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text(
+                            "Cancelar",
+                            style: TextStyle(
+                              color: Colors.red, // Cor do texto do botão
+                              fontWeight: FontWeight.bold, // Texto em negrito
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+
+
+                  },
                 );
-                _deleteService(); // Aqui chama a função para deletar fora do if
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     backgroundColor: Colors.red,
-                    content: Text('Você não tem permissões para Excluir.'),
+                    content: Text('Você não tem permissões para deletar.'),
                   ),
                 );
               }

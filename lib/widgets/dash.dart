@@ -20,7 +20,7 @@ class _CustomWidgetState extends State<CustomWidget> with SingleTickerProviderSt
   List<String> osAbertasList = [];
   List<String> osAndamentoList = [];
   List<String> estoqueBaixoList = [];
-  String _currentTheme = 'TemaSecundario'; // Tema padrão
+
   @override
   void initState() {
     super.initState();
@@ -28,10 +28,10 @@ class _CustomWidgetState extends State<CustomWidget> with SingleTickerProviderSt
     _fetchData();
     _getTheme();
   }
-
+  String _currentTheme = 'TemaSecundario';
   Future<void> _getTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String theme = prefs.getString('theme') ?? 'TemaPrimario';
+    String theme = prefs.getString('theme') ?? 'TemaSecundario';
     setState(() {
       _currentTheme = theme;
     });

@@ -107,13 +107,78 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                 }
               }
               if (hasPermissionToDelete) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: Colors.green,
-                    content: Text('Produto Excluido com sucesso'),
-                  ),
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      title: Text(
+                        "Confirmar exclusão",
+                        style: TextStyle(
+                          color: Colors.black, // Cor do título
+                          fontWeight: FontWeight.bold, // Texto em negrito
+                          fontSize: 18.0, // Tamanho da fonte
+                        ),
+                      ),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Tem certeza que deseja excluir este produto?",
+                            style: TextStyle(
+                              fontSize: 16.0, // Tamanho da fonte
+                            ),
+                          ),
+                          SizedBox(height: 10), // Espaçamento entre o texto e o campo de entrada
+                          TextField(
+                            decoration: InputDecoration(
+                              hintText: "Digite 'sim' para confirmar",
+                              hintStyle: TextStyle(
+                                color: Colors.grey[400], // Cor do texto de dica
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black), // Cor da borda quando em foco
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey), // Cor da borda quando não está em foco
+                              ),
+                            ),
+                            onChanged: (value) {
+                              if (value.toLowerCase() == 'sim') {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: Colors.green,
+                                    content: Text('Produto Excluído com sucesso'),
+                                  ),
+                                );
+                                _deleteProduct();
+                                Navigator.of(context).pop(); // Fechar o diálogo após exclusão
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text(
+                            "Cancelar",
+                            style: TextStyle(
+                              color: Colors.red, // Cor do texto do botão
+                              fontWeight: FontWeight.bold, // Texto em negrito
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+
+
+                  },
                 );
-                _deleteProduct(); // Aqui chama a função para deletar fora do if
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -124,6 +189,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
               }
             },
           ),
+
 
         ],
       ),
