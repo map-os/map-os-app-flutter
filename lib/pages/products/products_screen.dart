@@ -31,7 +31,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   Future<void> _getTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String theme = prefs.getString('theme') ?? 'TemaPrimario';
+    String theme = prefs.getString('theme') ?? 'TemaSecundario';
     setState(() {
       _currentTheme = theme;
     });

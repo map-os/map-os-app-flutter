@@ -9,6 +9,7 @@ import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:intl/intl.dart';
 import 'package:mapos_app/assets/app_colors.dart';
+import 'package:mapos_app/pages/os/os_add.dart';
 /*
 SANTT -- 2024
 TODOS OS PRINTS SERÃO REMOVIDOS E SUBSTITUIDOS POR SNACKBAR --
@@ -36,7 +37,7 @@ class _OsScreenState extends State<OsScreen> {
 
   Future<void> _getTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String theme = prefs.getString('theme') ?? 'TemaPrimario';
+    String theme = prefs.getString('theme') ?? 'TemaSecundario';
     setState(() {
       _currentTheme = theme;
     });
@@ -303,10 +304,10 @@ class _OsScreenState extends State<OsScreen> {
             }
           }
           if (hasPermissionToAdd) {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => OsAddScreen()),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AdicionarOs()),
+            );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -320,6 +321,7 @@ class _OsScreenState extends State<OsScreen> {
         child: Icon(Icons.add, color:
         Color(0xff5fb061)),
         backgroundColor: Color(0xFFECF6ED),
+
       ),
       ),
       bottomNavigationBar: BottomNavigationBarWidget(
