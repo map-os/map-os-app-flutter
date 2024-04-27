@@ -4,13 +4,13 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/config/constants.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
-import 'package:intl/intl.dart';
-import 'package:mapos_app/pages/profile/edit_profile.dart';
+import 'package:mapos_app/assets/app_colors.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
+
 
 class _ProfileScreenState extends State<ProfileScreen> {
   Map<String, dynamic> _profileData = {};
@@ -19,13 +19,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _getProfile();
+    _getTheme();
+  }
+  String _currentTheme = 'TemaSecundario';
+
+  Future<void> _getTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String theme = prefs.getString('theme') ?? 'TemaSecundario';
+    setState(() {
+      _currentTheme = theme;
+    });
   }
 
-  Future<void> _getProfile({int page = 0}) async {
+  Future<void> _getProfile() async {
     Map<String, dynamic> keyAndPermissions = await _getCiKey();
     String ciKey = keyAndPermissions['ciKey'] ?? '';
     Map<String, String> headers = {
-      'Authorization': 'Bearer $ciKey',
+      'Authorization': 'Bearaer $ciKey',
     };
 
     var url = '${APIConfig.baseURL}${APIConfig.profileEndpoint}';
@@ -68,23 +78,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: _currentTheme == 'TemaPrimario'
+          ? TemaPrimario.backgroundColor
+          : TemaSecundario.backgroundColor,
       appBar: AppBar(
         title: Text('Minha conta'),
-        actions: [
-          // IconButton(
-          //   icon: Icon(Icons.edit),
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(builder: (context) => EditProfileScreen(profileData: _profileData)),
-          //     );
-          //   },
-          // ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -120,55 +121,128 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     SizedBox(height: 20),
                     ListTile(
-                      leading: Icon(Icons.person),
+                      leading: Icon(
+                          Icons.person,
+                          color: _currentTheme == 'TemaPrimario'
+                              ? TemaPrimario.iconColor
+                              : TemaSecundario.iconColor,
+                      ),
                       title: Text(
                         'Nome',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: _currentTheme == 'TemaPrimario'
+                              ? TemaPrimario.ColorText
+                              : TemaSecundario.ColorText,
+                        ),
                       ),
-                      subtitle: Text(_profileData['nome']),
+                        subtitle: Text(
+                          _profileData['nome'],
+                          style: TextStyle(
+                          color: _currentTheme == 'TemaPrimario'
+                          ? TemaPrimario.ColorText
+                              : TemaSecundario.ColorText,
+                          ),
+                        ),
                     ),
                     ListTile(
-                      leading: Icon(Boxicons.bxs_id_card),
+                      leading: Icon(
+                          Boxicons.bxs_id_card,
+                          color: _currentTheme == 'TemaPrimario'
+                              ? TemaPrimario.iconColor
+                              : TemaSecundario.iconColor,
+                      ),
                       title: Text(
                         'C.P.F',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: _currentTheme == 'TemaPrimario'
+                          ? TemaPrimario.ColorText
+                              : TemaSecundario.ColorText,
+                          ),
                       ),
-                      subtitle: Text(_profileData['cpf']),
+                      subtitle: Text(
+                        _profileData['cpf'],
+                        style: TextStyle(
+                          color: _currentTheme == 'TemaPrimario'
+                              ? TemaPrimario.ColorText
+                              : TemaSecundario.ColorText,
+                        ),
+                      ),
                     ),
                     ListTile(
-                      leading: Icon(Icons.email),
+                      leading: Icon(
+                          Icons.email,
+                          color: _currentTheme == 'TemaPrimario'
+                              ? TemaPrimario.iconColor
+                              : TemaSecundario.iconColor,
+                      ),
                       title: Text(
                         'E-mail',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: _currentTheme == 'TemaPrimario'
+                            ? TemaPrimario.ColorText
+                                : TemaSecundario.ColorText,
+                        ),
                       ),
-                      subtitle: Text(_profileData['email']),
+                      subtitle: Text(
+                        _profileData['email'],
+                        style: TextStyle(
+                          color: _currentTheme == 'TemaPrimario'
+                              ? TemaPrimario.ColorText
+                              : TemaSecundario.ColorText,
+                        ),
+                      ),
                     ),
                     ListTile(
-                      leading: Icon(Icons.phone),
+                      leading: Icon(
+                          Icons.phone,
+                          color: _currentTheme == 'TemaPrimario'
+                              ? TemaPrimario.iconColor
+                              : TemaSecundario.iconColor,
+                      ),
                       title: Text(
                         'Telefone',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: _currentTheme == 'TemaPrimario'
+                                ? TemaPrimario.ColorText
+                                : TemaSecundario.ColorText,
+                        ),
                       ),
-                      subtitle: Text(_profileData['telefone']),
+                      subtitle: Text(
+                        _profileData['telefone'],
+                        style: TextStyle(
+                          color: _currentTheme == 'TemaPrimario'
+                              ? TemaPrimario.ColorText
+                              : TemaSecundario.ColorText,
+                        ),
+                      ),
                     ),
                     ListTile(
-                      leading: Icon(Icons.location_on),
+                      leading: Icon(
+                          Icons.location_on,
+                          color: _currentTheme == 'TemaPrimario'
+                              ? TemaPrimario.iconColor
+                              : TemaSecundario.iconColor,
+                      ),
                       title: Text(
                         'Endereço',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: _currentTheme == 'TemaPrimario'
+                                ? TemaPrimario.ColorText
+                                : TemaSecundario.ColorText,
+                        ),
                       ),
                       subtitle: Text(
                         '${_profileData['rua']}, ${_profileData['numero']}, ${_profileData['bairro']}, ${_profileData['cidade']}, ${_profileData['estado']}, ${_profileData['cep']}',
-                      ),
-                    ),
-                    ListTile(
-                      leading: Icon(Boxicons.bxs_hourglass),
-                      title: Text(
-                        'Data de Expiração',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(
-                        DateFormat('dd/MM/yyyy').format(DateTime.parse(_profileData['dataExpiracao'])),
+                          style: TextStyle(
+                          color: _currentTheme == 'TemaPrimario'
+                          ? TemaPrimario.ColorText
+                              : TemaSecundario.ColorText,
+                          ),
                       ),
                     ),
                   ],

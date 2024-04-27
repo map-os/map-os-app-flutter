@@ -112,6 +112,7 @@ class TemaSecundario {
 class ThemePreferences {
   static const String themeKey = 'theme';
 
+
   Future<ThemeMode> getTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // Retorna o tema salvo ou o tema claro como padrão
