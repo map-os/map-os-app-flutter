@@ -145,8 +145,6 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                         ),
                       ],
                     );
-
-
                   },
                 );
               } else {

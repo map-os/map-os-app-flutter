@@ -24,6 +24,8 @@ class _AdicionarOsScreenState extends State<AdicionarOs> {
   List<String> filteredClientes = [];
   Map<String, String> usuariosMap = {};
   List<String> filteredUsuarios = [];
+  String _selectedStatus = 'Aberto';
+
 
   Future<String> _getCiKey() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -269,26 +271,44 @@ class _AdicionarOsScreenState extends State<AdicionarOs> {
                 ),
               ),
               SizedBox(height: 10),
-              TextFormField(
-                controller: _statusController,
+              DropdownButtonFormField<String>(
+                value: _selectedStatus,
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedStatus = newValue!;
+                    _statusController.text = newValue; // Salva a escolha no controller
+                  });
+                },
                 decoration: InputDecoration(
                   labelText: 'Status',
                   prefixIcon: Icon(Icons.add),
                   filled: true,
                   fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding:
-                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
                   border: OutlineInputBorder(
-                    borderRadius:
-                    BorderRadius.circular(10.0), // Define o raio do border
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius:
-                    BorderRadius.circular(10.0), // Define o raio do border
-                    borderSide:
-                    BorderSide(color: Color(0xff333649), width: 2.0),
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
                   ),
                 ),
+                items: <String>[
+                  'Aberto',
+                  'Orçamento',
+                  'Aprovado',
+                  'Negociação',
+                  'Em Andamento',
+                  'Aguardando Peças',
+                  'Finalizado',
+                  'Cancelado',
+                  'Faturado',
+                ].map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
               ),
               SizedBox(height: 10),
               TextFormField(
