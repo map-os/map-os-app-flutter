@@ -128,21 +128,21 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                           Text(
                             "Tem certeza que deseja excluir este produto?",
                             style: TextStyle(
-                              fontSize: 16.0, // Tamanho da fonte
+                              fontSize: 16.0,
                             ),
                           ),
-                          SizedBox(height: 10), // Espaçamento entre o texto e o campo de entrada
+                          SizedBox(height: 10),
                           TextField(
                             decoration: InputDecoration(
                               hintText: "Digite 'sim' para confirmar",
                               hintStyle: TextStyle(
-                                color: Colors.grey[400], // Cor do texto de dica
+                                color: Colors.grey[400],
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black), // Cor da borda quando em foco
+                                borderSide: BorderSide(color: Colors.black),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey), // Cor da borda quando não está em foco
+                                borderSide: BorderSide(color: Colors.grey),
                               ),
                             ),
                             onChanged: (value) {
@@ -154,7 +154,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                                   ),
                                 );
                                 _deleteProduct();
-                                Navigator.of(context).pop(); // Fechar o diálogo após exclusão
+                                Navigator.of(context).pop();
                               }
                             },
                           ),
@@ -165,8 +165,8 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                           child: Text(
                             "Cancelar",
                             style: TextStyle(
-                              color: Colors.red, // Cor do texto do botão
-                              fontWeight: FontWeight.bold, // Texto em negrito
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           onPressed: () {
@@ -189,8 +189,6 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
               }
             },
           ),
-
-
         ],
       ),
       body: Padding(

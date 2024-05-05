@@ -8,7 +8,12 @@ import 'package:mapos_app/config/constants.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mapos_app/assets/app_colors.dart';
+import 'package:flutter/services.dart';
+
 void main() {
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
   runApp(MyApp());
 }
 
@@ -92,9 +97,9 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   TextEditingController _usernameController =
-      TextEditingController(text: 'teste@teste.com');
+      TextEditingController(text: 'demo@mapos.com.br');
   TextEditingController _passwordController =
-      TextEditingController(text: '123456');
+      TextEditingController(text: 'mapos123456');
   bool _showPassword = false;
   @override
   void initState() {
@@ -122,9 +127,14 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  _showBaseUrlInputDialog(BuildContext context) {
-    String newBaseUrl = '';
-    bool isButtonEnabled = false;
+  _showBaseUrlInputDialog(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String baseUrl = prefs.getString('baseURL') ?? '';
+
+    String newBaseUrl = baseUrl;
+    bool isButtonEnabled = newBaseUrl.isNotEmpty;
+
+    TextEditingController controller = TextEditingController(text: newBaseUrl);
 
     showModalBottomSheet(
       context: context,
@@ -156,13 +166,23 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 SizedBox(height: 20),
                 Text(
-                  'Informe a URL do seu MAP-OS. ',
+                  'Informe a URL do seu MAP-OS. \nCaso esteja editando a URL após salvar feche o app e abra novamente ',
                   style: TextStyle(
                     fontSize: 16,
                   ),
                 ),
                 SizedBox(height: 10),
                 TextField(
+                  controller: controller,
+                  readOnly: false, // Permitir edição
+                  enableInteractiveSelection: true, // Permitir seleção de texto
+                  onTap: () {
+                    // Selecionar todo o texto quando o campo de texto receber foco
+                    controller.selection = TextSelection(
+                      baseOffset: 0,
+                      extentOffset: controller.text.length,
+                    );
+                  },
                   onChanged: (value) {
                     setState(() {
                       newBaseUrl = value.trim();
@@ -186,7 +206,6 @@ class _LoginPageState extends State<LoginPage> {
                         newBaseUrl = newBaseUrl.substring(0, newBaseUrl.length - 1);
                       }
 
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
                       prefs.setString('baseURL', newBaseUrl);
                       Navigator.of(context).pop();
                       print(newBaseUrl);
@@ -211,18 +230,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
 
-
-
-
   Future<void> _login() async {
     try {
-      // Verifica se o e-mail é válido
       if (!isValidEmail(_usernameController.text)) {
         showSnackBar('E-mail inválido');
         return;
       }
 
-      // Inicializa a baseURL se ainda não estiver inicializada
       if (APIConfig.baseURL == null) {
         await APIConfig.initBaseURL();
         if (APIConfig.baseURL == null) {
@@ -331,12 +345,12 @@ class _LoginPageState extends State<LoginPage> {
                               vertical: 5.0, horizontal: 9.0),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(
-                                10.0), // Define o raio do border
-                            borderSide:  BorderSide(color: Color(0xff333960), width: 2.0), // Remove a linha preta
+                                10.0),
+                            borderSide:  BorderSide(color: Color(0xff333960), width: 2.0),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(
-                                10.0), // Define o raio do border
+                                10.0),
                             borderSide: BorderSide(
                                 color: Color(0xff333649), width: 2.0),
                           ),
@@ -346,7 +360,7 @@ class _LoginPageState extends State<LoginPage> {
                       TextField(
                         controller: _passwordController,
                         obscureText:
-                            !_showPassword, // Altere o obscureText com base em _showPassword
+                            !_showPassword,
                         style: TextStyle(
                           color:
                               Theme.of(context).brightness == Brightness.light
@@ -513,7 +527,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           )
-
         ],
       ),
     );

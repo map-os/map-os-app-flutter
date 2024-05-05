@@ -1,3 +1,4 @@
+import 'dart:async'; // Importe isso para usar StreamTransformer
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -23,6 +24,7 @@ class TabAnexos extends StatefulWidget {
 class _TabAnexosState extends State<TabAnexos> {
   List<dynamic> osData = [];
   bool _loading = false;
+  double _uploadProgress = 0.0; // Progresso do upload
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   @override
@@ -38,6 +40,17 @@ class _TabAnexosState extends State<TabAnexos> {
         ? Center(child: CircularProgressIndicator())
         : Stack(
       children: [
+    if (_uploadProgress > 0.0 && _uploadProgress < 1.0)
+    Center(
+      child: Container(
+        width: 200, // Ajuste conforme necessário
+        child: LinearProgressIndicator(
+          value: _uploadProgress,
+          backgroundColor: Colors.grey,
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+        ),
+      ),
+    ),
         osData.isNotEmpty
             ? GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -48,10 +61,7 @@ class _TabAnexosState extends State<TabAnexos> {
           itemCount: osData.length,
           itemBuilder: (BuildContext context, int index) {
             String fileExtension =
-            osData[index]['anexo']
-                .split('.')
-                .last
-                .toLowerCase();
+            osData[index]['anexo'].split('.').last.toLowerCase();
             Widget fileWidget;
             if (fileExtension == 'jpg' ||
                 fileExtension == 'jpeg' ||
@@ -61,11 +71,10 @@ class _TabAnexosState extends State<TabAnexos> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          FullScreenImage(
-                            imageUrl:
-                            '${osData[index]['url']}/${osData[index]['anexo']}',
-                          ),
+                      builder: (context) => FullScreenImage(
+                        imageUrl:
+                        '${osData[index]['url']}/${osData[index]['anexo']}',
+                      ),
                     ),
                   );
                 },
@@ -303,7 +312,6 @@ class _TabAnexosState extends State<TabAnexos> {
     }
   }
 
-
   Future<void> _takePicture() async {
     try {
       XFile? pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
@@ -325,7 +333,6 @@ class _TabAnexosState extends State<TabAnexos> {
     }
   }
 
-
   Future<void> _uploadFile(PlatformFile file) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -333,8 +340,7 @@ class _TabAnexosState extends State<TabAnexos> {
 
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget
-            .os['idOs']}/anexos'),
+        Uri.parse('${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}/anexos'),
       );
 
       request.headers['Authorization'] ='Bearer ${ciKey}';
@@ -347,20 +353,38 @@ class _TabAnexosState extends State<TabAnexos> {
           contentType: http_parser.MediaType.parse('application/octet-stream'),
         ),
       );
-      var response = await request.send();
-      if (response.statusCode == 201) {
-        print('Arquivo enviado com sucesso!');
-        _getAnexosOs();
-      } else {
-        print('Erro ao enviar o arquivo: ${response.reasonPhrase}');
-      }
+
+      var streamResponse = await request.send();
+      var totalBytes = streamResponse.contentLength ?? 0;
+      var bytesUploaded = 0;
+      var progressStream = streamResponse.stream.transform(
+        StreamTransformer.fromHandlers(
+          handleData: (data, sink) {
+            bytesUploaded += data.length;
+            var progress = bytesUploaded / totalBytes;
+            setState(() {
+              _uploadProgress = progress;
+            });
+            sink.add(data);
+          },
+        ),
+      );
+
+      await http.ByteStream(progressStream.cast<List<int>>()).toBytes();
+
+      setState(() {
+        _uploadProgress = 1.0;
+      });
+
+      _getAnexosOs();
     } catch (e) {
       print('Erro durante o envio do arquivo: $e');
     }
   }
 
 }
-  class FullScreenImage extends StatelessWidget {
+
+class FullScreenImage extends StatelessWidget {
   final String imageUrl;
 
   const FullScreenImage({required this.imageUrl});
@@ -374,4 +398,12 @@ class _TabAnexosState extends State<TabAnexos> {
       ),
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: Scaffold(
+      body: TabAnexos(os: {'idOs': 1}),
+    ),
+  ));
 }

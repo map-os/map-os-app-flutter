@@ -5,14 +5,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/config/constants.dart';
 import 'package:mapos_app/pages/os/os_view.dart';
 import 'package:mapos_app/widgets/bottom_navigation_bar.dart';
-// import 'package:mapos_app/pages/os/os_add.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:intl/intl.dart';
 import 'package:mapos_app/assets/app_colors.dart';
 import 'package:mapos_app/pages/os/os_add.dart';
 /*
 SANTT -- 2024
-TODOS OS PRINTS SERÃO REMOVIDOS E SUBSTITUIDOS POR SNACKBAR --
 github.com/Fesantt
 */
 class OsScreen extends StatefulWidget {
@@ -27,13 +25,19 @@ class _OsScreenState extends State<OsScreen> {
   bool isSearching = false;
   TextEditingController searchController = TextEditingController();
   String _currentTheme = 'TemaSecundario'; // Tema padrão
+  ScrollController _scrollController = ScrollController();
+  int _currentPage = 0; // Página atual
+  bool _loading = false; // Variable to track loading state
 
   @override
   void initState() {
     super.initState();
     _getOs();
     _getTheme();
+    _scrollController.addListener(_scrollListener);
   }
+
+
 
   Future<void> _getTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -41,6 +45,14 @@ class _OsScreenState extends State<OsScreen> {
     setState(() {
       _currentTheme = theme;
     });
+  }
+
+  void _scrollListener() {
+    if (!_loading &&
+        _scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent) {
+      _getOs(page: _currentPage + 1);
+    }
   }
 
   Future<Map<String, dynamic>> _getCiKey() async {
@@ -51,29 +63,45 @@ class _OsScreenState extends State<OsScreen> {
     return {'ciKey': ciKey, 'permissoes': permissoes};
   }
 
-  Future<void> _getOs() async {
-    Map<String, dynamic> keyAndPermissions = await _getCiKey();
-    String ciKey = keyAndPermissions['ciKey'] ?? '';
-    Map<String, String> headers = {
-      'Authorization': 'Bearer $ciKey',
-    };
-    var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}';
+  Future<void> _getOs({int page = 1}) async {
+    setState(() {
+      _loading = true;
+    });
 
-    var response = await http.get(Uri.parse(url), headers: headers);
+    try {
+      Map<String, dynamic> keyAndPermissions = await _getCiKey();
+      String ciKey = keyAndPermissions['ciKey'] ?? '';
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $ciKey',
+      };
+      var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}?page=$page';
 
-    if (response.statusCode == 200) {
-      Map<String, dynamic> data = json.decode(response.body);
-      if (data.containsKey('result')) {
-        List<dynamic> newOs = data['result'];
-        setState(() {
-          os.addAll(newOs);
-          filteredOs = List.from(os); // Update filtered list
-        });
+      var response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        if (data.containsKey('result')) {
+          List<dynamic> newOs = data['result'];
+          setState(() {
+            if (page == 1) {
+              os.clear(); // Clear the existing list only when loading the first page
+            }
+            os.addAll(newOs); // Add new data to the list
+            filteredOs = List.from(os); // Update filtered list
+            _currentPage = page; // Update current page
+          });
+        } else {
+          print('Key "result" not found in API response');
+        }
       } else {
-        print('Key "os" not found in API response');
+        print('Failed to load os: ${response.body}');
       }
-    } else {
-      print('Failed to load os');
+    } catch (e) {
+      print('Error loading os: $e');
+    } finally {
+      setState(() {
+        _loading = false; // Reset loading indicator
+      });
     }
   }
 
@@ -87,18 +115,59 @@ class _OsScreenState extends State<OsScreen> {
     setState(() {
       isSearching = false;
       searchController.clear();
-      filteredOs = List.from(os); // Restore filtered list to original
+      filteredOs = List.from(os); // Restore filtered list to the original
     });
   }
 
-  void _filterOs(String searchText) {
-    setState(() {
-      filteredOs = os
-          .where((os) => os['nomeCliente']
-              .toLowerCase()
-              .contains(searchText.toLowerCase()))
-          .toList();
-    });
+  Future<void> _filterOs(String searchText) async {
+    if (searchText.isEmpty) {
+      setState(() {
+        filteredOs.clear(); // Limpar a lista filtrada se não houver texto de pesquisa
+      });
+      return;
+    }
+
+    try {
+      setState(() {
+        _loading = true; // Ativar indicador de carregamento
+      });
+
+      final Map<String, dynamic> keyAndPermissions = await _getCiKey();
+      final String ciKey = keyAndPermissions['ciKey'] ?? '';
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $ciKey',
+      };
+      final url =
+          '${APIConfig.baseURL}${APIConfig.osEndpoint}';
+      final response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final List<dynamic> data = responseData['result'];
+
+        // Filtrar pelo nome do cliente ou ID da OS
+        List<dynamic> filteredList = [];
+        for (var item in data) {
+          String clientName = item['nomeCliente'].toLowerCase();
+          String osId = item['idOs'].toString().toLowerCase();
+          if (clientName.contains(searchText.toLowerCase()) || osId.contains(searchText.toLowerCase())) {
+            filteredList.add(item);
+          }
+        }
+
+        setState(() {
+          filteredOs = List.from(filteredList); // Atualizar lista filtrada com resultados da API
+        });
+      } else {
+        print('Failed to filter os: ${response.body}');
+      }
+    } catch (e) {
+      print('Error filtering os: $e');
+    } finally {
+      setState(() {
+        _loading = false; // Desativar indicador de carregamento, independentemente do resultado
+      });
+    }
   }
 
   Color _getStatusColor(String status) {
@@ -184,6 +253,7 @@ class _OsScreenState extends State<OsScreen> {
         child: CircularProgressIndicator(),
       )
           : ListView.builder(
+        controller: _scrollController,
         itemCount: filteredOs.length,
         itemBuilder: (BuildContext context, int index) {
           return Padding(
@@ -239,10 +309,10 @@ class _OsScreenState extends State<OsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${filteredOs[index]['nomeCliente'].split(' ').take(3).join(' ')}',
+                              '${filteredOs[index]['nomeCliente'].split(' ').take(2).join(' ')}',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: (MediaQuery.of(context).size.width * 0.040),
+                                fontSize: (MediaQuery.of(context).size.width * 0.035),
                                 color: _currentTheme == 'TemaPrimario'
                                     ? TemaPrimario.listagemTextColor
                                     : TemaSecundario.listagemTextColor,
@@ -280,7 +350,7 @@ class _OsScreenState extends State<OsScreen> {
                           color: _getStatusColor(
                               filteredOs[index]['status'] ?? ''),
                           fontWeight: FontWeight.bold,
-                          fontSize: (MediaQuery.of(context).size.width * 0.030),
+                          fontSize: (MediaQuery.of(context).size.width * 0.025),
                         ),
                       ),
                     ),
@@ -326,7 +396,7 @@ class _OsScreenState extends State<OsScreen> {
       ),
       bottomNavigationBar: BottomNavigationBarWidget(
         activeIndex: _selectedIndex,
-        context: context, // Passe o contexto aqui
+        context: context,
         onTap: _onItemTapped,
       ),
     );
