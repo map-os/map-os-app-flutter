@@ -21,8 +21,8 @@ class _ClientesScreenState extends State<ClientesScreen> {
   bool isSearching = false;
   TextEditingController searchController = TextEditingController();
   ScrollController _scrollController = ScrollController();
-  int _currentPage = 0; // Página atual
-  String _currentTheme = 'TemaSecundario'; // Tema padrão
+  int _currentPage = 0;
+  String _currentTheme = 'TemaSecundario';
 
 
   @override
@@ -87,10 +87,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
           filteredClientes = List.from(clientes);
           _currentPage = page;
         });
-      } else {
-        _logout(context);
       }
-
     } else {
       print('Falha ao carregar clientes');
     }
@@ -365,23 +362,6 @@ class _ClientesScreenState extends State<ClientesScreen> {
   }
 }
 
-Future<Map<String, dynamic>> _getUserData() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String ciKey = prefs.getString('token') ?? '';
-  String permissoesString = prefs.getString('permissoes') ?? '[]';
-  List<dynamic> permissoes = jsonDecode(permissoesString);
-  return {'ci_key': ciKey, 'permissoes': permissoes};
-}
 
-void _logout(BuildContext context) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  // Limpa os dados de autenticação
-  await prefs.remove('token');
-  await prefs.remove('permissoes');
-  // Navega para a tela de login e remove todas as rotas anteriores
-  Navigator.pushAndRemoveUntil(
-    context,
-    MaterialPageRoute(builder: (context) => LoginPage(() {})),
-    (Route<dynamic> route) => false,
-  );
-}
+
+

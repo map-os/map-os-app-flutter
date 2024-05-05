@@ -1,7 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class APIConfig {
-  static const String appVersion = 'Beta 1.1.0';
+  static const String appVersion = 'Beta 1.0.0';
 
   // Campo estático para armazenar a baseURL
   static String? baseURL;

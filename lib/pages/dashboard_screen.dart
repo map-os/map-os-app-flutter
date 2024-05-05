@@ -21,6 +21,7 @@ import 'package:mapos_app/config/constants.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:mapos_app/pages/about/about.dart';
 
 
 class DashboardScreen extends StatefulWidget {
@@ -173,6 +174,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               ListTile(
                 leading: Icon(
+                  Icons.question_mark,
+                  color: Colors.black87,
+                ),
+                title: Text(
+                  'Sobre Nós',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    // color: Colors.blue,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      child: AboutUsPage(),
+                      type: PageTransitionType.leftToRight,
+                    ),
+                  );
+                },
+              ),
+              Divider(
+                height: 10,
+                thickness: 1,
+                color: Colors.grey[300],
+              ),
+              ListTile(
+                leading: Icon(
                   Icons.logout,
                   color: Colors.red,
                 ),
@@ -181,7 +211,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    // color: Colors.red,
                   ),
                 ),
                 onTap: () {
@@ -209,13 +238,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
             fontSize: 20.0,
           ),
         ),
-        automaticallyImplyLeading: false, // Desativa o botão de voltar
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: _currentTheme == 'TemaPrimario'
                 ? Icon(Icons.nightlight_round,
-                color: Color(0xFFDC7902)) // Ícone de lua
-                : Icon(Icons.wb_sunny), // Ícone de sol
+                color: Color(0xFFDC7902))
+                : Icon(Icons.wb_sunny),
             onPressed: () {
               setState(() {
                 _currentTheme =
@@ -231,7 +260,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             padding: EdgeInsets.only(right: 10),
             child: GestureDetector(
               onTap: () {
-                // Abrir o menu suspenso manualmente ao clicar na imagem de perfil
                 _showProfileMenu(context);
               },
               child: CircleAvatar(
@@ -387,14 +415,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         width: MediaQuery
                             .of(context)
                             .size
-                            .width * 0.3, // 40% da largura da tela
+                            .width * 0.3,
                         height: MediaQuery
                             .of(context)
                             .size
-                            .height * 0.180, // 20% da altura da tela
+                            .height * 0.180,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(
-                              10.0), // Borda arredondada
+                              10.0),
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),
@@ -478,20 +506,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         width: MediaQuery
                             .of(context)
                             .size
-                            .width * 0.3, // 40% da largura da tela
+                            .width * 0.3,
                         height: MediaQuery
                             .of(context)
                             .size
-                            .height * 0.180, // 20% da altura da tela
+                            .height * 0.180,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(
-                              10.0), // Borda arredondada
+                              10.0),
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),
                           child: CardWidget(
                             color: Colors.transparent,
-                            // Defina a cor do CardWidget como transparente
                             content: Container(
                               decoration: BoxDecoration(
                                 border: Border.all(
@@ -575,11 +602,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       width: MediaQuery
                           .of(context)
                           .size
-                          .width * 0.3, // 40% da largura da tela
+                          .width * 0.3,
                       height: MediaQuery
                           .of(context)
                           .size
-                          .height * 0.180, // 20% da altura da tela
+                          .height * 0.180,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(
                             10.0),
@@ -654,21 +681,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       width: MediaQuery
                           .of(context)
                           .size
-                          .width * 0.3, // 40% da largura da tela
+                          .width * 0.3,
                       height: MediaQuery
                           .of(context)
                           .size
-                          .height * 0.180, // 20% da altura da tela
+                          .height * 0.180,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10.0),
-                        // boxShadow: [
-                        //   BoxShadow(
-                        //     color: Colors.black54.withOpacity(0.5), // Cor da sombra
-                        //     spreadRadius: 0.001, // Espalhamento da sombra
-                        //     blurRadius: 5, // Desfoque da sombra
-                        //     offset: Offset(2, 1), // Posição da sombra
-                        //   ),
-                        // ],
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10.0),
@@ -891,18 +910,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void _logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    // Limpa os dados de autenticação
     await prefs.remove('token');
     await prefs.remove('permissoes');
-    // Navega para a tela de login e remove todas as rotas anteriores
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => LoginPage(() {})),
           (Route<dynamic> route) => false,
     );
   }
-
-  // Defina uma variável para armazenar os dados do perfil do usuário
   Map<String, dynamic> _profileData = {};
 
   Future<void> _getProfile({int page = 0}) async {
@@ -919,10 +934,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (response.statusCode == 200) {
       var responseData = json.decode(response.body);
       var profileData = responseData['result']['usuario'];
-print(profileData);
-      // Verifica se existe uma URL de imagem de usuário
+
       if (profileData.containsKey('url_image_user')) {
-        // Carrega a imagem da URL
         try {
           var file = await DefaultCacheManager().getSingleFile(
               profileData['url_image_user']);
@@ -932,7 +945,6 @@ print(profileData);
         }
       }
 
-      // Atualiza os dados do perfil do usuário na variável de classe
       setState(() {
         _profileData = profileData;
       });
@@ -940,16 +952,8 @@ print(profileData);
       print('Failed to load profile');
     }
   }
-
-
-// Exemplo de como usar os dados do perfil do usuário em outros lugares do seu aplicativo
-  void _exemploDeUso() {
-    // Aqui você pode acessar os dados do perfil do usuário da variável _profileData
-    // Por exemplo, para acessar o nome do usuário:
-    String nomeDoUsuario = _profileData['nome'] ?? '';
-    print('Nome do usuário: $nomeDoUsuario');
-  }
 }
+
 class CardWidget extends StatelessWidget {
   final Color color;
   final Widget content;
@@ -968,23 +972,22 @@ class CardWidget extends StatelessWidget {
     );
   }
 }
+
 String formatarData(String data) {
-  // Supondo que a data esteja no formato "yyyy-MM-dd"
   DateTime dateTime = DateTime.parse(data);
   return DateFormat('dd/MM/yyyy').format(dateTime);
 }
+
 class ThemePreferences {
   static const String themeKey = 'theme';
 
   Future<ThemeMode> getTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    // Retorna o tema salvo ou o tema padrão como padrão
     String? themeString = prefs.getString(themeKey);
+
     if (themeString != null) {
-      // Se um tema foi salvo, converte a string para um enum ThemeMode
       return themeString == 'TemaPrimario' ? ThemeMode.dark : ThemeMode.light;
     } else {
-      // Se nenhum tema foi salvo, retorna o tema do sistema como padrão
       return ThemeMode.system;
     }
   }

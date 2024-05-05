@@ -22,6 +22,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
   bool _editingEnabled = false;
   String _currentTheme = 'TemaSecundario';
 
+
   @override
   void initState() {
     _getTheme();
@@ -64,6 +65,34 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
         title: Text('Editar Serviço'),
         actions: [
           IconButton(
+            icon: Icon(_editingEnabled ? Icons.edit_note_sharp : Icons.edit),
+            onPressed: () async {
+              Map<String, dynamic> permissionsMap = await _getCiKey();
+              List<dynamic> permissoes = permissionsMap['permissoes'];
+              bool hasPermissionToEdit = false;
+              for (var permissao in permissoes) {
+                if (permissao['eServico'] == '1') {
+                  hasPermissionToEdit = true;
+                  break;
+                }
+              }
+              if (hasPermissionToEdit) {
+                setState(() {
+                  _editingEnabled = !_editingEnabled;
+                  ;
+                });
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.red,
+                    content:
+                    Text('Você não tem permissões para editar serviços.'),
+                  ),
+                );
+              }
+            },
+          ),
+          IconButton(
             icon: Icon(Icons.delete),
             color: Colors.red,
             onPressed: () async {
@@ -87,9 +116,9 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                       title: Text(
                         "Confirmar exclusão",
                         style: TextStyle(
-                          color: Colors.black, // Cor do título
-                          fontWeight: FontWeight.bold, // Texto em negrito
-                          fontSize: 18.0, // Tamanho da fonte
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0,
                         ),
                       ),
                       content: Column(
@@ -98,10 +127,10 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                           Text(
                             "Tem certeza que deseja excluir este produto?",
                             style: TextStyle(
-                              fontSize: 16.0, // Tamanho da fonte
+                              fontSize: 16.0,
                             ),
                           ),
-                          SizedBox(height: 10), // Espaçamento entre o texto e o campo de entrada
+                          SizedBox(height: 10),
                           TextField(
                             decoration: InputDecoration(
                               hintText: "Digite 'sim' para confirmar",
@@ -109,10 +138,10 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                                 color: Colors.grey[400], // Cor do texto de dica
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black), // Cor da borda quando em foco
+                                borderSide: BorderSide(color: Colors.black),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey), // Cor da borda quando não está em foco
+                                borderSide: BorderSide(color: Colors.grey),
                               ),
                             ),
                             onChanged: (value) {
@@ -124,7 +153,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                                   ),
                                 );
                                 _deleteService();
-                                Navigator.of(context).pop(); // Fechar o diálogo após exclusão
+                                Navigator.of(context).pop();
                               }
                             },
                           ),
@@ -135,8 +164,8 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                           child: Text(
                             "Cancelar",
                             style: TextStyle(
-                              color: Colors.red, // Cor do texto do botão
-                              fontWeight: FontWeight.bold, // Texto em negrito
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           onPressed: () {
@@ -205,7 +234,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                         color: _currentTheme == 'TemaPrimario'
                             ? TemaPrimario.inputBorderColor
                             : TemaSecundario.inputBorderColor,
-                        width: 2.0), // Cor da borda quando não está em foco
+                        width: 2.0),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -213,7 +242,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                         color: _currentTheme == 'TemaPrimario'
                             ? TemaPrimario.inputBorderColor
                             : TemaSecundario.inputBorderColor,
-                        width: 2.0), // Cor da borda quando está em foco
+                        width: 2.0),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -221,7 +250,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                         color: _currentTheme == 'TemaPrimario'
                             ? TemaPrimario.inputBorderColor
                             : TemaSecundario.inputBorderColor,
-                        width: 1.0), // Cor da borda quando o campo está habilitado e não está em foco
+                        width: 1.0),
                   ),
                   disabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -229,7 +258,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                         color: _currentTheme == 'TemaPrimario'
                             ? TemaPrimario.inputBorderColor
                             : TemaSecundario.inputBorderColor,
-                        width: 1.0), // Cor da borda quando o campo está desabilitado
+                        width: 1.0),
                   ),
                 ),
               ),
@@ -246,7 +275,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                   labelStyle: TextStyle(color: _currentTheme == 'TemaPrimario'
                       ? TemaPrimario.labelColor
                       : TemaSecundario.labelColor,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
                       fontSize: 18
                   ),
                   prefixIcon: Icon(
@@ -265,7 +294,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                         color: _currentTheme == 'TemaPrimario'
                             ? TemaPrimario.inputBorderColor
                             : TemaSecundario.inputBorderColor,
-                        width: 2.0), // Cor da borda quando não está em foco
+                        width: 2.0),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -273,7 +302,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                         color: _currentTheme == 'TemaPrimario'
                             ? TemaPrimario.inputBorderColor
                             : TemaSecundario.inputBorderColor,
-                        width: 2.0), // Cor da borda quando está em foco
+                        width: 2.0),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -281,7 +310,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                         color: _currentTheme == 'TemaPrimario'
                             ? TemaPrimario.inputBorderColor
                             : TemaSecundario.inputBorderColor,
-                        width: 1.0), // Cor da borda quando o campo está habilitado e não está em foco
+                        width: 1.0),
                   ),
                   disabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -289,9 +318,10 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                         color: _currentTheme == 'TemaPrimario'
                             ? TemaPrimario.inputBorderColor
                             : TemaSecundario.inputBorderColor,
-                        width: 1.0), // Cor da borda quando o campo está desabilitado
+                        width: 1.0),
                   ),
                 ),
+                maxLines: 5,
               ),
               SizedBox(height: 16.0),
               TextField(
@@ -325,7 +355,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                         color: _currentTheme == 'TemaPrimario'
                             ? TemaPrimario.inputBorderColor
                             : TemaSecundario.inputBorderColor,
-                        width: 2.0), // Cor da borda quando não está em foco
+                        width: 2.0),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -333,7 +363,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                         color: _currentTheme == 'TemaPrimario'
                             ? TemaPrimario.inputBorderColor
                             : TemaSecundario.inputBorderColor,
-                        width: 2.0), // Cor da borda quando está em foco
+                        width: 2.0),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -341,7 +371,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                         color: _currentTheme == 'TemaPrimario'
                             ? TemaPrimario.inputBorderColor
                             : TemaSecundario.inputBorderColor,
-                        width: 1.0), // Cor da borda quando o campo está habilitado e não está em foco
+                        width: 1.0),
                   ),
                   disabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -349,7 +379,7 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
                         color: _currentTheme == 'TemaPrimario'
                             ? TemaPrimario.inputBorderColor
                             : TemaSecundario.inputBorderColor,
-                        width: 1.0), // Cor da borda quando o campo está desabilitado
+                        width: 1.0),
                   ),
                 ),
                 keyboardType: TextInputType.number,
@@ -432,14 +462,12 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
         body: jsonEncode(updatedServico),
       );
       if (response.statusCode == 200) {
-        print('Serviço atualizado com sucesso');
+          Navigator.pop(context);
         return true;
       } else {
-        print('Falha ao atualizar o serviço: ${response.reasonPhrase}');
         return false;
       }
     } catch (error) {
-      print('Erro ao enviar solicitação PUT: $error');
       return false;
     }
   }
@@ -459,15 +487,12 @@ class _ServicoEditScreenState extends State<ServicoEditScreen> {
         },
       );
       if (response.statusCode == 200) {
-        print('Serviço atualizado com sucesso');
         Navigator.pop(context);
         return true;
       } else {
-        print('Falha ao atualizar o serviço: ${response.reasonPhrase}');
         return false;
       }
     } catch (error) {
-      print('Erro ao enviar solicitação PUT: $error');
       return false;
     }
   }
