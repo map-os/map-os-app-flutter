@@ -147,7 +147,9 @@ class _ServicesScreenState extends State<ServicesScreen> {
         onRefresh: _getServices,
         child: filteredServices.isEmpty
             ? Center(
-          child: CircularProgressIndicator(),
+          child: services.isEmpty
+              ? Text('Nenhum serviço encontrado') // Message when no services are found
+              : CircularProgressIndicator(), // Loading indicator when waiting for services
         )
             : ListView.builder(
           itemCount: filteredServices.length,
@@ -175,8 +177,8 @@ class _ServicesScreenState extends State<ServicesScreen> {
                       Container(
                         decoration: BoxDecoration(
                           color: _currentTheme == 'TemaPrimario'
-                            ? TemaPrimario.backId
-                            : TemaSecundario.backId,
+                              ? TemaPrimario.backId
+                              : TemaSecundario.backId,
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         padding: EdgeInsets.all(8.0),
@@ -184,8 +186,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                           child: Text(
                             '${filteredServices[index]['idServicos']}',
                             style: TextStyle(
-                              fontSize:
-                              MediaQuery.of(context).size.width *
+                              fontSize: MediaQuery.of(context).size.width *
                                   0.04, // 4% da largura da tela
                               color: _currentTheme == 'TemaPrimario'
                                   ? TemaPrimario.ColorText
@@ -203,8 +204,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                               '${filteredServices[index]['nome']}',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize:
-                                MediaQuery.of(context).size.width *
+                                fontSize: MediaQuery.of(context).size.width *
                                     0.04, // 4% da largura da tela
                                 color: _currentTheme == 'TemaPrimario'
                                     ? TemaPrimario.ColorText
@@ -230,6 +230,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
           },
         ),
       ),
+
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 8, left: 5),
       child: FloatingActionButton(

@@ -24,4 +24,5 @@ class APIConfig {
   static const String emitenteEndpoint = '/emitente';
   static const String auditoriaEndpoint = '/audit';
   static const String anexosEndpoint = '/anexos';
+  static const String regenToken = '/reGenToken';
 }

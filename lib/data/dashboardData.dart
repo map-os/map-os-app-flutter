@@ -71,36 +71,50 @@ class DashboardData {
         garantias = data['result']['garantias'] ?? 0;
         vendas = data['result']['vendas'] ?? 0;
         osAbertasList = data['result']['osAbertas']
-            .map<OSAberta>((os) => OSAberta(
-          id: os['idOs'].toString(),
-          nomeCliente: os['nomeCliente'].toString(),
-          dataInicial: os['dataInicial'].toString(),
-          dataFinal: os['dataFinal'].toString(),
-          status: os['status'].toString(),
-        ))
+            .map<OSAberta>((os) =>
+            OSAberta(
+              id: os['idOs'].toString(),
+              nomeCliente: os['nomeCliente'].toString(),
+              dataInicial: os['dataInicial'].toString(),
+              dataFinal: os['dataFinal'].toString(),
+              status: os['status'].toString(),
+            ))
             .toList();
         osAndamentoList = data['result']['osAndamento']
-            .map<OSAndamento>((os) => OSAndamento(
-          id: os['idOs'].toString(),
-          nomeCliente: os['nomeCliente'].toString(),
-          dataInicial: os['dataInicial'].toString(),
-          dataFinal: os['dataFinal'].toString(),
-          status: os['status'].toString(),
-        ))
+            .map<OSAndamento>((os) =>
+            OSAndamento(
+              id: os['idOs'].toString(),
+              nomeCliente: os['nomeCliente'].toString(),
+              dataInicial: os['dataInicial'].toString(),
+              dataFinal: os['dataFinal'].toString(),
+              status: os['status'].toString(),
+            ))
             .toList();
         estoqueBaixoList = data['result']['estoqueBaixo']
-            .map<EstoqueBaixo>((os) => EstoqueBaixo(
-          id: os['idProdutos'].toString(),
-          descricao: os['descricao'].toString(),
-          precoVenda: os['precoVenda'].toString(),
-          estoque: os['estoque'].toString(),
-        ))
+            .map<EstoqueBaixo>((os) =>
+            EstoqueBaixo(
+              id: os['idProdutos'].toString(),
+              descricao: os['descricao'].toString(),
+              precoVenda: os['precoVenda'].toString(),
+              estoque: os['estoque'].toString(),
+            ))
             .toList();
       } else {
         print(data['message']);
       }
+    } else if (response.statusCode == 401) {
+      var tokenUrl = '${APIConfig.baseURL}${APIConfig.regenToken}';
+      var tokenResponse = await http.post(Uri.parse(tokenUrl));
+      if (tokenResponse.statusCode == 200) {
+        var tokenData = json.decode(tokenResponse.body);
+        var newToken = tokenData['access_token'];
+        await prefs.setString('token', newToken);
+        await fetchData(context);
+      } else {
+        print('Erro ao renovar token: ${tokenResponse.statusCode}');
+      }
     } else {
-      print('ERRO');
+      print('ERRO: ${response.statusCode}');
     }
   }
 }

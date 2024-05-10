@@ -156,7 +156,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
         onRefresh: _refreshProducts,
         child: filteredProducts.isEmpty
             ? Center(
-                child: CircularProgressIndicator(),
+          child: products.isEmpty
+              ? Text('Nenhum produto encontrado')
+              : CircularProgressIndicator(),
               )
             : ListView.builder(
                 itemCount: filteredProducts.length,

@@ -217,7 +217,7 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                   ),
                   minimumSize: Size(200, 50),
                 ),
-                child: Text(
+                child: const Text(
                   'Adicionar Produto',
                   style: TextStyle(fontSize: 18.0, color: Colors.white),
                 ),
@@ -251,8 +251,8 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
     Map<String, dynamic> newProduct = {
       'descricao': _productNameController.text,
       'codDeBarra': _productCodController.text,
-      'precoVenda': precoCompra,
-      'precoCompra': precoVenda,
+      'precoVenda': precoVenda,
+      'precoCompra': precoCompra,
       'unidade': 'UNID',
       'estoque': _productEstoqueController.text,
       'estoqueMinimo': _productEstoqueMinimoController.text,
