@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:mapos_app/pages/dashboard_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'package:mapos_app/assets/app_colors.dart';
@@ -112,8 +113,8 @@ class _AuditState extends State<Audit> {
           if (index < _auditData.length) {
             final auditEntry = _auditData[index];
             final date = auditEntry['data'] ?? '';
-            final formattedDate =
-            DateFormat('dd-MM-yyy').format(DateTime.parse(date));
+            final formattedDate = DateFormat('dd/MM/yyyy').format(
+                DateTime.parse(date));
 
             bool shouldStartNewGroup =
                 index == 0 || _auditData[index - 1]['data'] != date;
@@ -124,8 +125,7 @@ class _AuditState extends State<Audit> {
               children: [
                 SizedBox(height: 10),
                 Padding(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
                     formattedDate,
                     style: TextStyle(
@@ -137,10 +137,12 @@ class _AuditState extends State<Audit> {
                     ),
                   ),
                 ),
-                _buildExpansionTile(auditEntry),
+                _buildExpansionTile(auditEntry, formattedDate),
+                // Pass formattedDate here
               ],
             )
-                : _buildExpansionTile(auditEntry);
+                : _buildExpansionTile(
+                auditEntry, formattedDate); // Pass formattedDate here
           } else {
             return Center(
               child: CircularProgressIndicator(),
@@ -151,9 +153,12 @@ class _AuditState extends State<Audit> {
     );
   }
 
-  Widget _buildExpansionTile(Map<String, String> auditEntry) {
+  Widget _buildExpansionTile(Map<String, String> auditEntry,
+      String formattedDate) {
+    // Add formattedDate as a parameter
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16), // Espaço entre os cards
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      // Espaço entre os cards
       decoration: BoxDecoration(
         color: _currentTheme == 'TemaPrimario'
             ? TemaPrimario.listagemCard
@@ -182,7 +187,7 @@ class _AuditState extends State<Audit> {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Data: ${auditEntry['data'] ?? ''}',
+                Text('Data: $formattedDate',
                   style: TextStyle(
                     color: _currentTheme == 'TemaPrimario'
                         ? TemaPrimario.ColorText
@@ -192,8 +197,8 @@ class _AuditState extends State<Audit> {
                 Text('Hora: ${auditEntry['hora'] ?? ''}',
                   style: TextStyle(
                     color: _currentTheme == 'TemaPrimario'
-                    ? TemaPrimario.ColorText
-                    : TemaSecundario.ColorText,
+                        ? TemaPrimario.ColorText
+                        : TemaSecundario.ColorText,
                   ),
                 ),
                 Text('IP: ${auditEntry['ip'] ?? ''}',
