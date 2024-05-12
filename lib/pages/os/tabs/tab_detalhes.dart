@@ -9,7 +9,6 @@ import 'package:mapos_app/providers/calcTotal.dart';
 
 class TabDetalhes extends StatefulWidget {
   final Map<String, dynamic> os;
-
   TabDetalhes({required this.os});
 
   @override
@@ -30,7 +29,7 @@ class _TabDetalhesState extends State<TabDetalhes> {
   late TextEditingController _laudoTecnicoController;
   late HtmlEditorController _htmlEditorController;
   late HtmlEditorController _htmlDefeitoController;
-  late HtmlEditorController  _htmlLaudoController;
+  late HtmlEditorController _htmlLaudoController;
   late String observacoesHTML;
   late String defeitoHTML;
   late String laudoHTML;
@@ -39,7 +38,8 @@ class _TabDetalhesState extends State<TabDetalhes> {
   @override
   void initState() {
     super.initState();
-    _getOs();
+    _updateOs();
+    _getOsById();
     _idOsController = TextEditingController();
     _nomeClienteController = TextEditingController();
     _dataInicialController = TextEditingController();
@@ -52,10 +52,9 @@ class _TabDetalhesState extends State<TabDetalhes> {
     _htmlEditorController = HtmlEditorController();
     _htmlDefeitoController = HtmlEditorController();
     _htmlLaudoController = HtmlEditorController();
-    observacoesHTML = ''; // Inicialize a variável observacoesHTML
+    observacoesHTML = '';
     defeitoHTML = '';
     laudoHTML = '';
-
   }
 
   @override
@@ -69,96 +68,146 @@ class _TabDetalhesState extends State<TabDetalhes> {
     _defeitoController.dispose();
     _observacoesController.dispose();
     _laudoTecnicoController.dispose();
-    observacoesHTML.toString();
-    defeitoHTML.toString();
     super.dispose();
   }
 
-  Future<void> _getOs() async {
-    Map<String, dynamic> keyAndPermissions = await _getCiKey();
-    String ciKey = keyAndPermissions['ciKey'] ?? '';
-    Map<String, String> headers = {
-      'Authorization': 'Bearer ${ciKey}',
-    };
-    var url =
-        '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
+  Future<void> _updateOs() async {
+    try {
+      Map<String, dynamic> keyAndPermissions = await _getCiKey();
+      String ciKey = keyAndPermissions['ciKey'] ?? '';
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $ciKey',
+      };
+      var url =
+          '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
 
-    var response = await http.get(Uri.parse(url), headers: headers);
+      var response = await http.get(Uri.parse(url), headers: headers);
 
-    if (response.statusCode == 200) {
-      Map<String, dynamic> data = json.decode(response.body);
-      if (data.containsKey('result')) {
-        setState(() {
-          UsuariosId = data['result']['usuarios_id'];
-          ClientesId = data['result']['clientes_id'];
-          _idOsController.text = data['result']['idOs'];
-          _nomeClienteController.text = data['result']['nomeCliente'];
-          _dataInicialController.text = data['result']['dataInicial'];
-          _dataFinalController.text = data['result']['dataFinal'];
-          _statusController.text = data['result']['status'];
-          _descricaoProdutoController.text = data['result']['descricaoProduto'];
-          _defeitoController.text = data['result']['defeito'];
-          _observacoesController.text = data['result']['observacoes'];
-          _laudoTecnicoController.text = data['result']['laudoTecnico'];
-        });
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        if (data.containsKey('result')) {
+          setState(() {
+            UsuariosId = data['result']['usuarios_id'];
+            ClientesId = data['result']['clientes_id'];
+            _idOsController.text = data['result']['idOs'];
+            _nomeClienteController.text = data['result']['nomeCliente'];
+            _dataInicialController.text = data['result']['dataInicial'];
+            _dataFinalController.text = data['result']['dataFinal'];
+            _statusController.text = data['result']['status'];
+            _descricaoProdutoController.text =
+            data['result']['descricaoProduto'];
+            _defeitoController.text = data['result']['defeito'];
+            _observacoesController.text = data['result']['observacoes'];
+            _laudoTecnicoController.text = data['result']['laudoTecnico'];
+          });
+        } else {
+          print('Key "result" not found in API response');
+        }
       } else {
-        print('API não retornou nenhum dado');
+        print('Failed to load os: ${response.body}');
       }
-    } else {
-      print('Falha ao carregar dados');
+    } catch (e) {
+      print('Error updating OS: $e');
     }
   }
 
   void _salvarDados() async {
-    Map<String, dynamic> keyAndPermissions = await _getCiKey();
-    String ciKey = keyAndPermissions['ciKey'] ?? '';
-    Map<String, String> headers = {
-      'Authorization': 'Bearer ${ciKey}',
-      'Content-Type': 'application/json',
-    };
-    Map<String, dynamic> requestBody = {
-      'dataInicial': _dataInicialController.text,
-      'dataFinal': _dataFinalController.text,
-      'status': _selectedStatus ?? _statusController.text,
-      'clientes_id': ClientesId,
-      'usuarios_id': UsuariosId,
-      'descricaoProduto': observacoesHTML,
-      'defeito': defeitoHTML,
-      'observacoes': '',
-      'laudoTecnico': laudoHTML,
-    };
+    try {
+      Map<String, dynamic> keyAndPermissions = await _getCiKey();
+      String ciKey = keyAndPermissions['ciKey'] ?? '';
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $ciKey',
+        'Content-Type': 'application/json',
+      };
+      Map<String, dynamic> requestBody = {
+        'dataInicial': _dataInicialController.text,
+        'dataFinal': _dataFinalController.text,
+        'status': _selectedStatus ?? _statusController.text,
+        'clientes_id': ClientesId,
+        'usuarios_id': UsuariosId,
+        'descricaoProduto': observacoesHTML,
+        'defeito': defeitoHTML,
+        'observacoes': '',
+        'laudoTecnico': laudoHTML,
+      };
 
-    var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
-    var response = await http.put(
-      Uri.parse(url),
-      headers: headers,
-      body: jsonEncode(requestBody), // Atribuir o corpo à requisição PUT
-    );
+      var url =
+          '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
+      var response = await http.put(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode(requestBody),
+      );
 
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.green,
-          content: Text('OS atualizada com sucesso'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red,
-          content: Text('Falha ao atualizar OS'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.green,
+            content: Text('OS atualizada com sucesso'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Falha ao atualizar OS'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error saving OS: $e');
     }
   }
+
   Future<Map<String, dynamic>> _getCiKey() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String ciKey = prefs.getString('token') ?? '';
     String permissoesString = prefs.getString('permissoes') ?? '[]';
     List<dynamic> permissoes = jsonDecode(permissoesString);
     return {'ciKey': ciKey, 'permissoes': permissoes};
+  }
+
+  Future<void> _getOsById() async {
+    try {
+      Map<String, dynamic> keyAndPermissions = await _getCiKey();
+      String ciKey = keyAndPermissions['ciKey'] ?? '';
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $ciKey',
+      };
+      var url =
+          '${APIConfig.baseURL}${APIConfig.osEndpoint}/${widget.os['idOs']}';
+
+      var response = await http.get(Uri.parse(url), headers: headers);
+      print(url);
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        if (data.containsKey('result')) {
+          Map<String, dynamic> osData = data['result'];
+          setState(() {
+            UsuariosId = osData['usuarios_id'];
+            ClientesId = osData['clientes_id'];
+            _idOsController.text = osData['idOs'];
+            _nomeClienteController.text = osData['nomeCliente'];
+            _dataInicialController.text = osData['dataInicial'];
+            _dataFinalController.text = osData['dataFinal'];
+            _statusController.text = osData['status'];
+            _descricaoProdutoController.text =
+            osData['descricaoProduto'];
+            _defeitoController.text = osData['defeito'];
+            _observacoesController.text = osData['observacoes'];
+            _laudoTecnicoController.text = osData['laudoTecnico'];
+          });
+        } else {
+          print('Key "result" not found in API response');
+        }
+      } else {
+        print('Failed to load os: ${response.body}');
+      }
+    } catch (e) {
+      print('Error loading os: $e');
+    }
   }
 
   @override
