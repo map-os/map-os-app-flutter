@@ -3,6 +3,8 @@ import 'package:mapos_app/data/dashboardData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/assets/app_colors.dart';
 import 'package:intl/intl.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:mapos_app/pages/os/os_view.dart';
 
 class CustomWidget extends StatefulWidget {
   @override
@@ -224,7 +226,13 @@ class _CustomWidgetState extends State<CustomWidget> with SingleTickerProviderSt
                                                             ? TemaPrimario.iconColor
                                                             : TemaSecundario.iconColor,
                                                         onPressed: () {
-                                                          // Lógica quando o botão de visualização é pressionado
+                                                          Navigator.push(
+                                                            context,
+                                                            PageTransition(
+                                                              child: OsManager(os: {'idOs': id}),
+                                                              type: PageTransitionType.leftToRight,
+                                                            ),
+                                                          );
                                                         },
                                                       ),
                                                     ],
@@ -389,7 +397,13 @@ class _CustomWidgetState extends State<CustomWidget> with SingleTickerProviderSt
                                                             ? TemaPrimario.iconColor
                                                             : TemaSecundario.iconColor,
                                                         onPressed: () {
-                                                          // Lógica quando o botão de visualização é pressionado
+                                                          Navigator.push(
+                                                            context,
+                                                            PageTransition(
+                                                              child: OsManager(os: {'idOs': id}),
+                                                              type: PageTransitionType.leftToRight,
+                                                            ),
+                                                          );
                                                         },
                                                       ),
                                                     ],

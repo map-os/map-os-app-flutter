@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/config/constants.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
+import 'package:intl/intl.dart';
 
 class AdicionarOs extends StatefulWidget {
   @override
@@ -10,8 +12,10 @@ class AdicionarOs extends StatefulWidget {
 }
 
 class _AdicionarOsScreenState extends State<AdicionarOs> {
-  TextEditingController _dataInicialController = TextEditingController();
-  TextEditingController _dataFinalController = TextEditingController();
+  TextEditingController _dataInicialController = MaskedTextController(
+      mask: '00/00/0000');
+  TextEditingController _dataFinalController = MaskedTextController(
+      mask: '00/00/0000');
   TextEditingController _statusController = TextEditingController();
   TextEditingController _clientesController = TextEditingController();
   TextEditingController _responsavelController = TextEditingController();
@@ -24,8 +28,19 @@ class _AdicionarOsScreenState extends State<AdicionarOs> {
   List<String> filteredClientes = [];
   Map<String, String> usuariosMap = {};
   List<String> filteredUsuarios = [];
-  String _selectedStatus = 'Aberto';
-
+  // String _selectedStatus = 'Aberto';
+  List<String> _statusOptions = [
+    'Aberto',
+    'Orçamento',
+    'Aprovado',
+    'Negociação',
+    'Em Andamento',
+    'Aguardando Peças',
+    'Finalizado',
+    'Cancelado',
+    'Faturado',
+  ];
+  late String _selectedStatus;
 
   Future<String> _getCiKey() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -33,7 +48,7 @@ class _AdicionarOsScreenState extends State<AdicionarOs> {
     return ciKey;
   }
 
-  Future<bool> _addOs(Map<String, dynamic> newOs) async {
+  Future<bool> _addOs(Map<String, dynamic> newOs, BuildContext context) async {
     String ciKey = await _getCiKey();
 
     var url = '${APIConfig.baseURL}${APIConfig.osEndpoint}';
@@ -42,20 +57,37 @@ class _AdicionarOsScreenState extends State<AdicionarOs> {
         Uri.parse(url),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${ciKey}',
+          'Authorization': 'Bearer $ciKey',
         },
         body: jsonEncode(newOs),
       );
-      if (response.statusCode == 200) {}
-      _clearFields();
-      print(jsonEncode(newOs));
-      print(response.body);
-      return true;
+      if (response.statusCode == 201) {
+        _clearFields();
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("OS Adicionada com sucesso!"),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.green,
+        ));
+        return true;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Falha ao adicionar OS"),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ));
+        return false;
+      }
     } catch (error) {
-      print('Erro ao enviar solicitação POST: $error');
+      print('Erro na API: $error');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Erro interno do servidor"),
+        duration: Duration(seconds: 2),
+        backgroundColor: Colors.red, // Set background color to red
+      ));
       return false;
     }
   }
+
 
   Future<void> _getClientes({int page = 0}) async {
     String ciKey = await _getCiKey();
@@ -73,11 +105,12 @@ class _AdicionarOsScreenState extends State<AdicionarOs> {
         setState(() {
           clientesMap.clear();
           newClientes.forEach((cliente) {
-            clientesMap[cliente['nomeCliente']] = cliente['idClientes'].toString();
+            clientesMap[cliente['nomeCliente']] =
+                cliente['idClientes'].toString();
           });
         });
       } else {
-          print('Nenhum cliente encontrado');
+        print('Nenhum cliente encontrado');
       }
     } else {
       print('Falha ao carregar clientes');
@@ -112,17 +145,36 @@ class _AdicionarOsScreenState extends State<AdicionarOs> {
   }
 
   void _clearFields() {
-    _dataInicialController.clear();
-    _dataFinalController.clear();
     _statusController.clear();
     _clientesController.clear();
+    _statusController.clear();
+    _clientesController.clear();
+    _responsavelController.clear();
+    _descricaoController.clear();
+    _defeitoController.clear();
+    _observacoesController.clear();
+    _laudoTecnicoController.clear();
   }
+
+  void _setDataInicial() {
+    DateTime dataAtual = DateTime.now();
+    String formattedDate = DateFormat('dd/MM/yyyy').format(dataAtual);
+    _dataInicialController.text = formattedDate;
+
+    DateTime dataFinal = dataAtual.add(Duration(days: 3));
+    String formattedFinalDate = DateFormat('dd/MM/yyyy').format(dataFinal);
+    _dataFinalController.text = formattedFinalDate;
+  }
+
 
   @override
   void initState() {
     super.initState();
     _getClientes();
     _getUsuarios();
+    _setDataInicial();
+    _selectedStatus = _statusOptions.first;
+    print(_selectedStatus);
   }
 
   @override
@@ -271,46 +323,39 @@ class _AdicionarOsScreenState extends State<AdicionarOs> {
                 ),
               ),
               SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                value: _selectedStatus,
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedStatus = newValue!;
-                    _statusController.text = newValue; // Salva a escolha no controller
-                  });
-                },
-                decoration: InputDecoration(
-                  labelText: 'Status',
-                  prefixIcon: Icon(Icons.add),
-                  filled: true,
-                  fillColor: Color(0xffb9dbfd).withOpacity(0.3),
-                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
-                  ),
-                ),
-                items: <String>[
-                  'Aberto',
-                  'Orçamento',
-                  'Aprovado',
-                  'Negociação',
-                  'Em Andamento',
-                  'Aguardando Peças',
-                  'Finalizado',
-                  'Cancelado',
-                  'Faturado',
-                ].map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              SizedBox(height: 10),
+
+
+        DropdownButtonFormField<String>(
+        value: _selectedStatus,
+            onChanged: (newValue) {
+      setState(() {
+      _selectedStatus = newValue!;
+      _statusController.text = newValue;
+      });
+      },
+        decoration: InputDecoration(
+          labelText: 'Status',
+          prefixIcon: Icon(Icons.add),
+          filled: true,
+          fillColor: Color(0xffb9dbfd).withOpacity(0.3),
+          contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 9.0),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide(color: Color(0xff333649), width: 2.0),
+          ),
+        ),
+        items: _statusOptions.map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+      ),
+
+      SizedBox(height: 10),
               TextFormField(
                 controller: _descricaoController,
                 decoration: InputDecoration(
@@ -413,10 +458,12 @@ class _AdicionarOsScreenState extends State<AdicionarOs> {
                   minimumSize: Size(200, 50),
                 ),
                 onPressed: () {
+                  String status = _statusController.text.isNotEmpty ? _statusController.text : 'Aberto';
                   Map<String, dynamic> newOs = {
+
                     "dataInicial": _dataInicialController.text,
                     "dataFinal": _dataFinalController.text,
-                    "status": _statusController.text,
+                    "status": status,
                     "clientes_id": clientesMap[_clientesController.text],
                     "usuarios_id": usuariosMap[_responsavelController.text],
                     "descricaoProduto": _descricaoController.text,
@@ -427,7 +474,7 @@ class _AdicionarOsScreenState extends State<AdicionarOs> {
                     "garantias_id": "",
                     "garantia": "",
                   };
-                  _addOs(newOs);
+                  _addOs(newOs, context);
                 },
                 child: Text('Adicionar OS',
                   style: TextStyle(fontSize: 18.0, color: Colors.white),

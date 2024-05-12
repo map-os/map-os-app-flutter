@@ -97,9 +97,9 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   TextEditingController _usernameController =
-      TextEditingController(text: 'demo@mapos.com.br');
+      TextEditingController();
   TextEditingController _passwordController =
-      TextEditingController(text: 'mapos123456');
+      TextEditingController();
   bool _showPassword = false;
   @override
   void initState() {

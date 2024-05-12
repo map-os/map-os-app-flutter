@@ -53,9 +53,7 @@ class _OsManagerState extends State<OsManager> with SingleTickerProviderStateMix
         _calctotal = osCalculator.calcTotal; // Assign the calcTotal directly
       });
     } catch (error) {
-      // Handle potential errors during calculation retrieval
       print('Error fetching calcTotal: $error');
-      // Consider notifying the user or taking appropriate actions (e.g., displaying an error message)
     }
   }
 

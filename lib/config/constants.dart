@@ -1,7 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class APIConfig {
-  static const String appVersion = 'Beta 1.0.0';
+  static const String appVersion = 'Beta 1.1.0';
 
   // Campo estático para armazenar a baseURL
   static String? baseURL;
@@ -16,7 +16,7 @@ class APIConfig {
   static const String indexEndpoint = '';
   static const String loginEndpoint = '/login';
   static const String clientesEndpoint = '/clientes';
-  static const String prodtuostesEndpoint = '/produtos'; // Corrigido o nome do endpoint
+  static const String prodtuostesEndpoint = '/produtos';
   static const String servicossEndpoint = '/servicos';
   static const String osEndpoint = '/os';
   static const String usuarioEndpoint = '/usuarios';
