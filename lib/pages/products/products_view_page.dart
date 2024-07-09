@@ -4,6 +4,7 @@ import 'package:mapos_app/controllers/products/productsController.dart';
 import 'package:mapos_app/pages/products/products_edit_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:mapos_app/pages/products/products_page.dart';
+import 'package:mapos_app/helpers/format.dart';
 
 class VisualizarProdutosPage extends StatefulWidget {
   final int idProdutos;
@@ -66,9 +67,9 @@ class _VisualizarProdutosPageState extends State<VisualizarProdutosPage> {
                       const SizedBox(height: 5),
                       _buildDetailRow('Cod Barras:', product['codDeBarra'] ?? 'Não cadastrado'),
                       const SizedBox(height: 5),
-                      _buildDetailRow('Preço de Compra:', 'R\$ ${product['precoCompra']}'),
+                      _buildDetailRow('Preço de Compra:', Format.formatCurrency.format(double.parse(product['precoCompra'].toString()))),
                       const SizedBox(height: 5),
-                      _buildDetailRow('Preço de Venda:', 'R\$ ${product['precoVenda']}'),
+                      _buildDetailRow('Preço de Venda:', Format.formatCurrency.format(double.parse(product['precoVenda'].toString()))),
                       const SizedBox(height: 5),
                       _buildDetailRow('Estoque:', product['estoque']),
                       const SizedBox(height: 5),

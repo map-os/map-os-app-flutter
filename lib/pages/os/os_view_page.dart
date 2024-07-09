@@ -6,6 +6,7 @@ import 'package:mapos_app/controllers/os/osController.dart';
 import 'package:mapos_app/pages/os/os_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:mapos_app/helpers/format.dart';
 
 class VisualizarOrdemServicoPage extends StatefulWidget {
   final int idOrdemServico;
@@ -13,10 +14,12 @@ class VisualizarOrdemServicoPage extends StatefulWidget {
   VisualizarOrdemServicoPage({required this.idOrdemServico});
 
   @override
-  _VisualizarOrdemServicoPageState createState() => _VisualizarOrdemServicoPageState();
+  _VisualizarOrdemServicoPageState createState() =>
+      _VisualizarOrdemServicoPageState();
 }
 
-class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage> {
+class _VisualizarOrdemServicoPageState
+    extends State<VisualizarOrdemServicoPage> {
   late Future<Map<String, dynamic>> futureOrder;
 
   @override
@@ -26,12 +29,10 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
   }
 
   String removeHtmlTags(String htmlString) {
-    // Verifica se a string é nula ou vazia
     if (htmlString == null || htmlString.isEmpty) {
       return '';
     }
 
-    // Remove tags HTML utilizando métodos de strings simples
     String withoutHtml = '';
     bool insideTag = false;
 
@@ -48,7 +49,6 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
     return withoutHtml.trim();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,14 +64,16 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
                   snapshot.data!['contato'] != null) {
                 final contato = snapshot.data!['contato'];
                 return IconButton(
-                  icon: Icon(Boxicons.bxl_whatsapp, color: Colors.green,),
+                  icon: Icon(
+                    Boxicons.bxl_whatsapp,
+                    color: Colors.green,
+                  ),
                   onPressed: () async {
                     String celular = snapshot.data!['celular'];
-                    String cleanedCelular = celular.replaceAll(
-                        RegExp(r'[^\d+]'), '');
+                    String cleanedCelular =
+                        celular.replaceAll(RegExp(r'[^\d+]'), '');
                     final Uri whatsappUrl = Uri.parse(
-                      'https://api.whatsapp.com/send?phone=+55$cleanedCelular&text=${snapshot
-                          .data!['textoWhatsApp']}',
+                      'https://api.whatsapp.com/send?phone=+55$cleanedCelular&text=${snapshot.data!['textoWhatsApp']}',
                     );
                     await _launchInBrowser(whatsappUrl);
                   },
@@ -89,14 +91,19 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
           if (snapshot.connectionState == ConnectionState.waiting) {
             return _buildShimmer();
           } else if (snapshot.hasError) {
-            return Center(child: Text('Erro: ${snapshot.error}',
-                style: TextStyle(color: Colors.red, fontSize: 18)));
+            return Center(
+                child: Text('Erro: ${snapshot.error}',
+                    style: TextStyle(color: Colors.red, fontSize: 18)));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text(
-                'Nenhum detalhe da ordem de serviço encontrado',
-                style: TextStyle(fontSize: 18)));
+            return Center(
+                child: Text('Nenhum detalhe da ordem de serviço encontrado',
+                    style: TextStyle(fontSize: 18)));
           } else {
             final order = snapshot.data!;
+            String calcTotalString = order['calcTotal'].toString();
+            calcTotalString = calcTotalString.replaceAll(',', '');
+            NumberFormat format = NumberFormat.decimalPattern();
+            num calcTotal = format.parse(calcTotalString);
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -104,7 +111,8 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
                   Card(
                     elevation: 8.0,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0)),
+                        borderRadius: BorderRadius.circular(15.0)
+                        ),
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Column(
@@ -112,60 +120,70 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.build, color: Color(0xff333649),
-                                  size: 28),
+                              Icon(Icons.build,
+                                  color: Color(0xff333649), size: 28),
                               SizedBox(width: 10),
                               Text(
                                 'Detalhes da OS #${order['idOs']}',
-                                style: TextStyle(fontSize: 22,
+                                style: TextStyle(
+                                    fontSize: 22,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xff333649)),
+                                    color: Color(0xff333649)
+                                    ),
                               ),
                             ],
                           ),
                           Divider(height: 30, color: Color(0xff333649)),
                           _buildDetailRow('Cliente:', order['nomeCliente']),
                           SizedBox(height: 5),
-                          _buildDetailRow('Entrada:',
+                          _buildDetailRow(
+                              'Entrada:',
                               DateFormat('dd/MM/yyyy').format(
                                   DateTime.parse(order['dataInicial']))),
                           SizedBox(height: 5),
-                          _buildDetailRow('Prev. Saída:',
-                              DateFormat('dd/MM/yyyy').format(
-                                  DateTime.parse(order['dataFinal']))),
+                          _buildDetailRow(
+                            
+                              'Prev. Saída:',
+                              DateFormat('dd/MM/yyyy')
+                                  .format(DateTime.parse(order['dataFinal']))),
                           SizedBox(height: 5),
                           _buildDetailRow('Status:', order['status']),
                           SizedBox(height: 5),
                           _buildDetailRow('Responsavel:', order['nome']),
+                           SizedBox(height: 5),
+                          _buildDetailRow('Desconto : -',Format.formatCurrency.format(double.parse(order['desconto'].toString()))),
                           SizedBox(height: 5),
-                          _buildDetailRow(
-                              'Valor da Ordem:', 'R\$ ${order['calcTotal']}'),
+                          _buildDetailRow('Valor da ordem:',  Format.formatCurrency.format(calcTotal)),
                           SizedBox(height: 30),
-                          Row(
+                          const Row(
                             children: [
-                              Icon(Icons.receipt_long, color: Color(0xff333649),
-                                  size: 28),
+                              Icon(Icons.receipt_long,
+                                  color: Color(0xff333649), size: 28),
                               SizedBox(width: 10),
                               Text(
                                 'Dados Tecnicos',
-                                style: TextStyle(fontSize: 22,
+                                style: TextStyle(
+                                    fontSize: 22,
                                     fontWeight: FontWeight.bold,
                                     color: Color(0xff333649)),
                               ),
                             ],
                           ),
                           Divider(height: 30, color: Color(0xff333649)),
-                          _buildDetailRow('Descrição', removeHtmlTags(
-                              order['descricaoProduto'].isEmpty
+                          _buildDetailRow(
+                              'Descrição',
+                              removeHtmlTags(order['descricaoProduto'].isEmpty
                                   ? 'Não informado'
                                   : removeHtmlTags(order['descricaoProduto']))),
                           SizedBox(height: 5),
-                          _buildDetailRow('Defeito', removeHtmlTags(
-                              order['defeito'].isEmpty
+                          _buildDetailRow(
+                              'Defeito',
+                              removeHtmlTags(order['defeito'].isEmpty
                                   ? 'Não informado'
                                   : removeHtmlTags(order['defeito']))),
                           SizedBox(height: 5),
-                          _buildDetailRow('Laudo Técnico',
+                          _buildDetailRow(
+                              'Laudo Técnico',
                               order['laudoTecnico'].isEmpty
                                   ? 'Não informado'
                                   : removeHtmlTags(order['laudoTecnico'])),
@@ -192,7 +210,7 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
                                     // );
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
+                                      const SnackBar(
                                         content: Text(
                                             'ID da ordem de serviço está nulo. Não é possível editar.'),
                                         backgroundColor: Colors.red,
@@ -200,17 +218,18 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
                                     );
                                   }
                                 },
-                                icon: Icon(Icons.edit, color: Colors.white),
-                                label: Text('Editar'),
+                                icon:
+                                    const Icon(Icons.edit, color: Colors.white),
+                                label: const Text('Editar'),
                                 style: ElevatedButton.styleFrom(
                                   foregroundColor: Colors.white,
-                                  backgroundColor: Color(0xffff7e15),
+                                  backgroundColor: const Color(0xffff7e15),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               ElevatedButton.icon(
                                 onPressed: () {
                                   _confirmDelete(context);
@@ -324,7 +343,8 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 16,
+          style: TextStyle(
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Color(0xff333649)),
         ),
@@ -344,8 +364,9 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
 
     double total = produtos.fold(
       0,
-          (sum, produto) =>
-      sum + (double.parse(produto['preco']) * int.parse(produto['quantidade'])),
+      (sum, produto) =>
+          sum +
+          (double.parse(produto['preco']) * int.parse(produto['quantidade'])),
     );
 
     return Column(
@@ -355,13 +376,14 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           // alinha os elementos ao redor
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.shopping_basket, color: Color(0xff333649), size: 28),
                 SizedBox(width: 10),
                 Text(
                   'Produtos',
-                  style: TextStyle(fontSize: 22,
+                  style: TextStyle(
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Color(0xff333649)),
                 ),
@@ -371,7 +393,7 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  'R\$ $total',
+                  Format.formatCurrency.format(total),
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -394,9 +416,10 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
     );
   }
 
-
   Widget _buildProdutoCard(
-      {required int quantidade, required String descricao, required double preco}) {
+      {required int quantidade,
+      required String descricao,
+      required double preco}) {
     return Container(
       width: double.infinity,
       height: 100, // altura desejada
@@ -432,12 +455,13 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
           children: [
             Row(
               children: [
-                Icon(Icons.miscellaneous_services, color: Color(0xff333649),
-                    size: 28),
+                Icon(Icons.miscellaneous_services,
+                    color: Color(0xff333649), size: 28),
                 SizedBox(width: 10),
                 Text(
                   'Serviços',
-                  style: TextStyle(fontSize: 22,
+                  style: TextStyle(
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Color(0xff333649)),
                 ),
@@ -455,7 +479,6 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
 
     double total = 0;
 
-    // Calcula o total apenas se 'preco' não for nulo
     total = servicos.fold(0, (sum, servico) {
       if (servico['preco'] != null) {
         return sum + double.parse(servico['preco']);
@@ -472,13 +495,14 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
             SizedBox(width: 10),
             Text(
               'Serviços',
-              style: TextStyle(fontSize: 22,
+              style: TextStyle(
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Color(0xff333649)),
             ),
             Spacer(),
             Text(
-              'R\$ $total',
+              Format.formatCurrency.format(total),
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
@@ -548,7 +572,8 @@ class _VisualizarOrdemServicoPageState extends State<VisualizarOrdemServicoPage>
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Tem certeza de que deseja excluir esta ordem de serviço? Essa ação é irreversivel 😢'),
+              Text(
+                  'Tem certeza de que deseja excluir esta ordem de serviço? Essa ação é irreversivel 😢'),
               SizedBox(height: 20),
               Text('Responda a seguinte conta para confirmar:'),
               SizedBox(height: 10),

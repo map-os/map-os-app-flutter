@@ -4,6 +4,7 @@ import 'package:mapos_app/widgets/bottom_nav_menu.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:mapos_app/pages/products/products_view_page.dart';
 import 'package:mapos_app/pages/products/products_add_page.dart';
+import 'package:mapos_app/helpers/format.dart';
 
 class productsList extends StatefulWidget {
   @override
@@ -140,7 +141,7 @@ class _productsListState extends State<productsList> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'R\$ ${products[index]['precoVenda']}',
+              Format.formatCurrency.format(double.parse(products[index]['precoVenda'].toString())),
               style: TextStyle(color: Color(0xff333649), fontSize: 16),
             ),
             IconButton(

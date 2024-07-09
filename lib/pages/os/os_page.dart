@@ -7,6 +7,7 @@ import 'package:mapos_app/pages/os/os_view_page.dart';
 
 class OrdemServicoList extends StatefulWidget {
   @override
+  // ignore: library_private_types_in_public_api
   _OrdemServicoListState createState() => _OrdemServicoListState();
 }
 
@@ -198,7 +199,7 @@ class _OrdemServicoListState extends State<OrdemServicoList> {
             IconButton(
               icon: Icon(Icons.visibility, color: Color(0xff333649)),
               onPressed: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => VisualizarOrdemServicoPage(idOrdemServico: int.parse(OrdemServico[index]['idOs'].toString())),

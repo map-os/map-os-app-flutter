@@ -4,6 +4,7 @@ import 'package:mapos_app/api/apiConfig.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController {
+  
   Future<Map<String, dynamic>> login(String email, String password) async {
     if (APIConfig.baseURL == null) {
       await APIConfig.initBaseURL();
