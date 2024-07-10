@@ -7,6 +7,7 @@ import 'package:mapos_app/pages/os/os_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mapos_app/helpers/format.dart';
+import 'package:mapos_app/pages/os/os_edit_page.dart';
 
 class VisualizarOrdemServicoPage extends StatefulWidget {
   final int idOrdemServico;
@@ -200,23 +201,12 @@ class _VisualizarOrdemServicoPageState
                             children: [
                               ElevatedButton.icon(
                                 onPressed: () {
-                                  final orderData = snapshot.data!;
-                                  if (orderData['idOrdemServico'] != null) {
-                                    // Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //     builder: (context) => EditarOrdemServicoPage(ordemServico: orderData),
-                                    //   ),
-                                    // );
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                            'ID da ordem de serviço está nulo. Não é possível editar.'),
-                                        backgroundColor: Colors.red,
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EditarOsPage(),
                                       ),
                                     );
-                                  }
                                 },
                                 icon:
                                     const Icon(Icons.edit, color: Colors.white),
@@ -455,7 +445,7 @@ class _VisualizarOrdemServicoPageState
           children: [
             Row(
               children: [
-                Icon(Icons.miscellaneous_services,
+                const Icon(Icons.miscellaneous_services,
                     color: Color(0xff333649), size: 28),
                 SizedBox(width: 10),
                 Text(
