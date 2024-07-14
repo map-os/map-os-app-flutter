@@ -1,5 +1,8 @@
-on: push
-name: Test, Build and Release apk
+on:
+  push:
+    tags:
+      - 'debug*'
+name: Build Debug APK
 jobs:
   build:
     name: Build APK
