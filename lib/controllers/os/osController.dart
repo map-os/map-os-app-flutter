@@ -49,7 +49,7 @@ class ControllerOs {
 
   Future<http.Response> _reqOrdemServico(String? token, int page, int perPage) async {
     final url = Uri.parse('${APIConfig.baseURL}${APIConfig.osEndpoint}?perPage=$perPage&page=$page');
-    print(url);
+
     return await http.get(
       url,
       headers: {
@@ -81,7 +81,7 @@ class ControllerOs {
 
     if (!await hasInternetConnection()) {
       print('Sem conexão Carregando Produtos localmente');
-      return _loadProductByIdFromLocal(prefs, id);
+      return _loadOrdemServicoByIdFromLocal(prefs, id);
     }
 
     await APIConfig.ensureBaseURLInitialized();
@@ -97,32 +97,13 @@ class ControllerOs {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       if (data['status']) {
-        await _saveProductToLocal(prefs, id, data['result']);
+        await _saveOrdemServicoToLocal(prefs, id, data['result']);
         return data['result'];
       } else {
         throw Exception('${data['message']}');
       }
     } else {
       throw Exception('Erro ao buscar Ordens');
-    }
-  }
-
-  Future<void> _saveProductToLocal(SharedPreferences prefs, int id, Map<String, dynamic> product) async {
-    String key = 'product_$id';
-    String jsonproduct = jsonEncode(product);
-    await prefs.setString(key, jsonproduct);
-    print('product details saved locally.');
-  }
-
-  Future<Map<String, dynamic>> _loadProductByIdFromLocal(SharedPreferences prefs, int id) async {
-    String key = 'product_$id';
-    String? jsonproduct = prefs.getString(key);
-    if (jsonproduct != null) {
-      Map<String, dynamic> product = jsonDecode(jsonproduct);
-      print('Dados salvos Localmente');
-      return product;
-    } else {
-      throw Exception('O Produto $id não foi salvo localmente 😢.');
     }
   }
 
@@ -135,6 +116,25 @@ class ControllerOs {
         'Authorization': 'Bearer $token',
       },
     );
+  }
+
+  Future<void> _saveOrdemServicoToLocal(SharedPreferences prefs, int id, Map<String, dynamic> product) async {
+    String key = 'ordem_servico_$id';
+    String jsonproduct = jsonEncode(product);
+    await prefs.setString(key, jsonproduct);
+    print('product details saved locally.');
+  }
+
+  Future<Map<String, dynamic>> _loadOrdemServicoByIdFromLocal(SharedPreferences prefs, int id) async {
+    String key = 'ordem_servico_$id';
+    String? jsonproduct = prefs.getString(key);
+    if (jsonproduct != null) {
+      Map<String, dynamic> product = jsonDecode(jsonproduct);
+      print('Dados salvos Localmente');
+      return product;
+    } else {
+      throw Exception('O Produto $id não foi salvo localmente 😢.');
+    }
   }
 
   Future<bool> updateProduct(int id, String? codDeBarra, String descricao, double precoVenda, double precoCompra, int estoque, int estoqueMinimo ) async {
@@ -251,5 +251,4 @@ class ControllerOs {
       },
     );
   }
-
 }

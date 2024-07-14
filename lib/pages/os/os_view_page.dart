@@ -204,7 +204,7 @@ class _VisualizarOrdemServicoPageState
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => EditarOsPage(),
+                                        builder: (context) => EditarOsPage(idOs: int.parse(order['idOs'])),
                                       ),
                                     );
                                 },
