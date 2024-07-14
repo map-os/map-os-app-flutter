@@ -3,7 +3,7 @@ import 'package:mapos_app/controllers/clients/clientsController.dart';
 import 'package:mapos_app/widgets/bottom_nav_menu.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:mapos_app/pages/clients/clients_view_page.dart';
-import 'package:mapos_app/pages/Clients/Clients_add_page.dart';
+import 'package:mapos_app/pages/clients/clients_add_page.dart';
 
 class ClientsList extends StatefulWidget {
   @override
