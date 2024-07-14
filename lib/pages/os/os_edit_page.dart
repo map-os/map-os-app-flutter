@@ -8,27 +8,37 @@ import 'package:mapos_app/pages/os/tabs/produtos_tab.dart';
 import 'package:mapos_app/pages/os/tabs/anexos_tab.dart';
 import 'package:mapos_app/pages/os/tabs/anotacoes_tab.dart';
 import 'package:mapos_app/pages/os/os_page.dart';
+import 'package:mapos_app/controllers/os/osController.dart';
 
 class EditarOsPage extends StatefulWidget {
+
+  final int idOs;
+  EditarOsPage({required this.idOs});
+
   @override
   _EditarOsPageState createState() => _EditarOsPageState();
+
 }
 
-class _EditarOsPageState extends State<EditarOsPage>
-    with SingleTickerProviderStateMixin {
+class _EditarOsPageState extends State<EditarOsPage> with SingleTickerProviderStateMixin {
+
   TabController? _tabController;
   PageController _pageController = PageController();
   int _currentIndex = 0;
   bool _useTopMenu = true;
+  late ControllerOs controllerOs;
+  Map<String, dynamic>? ordemServico;
 
-  final List<Widget> _tabPages = [
-    DetalhesTab(),
-    DescontosTab(),
-    ServicosTab(),
-    ProdutosTab(),
-    AnexosTab(),
-    AnotacoesTab()
-  ];
+  List<Widget> get _tabPages {
+    return [
+      DetalhesTab(ordemServico: ordemServico),
+      DescontosTab(),
+      ServicosTab(),
+      ProdutosTab(),
+      AnexosTab(),
+      AnotacoesTab()
+    ];
+  }
 
   final List<IconData> _tabIcons = [
     Icons.info,
@@ -44,6 +54,7 @@ class _EditarOsPageState extends State<EditarOsPage>
     super.initState();
     _tabController = TabController(length: _tabPages.length, vsync: this);
     _tabController!.addListener(_handleTabSelection);
+    _getOs();
   }
 
   @override
@@ -51,6 +62,21 @@ class _EditarOsPageState extends State<EditarOsPage>
     _tabController!.dispose();
     _pageController.dispose();
     super.dispose();
+  }
+
+  void _getOs() async {
+    controllerOs = ControllerOs();
+    try {
+      int idOs = widget.idOs;
+      Map<String, dynamic> data = await controllerOs.getOrdemServicotById(idOs);
+      setState(() {
+        ordemServico = data;
+        _tabController = TabController(length: _tabPages.length, vsync: this);
+        _tabController!.addListener(_handleTabSelection);
+      });
+    } catch (e) {
+      print("Erro ao buscar a ordem de serviço: $e");
+    }
   }
 
   void _handleTabSelection() {
