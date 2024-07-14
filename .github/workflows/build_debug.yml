@@ -1,5 +1,8 @@
-on: push
-name: Test, Build and Release apk
+on:
+  push:
+    tags:
+      - 'debug*'
+name: Build Debug APK
 jobs:
   build:
     name: Build APK
@@ -8,13 +11,12 @@ jobs:
     - uses: actions/checkout@v1
     - uses: actions/setup-java@v1
       with:
-        java-version: '21.x'
+        java-version: '19.x'
     - uses: subosito/flutter-action@v1
       with:
         channel: stable
-        flutter-version: 3.19.0
+        flutter-version: 3.22.2
     - run: flutter pub get
-    - run: flutter test
     - run: flutter build apk --debug --split-per-abi
     - name: Push APK to Releases
       uses: ncipollo/release-action@v1
