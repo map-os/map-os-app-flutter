@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:mapos_app/pages/os/tabs/detalhes_tab.dart';
 import 'package:mapos_app/pages/os/tabs/descontos_tab.dart';
 import 'package:mapos_app/pages/os/tabs/servicos_tab.dart';
@@ -11,23 +10,21 @@ import 'package:mapos_app/pages/os/os_page.dart';
 import 'package:mapos_app/controllers/os/osController.dart';
 
 class EditarOsPage extends StatefulWidget {
-
   final int idOs;
   EditarOsPage({required this.idOs});
 
   @override
   _EditarOsPageState createState() => _EditarOsPageState();
-
 }
 
 class _EditarOsPageState extends State<EditarOsPage> with SingleTickerProviderStateMixin {
-
   TabController? _tabController;
   PageController _pageController = PageController();
   int _currentIndex = 0;
   bool _useTopMenu = true;
   late ControllerOs controllerOs;
   Map<String, dynamic>? ordemServico;
+  bool _isLoading = true;
 
   List<Widget> get _tabPages {
     return [
@@ -71,11 +68,15 @@ class _EditarOsPageState extends State<EditarOsPage> with SingleTickerProviderSt
       Map<String, dynamic> data = await controllerOs.getOrdemServicotById(idOs);
       setState(() {
         ordemServico = data;
+        _isLoading = false;
         _tabController = TabController(length: _tabPages.length, vsync: this);
         _tabController!.addListener(_handleTabSelection);
       });
     } catch (e) {
       print("Erro ao buscar a ordem de serviço: $e");
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -144,7 +145,7 @@ class _EditarOsPageState extends State<EditarOsPage> with SingleTickerProviderSt
             onPressed: _toggleMenu,
           ),
         ],
-        bottom: _useTopMenu
+        bottom: _useTopMenu && !_isLoading
             ? TabBar(
           controller: _tabController,
           onTap: (index) {
@@ -167,7 +168,9 @@ class _EditarOsPageState extends State<EditarOsPage> with SingleTickerProviderSt
         )
             : null,
       ),
-      body: _useTopMenu
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : _useTopMenu
           ? TabBarView(
         controller: _tabController,
         children: _tabPages,
