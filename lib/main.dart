@@ -4,8 +4,14 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'providers/theme_provider.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FlutterDownloader.initialize(
+    debug: true,
+  );
   initializeDateFormatting().then((_) {
     runApp(
       ChangeNotifierProvider(
@@ -14,6 +20,7 @@ void main() {
       ),
     );
   });
+
 }
 
 class MaposApp extends StatelessWidget {
@@ -23,7 +30,7 @@ class MaposApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
-      title: 'MAP-OS APP',
+      title: 'MAP-OS',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.deepPurple,
@@ -49,7 +56,7 @@ class MaposApp extends StatelessWidget {
         Locale('en', 'US'),
         Locale('pt', 'BR'),
       ],
-      locale: const Locale('pt', 'BR'), // Define o locale para português do Brasil
+      locale: const Locale('pt', 'BR'),
     );
   }
 }

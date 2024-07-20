@@ -32,7 +32,7 @@ class _EditarOsPageState extends State<EditarOsPage> with SingleTickerProviderSt
       DescontosTab(),
       ServicosTab(),
       ProdutosTab(),
-      AnexosTab(),
+      AnexosTab(ordemServico: ordemServico),
       AnotacoesTab()
     ];
   }
