@@ -48,7 +48,7 @@ dependencies:
   flutter_masked_text2: ^0.9.1
   provider: ^6.1.2
   flutter_html: ^3.0.0-beta.2
-
+  flutter_localization: ^0.2.0
 
 
 
