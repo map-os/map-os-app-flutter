@@ -16,8 +16,8 @@ class LoginPage extends StatelessWidget {
   final UrlController settingsController = UrlController();
   final LoginController loginController = LoginController();
 
-  final TextEditingController emailController = TextEditingController(text: 'teste@teste.com');
-  final TextEditingController passwordController = TextEditingController(text: '123456');
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   void _showTutorial(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) => TutorialScreen()));
@@ -26,7 +26,7 @@ class LoginPage extends StatelessWidget {
   void _showSettingsDialog(BuildContext context) async {
     TextEditingController urlController = TextEditingController();
     String? currentURL = await settingsController.getBaseURL();
-    urlController.text = currentURL ?? "https://www.firewarrior.com.br/api/index.php/api/v1";
+    urlController.text = currentURL ?? "";
 
     showDialog(
       context: context,

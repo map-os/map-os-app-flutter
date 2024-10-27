@@ -4,7 +4,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'providers/theme_provider.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 
 void main() async {
@@ -20,7 +20,6 @@ void main() async {
       ),
     );
   });
-
 }
 
 class MaposApp extends StatelessWidget {

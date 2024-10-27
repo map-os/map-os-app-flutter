@@ -4,7 +4,7 @@ import 'package:mapos_app/pages/os/tabs/detalhes_tab.dart';
 import 'package:mapos_app/pages/os/tabs/descontos_tab.dart';
 import 'package:mapos_app/pages/os/tabs/servicos_tab.dart';
 import 'package:mapos_app/pages/os/tabs/produtos_tab.dart';
-import 'package:mapos_app/pages/os/tabs/anexos_tab.dart';
+// import 'package:mapos_app/pages/os/tabs/anexos_tab.dart';
 import 'package:mapos_app/pages/os/tabs/anotacoes_tab.dart';
 import 'package:mapos_app/pages/os/os_page.dart';
 import 'package:mapos_app/controllers/os/osController.dart';
@@ -32,7 +32,7 @@ class _EditarOsPageState extends State<EditarOsPage> with SingleTickerProviderSt
       DescontosTab(),
       ServicosTab(),
       ProdutosTab(),
-      AnexosTab(ordemServico: ordemServico),
+      // AnexosTab(ordemServico: ordemServico),
       AnotacoesTab()
     ];
   }
