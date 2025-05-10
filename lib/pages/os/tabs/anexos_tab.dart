@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -47,7 +49,7 @@ class _AnexosTabState extends State<AnexosTab> {
     InitializationSettings(android: initializationSettingsAndroid);
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
-    _requestPermissions(); // Solicitar permissões ao iniciar
+
   }
 
   static void downloadCallback(
@@ -74,20 +76,39 @@ class _AnexosTabState extends State<AnexosTab> {
     );
   }
 
-  void _requestPermissions() async {
-    if (await Permission.storage.request().isGranted) {
-      print("Storage permission granted");
-    } else {
-      print("Storage permission denied");
-      // Optionally, open app settings for the user to grant the permission manually.
-      openAppSettings();
+  Future<void> _requestPermissions() async {
+    if (Platform.isAndroid) {
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      final sdkInt = androidInfo.version.sdkInt;
+
+      if (sdkInt >= 33) { // Android 13 (API 33) ou superior
+        // No Android 13+ (API 33+), usamos as novas permissões específicas
+        await [
+          Permission.photos,       // Para fotos
+          Permission.videos,      // Para vídeos
+          Permission.notification // Se precisar de notificações
+        ].request();
+      } else {
+        // Para versões anteriores ao Android 13
+        await [
+          Permission.storage,
+          Permission.camera,      // Se precisar da câmera
+        ].request();
+      }
+    } else if (Platform.isIOS) {
+      // Permissões para iOS
+      await [
+        Permission.photos,
+        Permission.camera,
+      ].request();
     }
   }
 
+
   void _downloadFile(String url) async {
-    final status = await Permission.storage.status;
+    final status = await Permission.photos.status;
     if (!status.isGranted) {
-      await Permission.storage.request();
+      await Permission.videos.request();
     }
 
     final Directory? externalStorageDir = await getExternalStorageDirectory();

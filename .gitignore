@@ -1,14 +1,19 @@
 # Miscellaneous
 *.class
 *.log
+*.lock
 *.pyc
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
 migrate_working_dir/
+build/
+
 
 # IntelliJ related
 *.iml
