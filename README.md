@@ -1,49 +1,48 @@
-# MAP-OS APP
+# MAP-OS APP V2 - Em Desenvolvimento
 
-Aplicativo android para o sistema MAP-OS
-```bash
-https://github.com/RamonSilva20/mapos
-```
+Aplicativo Android para o sistema MAP-OS.
+
+[Repositório do MAP-OS](https://github.com/RamonSilva20/mapos)
 
 ## Screenshots
-<img src="https://github.com/Fesantt/MAPOS-OS-APP-FLUTTER/assets/33626716/e489e367-6fe6-41e2-ac3e-bcf96f2947e5" alt="Descrição da imagem" width="200">
-<img src="https://github.com/Fesantt/MAPOS-OS-APP-FLUTTER/assets/33626716/4588a98a-8bb7-4b65-b9df-9a879ff0aa31" alt="Descrição da imagem" width="200">
-<img src="https://github.com/Fesantt/MAPOS-OS-APP-FLUTTER/assets/33626716/cc2994b6-0db3-47d4-a3b0-4972b75f3bfd" alt="Descrição da imagem" width="200">
-<img src="https://github.com/Fesantt/MAPOS-OS-APP-FLUTTER/assets/33626716/5c0c51cf-9824-41b2-97e2-dcaaa1df86c1" alt="Descrição da imagem" width="200">
 
+<img src="https://github.com/user-attachments/assets/7d148007-6408-4316-8f72-1636f89102b5" width="200">
+<img src="https://github.com/user-attachments/assets/9ba3c8bb-edd0-4516-85e5-e04c74498548" width="200">
+<img src="https://github.com/user-attachments/assets/b32faa7f-ac9b-4c95-9002-ad922bca9f5c" width="200">
+<img src="https://github.com/user-attachments/assets/d8917b80-0af6-4c78-82db-863af655bafd1" width="200">
 
-## Ambiente de desenvolvimento
+## Ambiente de Desenvolvimento 💻
 
-Néssesario Flutter instalado
+Para começar a contribuir ou executar o projeto localmente, é necessário ter o **Flutter** instalado.
 
-Execute o comando na pasta do projeto para baixar as bibliotecas
-```bash
- flutter pub get
-```
-Gerar uma nova Build
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/Fesantt/MAPOS-OS-APP-FLUTTER.git
+   cd MAPOS-OS-APP-FLUTTER
+   ```
 
-```bash
- flutter build apk
-```
-    
-## API
-```bash
-https://github.com/Ramo](https://github.com/RamonSilva20/mapos
-```
+2. Baixe as dependências:
+   ```bash
+   flutter pub get
+   ```
 
-## Funcionalidades
+3. Para gerar uma nova build do APK:
+   ```bash
+   flutter build apk
+   ```
 
-- Adição/edição de serviços
-- Adição/edição de produtos
-- Adição/edição de clientes
-- Adição/edição de ordens de serviço.
+## Funcionalidades 🛠️
 
+- Adição/edição de **serviços**
+- Adição/edição de **produtos**
+- Adição/edição de **clientes**
+- Adição/edição de **ordens de serviço**
 
-### Contribuidores
+## Contribuidores 👥
+
 [![Contribuidores](https://contrib.rocks/image?repo=Fesantt/MAPOS-OS-APP-FLUTTER)](https://github.com/Fesantt/MAPOS-OS-APP-FLUTTER/graphs/contributors)
 
-
 ## Autor
+
 | [<img src="https://avatars.githubusercontent.com/Fesantt?s=115"><br><sub>Felipe Santt</sub>](https://github.com/Fesantt) |
 | :---: |
-
