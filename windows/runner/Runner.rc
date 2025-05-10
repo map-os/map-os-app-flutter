@@ -93,7 +93,7 @@ BEGIN
             VALUE "FileDescription", "mapos_app" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "mapos_app" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2024 br.com.mapos.os. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 br.com.mapos.os. All rights reserved." "\0"
             VALUE "OriginalFilename", "mapos_app.exe" "\0"
             VALUE "ProductName", "mapos_app" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
