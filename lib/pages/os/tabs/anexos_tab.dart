@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:photo_view/photo_view_gallery.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -32,9 +30,8 @@ class _AnexosTabState extends State<AnexosTab> {
     IsolateNameServer.registerPortWithName(
         _port.sendPort, 'downloader_send_port');
     _port.listen((dynamic data) {
-      String id = data[0];
       DownloadTaskStatus status = DownloadTaskStatus.values[data[1]];
-      int progress = data[2];
+
 
       if (status == DownloadTaskStatus.complete) {
         _showNotification();

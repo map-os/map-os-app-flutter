@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:mapos_app/controllers/clients/clientsController.dart';
 import 'package:mapos_app/pages/clients/clients_edit_page.dart';
@@ -40,7 +41,6 @@ class _VisualizarClientesPageState extends State<VisualizarClientesPage> {
               if (snapshot.connectionState == ConnectionState.done &&
                   snapshot.hasData &&
                   snapshot.data!['celular'] != null) {
-                final celular = snapshot.data!['celular'];
                 return IconButton(
                   icon: Icon(Boxicons.bxl_whatsapp),
                   onPressed: () async {
@@ -433,8 +433,17 @@ class _VisualizarClientesPageState extends State<VisualizarClientesPage> {
   void _deleteclient() async {
     try {
       bool success = await ControllerClients().deleteClient(widget.idClientes);
+      print(success);
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('cliente excluído com sucesso!')));
+        Fluttertoast.showToast(
+          msg: 'Cliente  exluido com Sucesso',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+
+        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -442,10 +451,26 @@ class _VisualizarClientesPageState extends State<VisualizarClientesPage> {
           ),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Falha ao excluir o cliente')));
+        Fluttertoast.showToast(
+          msg: 'Ops... erro ao exluir cliente!',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+
+        );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro: $e')));
+      Fluttertoast.showToast(
+        msg: 'Erro no servidor ...',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+
+      );
     }
   }
 
