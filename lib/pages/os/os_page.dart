@@ -26,15 +26,15 @@ class _OrdemServicoListState extends State<OrdemServicoList> {
   bool showFilters = false;
 
   final Map<String, Color> statusColors = {
-    'Orçamento': Color(0xffccb27f)!,
-    'Aberto': Color(0xff00cc00)!,
-    'Faturado': Color(0xffb166fd)!,
-    'Negociação': Color(0xffadb304)!,
-    'Em Andamento': Color(0xff436ded)!,
-    'Finalizado': Color(0xff225566)!,
-    'Cancelado': Colors.red!,
-    'Aguardando Peças': Color(0xfffd7e00)!,
-    'Aprovado': Color(0xff7f7f7f)!,
+    'Orçamento': Color(0xffccb27f),
+    'Aberto': Color(0xff00cc00),
+    'Faturado': Color(0xffb166fd),
+    'Negociação': Color(0xffadb304),
+    'Em Andamento': Color(0xff436ded),
+    'Finalizado': Color(0xff225566),
+    'Cancelado': Colors.red,
+    'Aguardando Peças': Color(0xfffd7e00),
+    'Aprovado': Color(0xff7f7f7f),
   };
 
   @override

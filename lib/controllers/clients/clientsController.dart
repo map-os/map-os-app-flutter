@@ -217,10 +217,11 @@ print(response.body);
       response = await _reqDeleteClient(newToken, id);
     }
 
+
     if (response.statusCode == 200 || response.statusCode == 204) {
       return true;
     } else {
-      throw Exception('Erro ao deletar o produto');
+      return false;
     }
   }
 

@@ -69,18 +69,26 @@ class _EditarClientePageState extends State<EditarClientePage> {
   Future<void> fetchCEP(String cep) async {
     final response = await http.get(Uri.parse('https://viacep.com.br/ws/$cep/json/'));
 
+    if (!mounted) return; // Add this check
+
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
       if (jsonResponse.containsKey('erro') && jsonResponse['erro']) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('CEP não encontrado')));
+        if (mounted) { // Add this check
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('CEP não encontrado')));
+        }
       } else {
-        _ruaController.text = jsonResponse['logradouro'] ?? '';
-        _bairroController.text = jsonResponse['bairro'] ?? '';
-        _cidadeController.text = jsonResponse['localidade'] ?? '';
-        _estadoController.text = jsonResponse['uf'] ?? '';
+        setState(() {
+          _ruaController.text = jsonResponse['logradouro'] ?? '';
+          _bairroController.text = jsonResponse['bairro'] ?? '';
+          _cidadeController.text = jsonResponse['localidade'] ?? '';
+          _estadoController.text = jsonResponse['uf'] ?? '';
+        });
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Falha ao buscar o CEP')));
+      if (mounted) { // Add this check
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Falha ao buscar o CEP')));
+      }
     }
   }
 
@@ -98,13 +106,14 @@ class _EditarClientePageState extends State<EditarClientePage> {
           suffixIcon: IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
-              // Verifica se o CEP possui 8 dígitos antes de tentar buscar
               if (_cepController.text.length == 8) {
                 fetchCEP(_cepController.text);
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Digite um CEP válido'))
-                );
+                if (mounted) { // Add this check
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Digite um CEP válido'))
+                  );
+                }
               }
             },
           ),
@@ -162,21 +171,25 @@ class _EditarClientePageState extends State<EditarClientePage> {
                   _buildTextField('Cidade', _cidadeController),
                   _buildTextField('Estado', _estadoController),
                   SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _updateClient();
-                      }
-                    },
-                    child: Text('Salvar Alterações'),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Color(0xff333649),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  Center(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _updateClient();
+                        }
+                      },
+                      icon: Icon(Icons.save, color: Colors.white), // Ícone adicionado
+                      label: Text('Salvar Alterações', style: TextStyle(color: Colors.white)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xff36374e),
+                        minimumSize: Size(200, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 1,
                       ),
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
@@ -273,10 +286,12 @@ class _EditarClientePageState extends State<EditarClientePage> {
         'numero': _numeroController.text,
         'cidade': _cidadeController.text,
         'estado': _estadoController.text,
-        'senha': _senhaController.text.isNotEmpty ? _senhaController.text : null, // Senha é opcional
+        'senha': _senhaController.text.isNotEmpty ? _senhaController.text : null,
       };
 
       var result = await ControllerClients().updateClient(clientData);
+
+      if (!mounted) return; // Add this check
 
       if (result) {
         Navigator.pushReplacement(
@@ -285,43 +300,47 @@ class _EditarClientePageState extends State<EditarClientePage> {
             builder: (context) => ClientsList(),
           ),
         );
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Cliente atualizado com sucesso!',
-                style: TextStyle(color: Colors.white),
-              ),
-              backgroundColor: Colors.green,
-              action: SnackBarAction(
-                label: 'DESFAZER',
-                textColor: Colors.yellow,
-                onPressed: () {
-                  // Ação para desfazer (opcional)
-                },
-              ),
-            )
-        );
+        if (mounted) { // Add this check
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Cliente atualizado com sucesso!',
+                  style: TextStyle(color: Colors.white),
+                ),
+                backgroundColor: Colors.green,
+                action: SnackBarAction(
+                  label: 'DESFAZER',
+                  textColor: Colors.yellow,
+                  onPressed: () {},
+                ),
+              )
+          );
+        }
       } else {
+        if (mounted) { // Add this check
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Falha ao atualizar Cliente!',
+                  style: TextStyle(color: Colors.white),
+                ),
+                backgroundColor: Colors.red,
+              )
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) { // Add this check
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Falha ao atualizar Cliente!',
+                'Falha ao atualizar Cliente, verifique os dados preenchidos!',
                 style: TextStyle(color: Colors.white),
               ),
               backgroundColor: Colors.red,
             )
         );
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Falha ao atualizar Cliente, verifique os dados preenchidos!',
-              style: TextStyle(color: Colors.white),
-            ),
-            backgroundColor: Colors.red,
-          )
-      );
     }
   }
 }

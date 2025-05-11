@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:mapos_app/controllers/clients/clientsController.dart';
-import 'package:mapos_app/pages/clients/clients_page.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 
 class AdicionarClientePage extends StatefulWidget {

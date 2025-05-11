@@ -21,8 +21,8 @@ class _LoginPageState extends State<LoginPage> {
   final UrlController _settingsController = UrlController();
   final LoginController _loginController = LoginController();
 
-  final TextEditingController _emailController = TextEditingController(text: 'teste@teste.com');
-  final TextEditingController _passwordController = TextEditingController(text: '123456');
+  final TextEditingController _emailController = TextEditingController(text: 'teste@firewarrior.com.br');
+  final TextEditingController _passwordController = TextEditingController(text: 'test321');
 
   bool _isLoading = false;
   bool _obscurePassword = true;
@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
   void _showSettingsDialog(BuildContext context) async {
     TextEditingController urlController = TextEditingController();
     String? currentURL = await _settingsController.getBaseURL();
-    urlController.text = currentURL ?? "https://www.firewarrior.com.br/api/index.php/api/v1";
+    urlController.text = currentURL ?? "https://www.firewarrior.com.br/mapos4/index.php/api/v1";
 
     showDialog(
       context: context,
@@ -369,13 +369,40 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           SizedBox(height: height * 0.035),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text(
+                        '© 2025 - MAP-OS APP V 2.0.0-Dev',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                          letterSpacing: 0.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
                           const Text(
-                            textAlign: TextAlign.center,
-                            '2025 © Felipe Santt &&',
+                            'Desenvolvido por ',
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 12,
                               letterSpacing: 0.5,
+
+                            ),
+                          ),
+                          const Text(
+                            'Felipe Santt & ',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              letterSpacing: 0.5,
+
                             ),
                           ),
                           GestureDetector(
@@ -391,9 +418,16 @@ class _LoginPageState extends State<LoginPage> {
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 0.5,
+
                               ),
                             ),
                           ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+
                         ],
                       ),
                     ],

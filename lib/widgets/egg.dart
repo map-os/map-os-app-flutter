@@ -101,7 +101,6 @@ class AnimatedGlowButton extends StatefulWidget {
 
 class _AnimatedGlowButtonState extends State<AnimatedGlowButton>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
   late AnimationController _glow;
 
 
