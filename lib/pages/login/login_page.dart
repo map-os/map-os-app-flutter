@@ -21,8 +21,8 @@ class _LoginPageState extends State<LoginPage> {
   final UrlController _settingsController = UrlController();
   final LoginController _loginController = LoginController();
 
-  final TextEditingController _emailController = TextEditingController(text: 'teste@firewarrior.com.br');
-  final TextEditingController _passwordController = TextEditingController(text: 'test321');
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   bool _isLoading = false;
   bool _obscurePassword = true;
@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
   void _showSettingsDialog(BuildContext context) async {
     TextEditingController urlController = TextEditingController();
     String? currentURL = await _settingsController.getBaseURL();
-    urlController.text = currentURL ?? "https://www.firewarrior.com.br/mapos4/index.php/api/v1";
+    urlController.text = currentURL ?? "";
 
     showDialog(
       context: context,
