@@ -11,6 +11,7 @@ import 'dashboard_controller.dart';
 import 'package:http/http.dart' as http;
 import 'package:mapos_app/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:mapos_app/pages/os/os_view_page.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -88,6 +89,50 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
+  void _navigateToOsView(String osNumber) {
+    if (osNumber.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, digite um número de OS válido'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Verifica se o número contém apenas dígitos
+    if (!RegExp(r'^\d+$').hasMatch(osNumber)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('O número da OS deve conter apenas dígitos'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final osId = int.tryParse(osNumber);
+    if (osId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Número de OS inválido'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Navega para a página de visualização da OS
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VisualizarOrdemServicoPage(idOrdemServico: osId),
+      ),
+    ).then((_) {
+      // Atualiza o dashboard quando retornar da visualização da OS
+      _loadDashboardData();
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
@@ -177,26 +222,38 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildSearchField() {
+    final TextEditingController _osSearchController = TextEditingController();
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(8),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Colors.black12,
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 6,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: const TextField(
+      child: TextField(
+        controller: _osSearchController,
         decoration: InputDecoration(
           border: InputBorder.none,
-          hintText: 'Digite o numero de uma OS',
-          icon: Icon(Icons.search),
+          hintText: 'Digite o número de uma OS',
+          icon: const Icon(Icons.search),
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.arrow_forward),
+            onPressed: () {
+              _navigateToOsView(_osSearchController.text);
+            },
+          ),
         ),
         keyboardType: TextInputType.number,
+        onSubmitted: (value) {
+          _navigateToOsView(value);
+        },
       ),
     );
   }

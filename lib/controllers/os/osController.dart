@@ -103,7 +103,7 @@ class ControllerOs {
         throw Exception('${data['message']}');
       }
     } else {
-      throw Exception('Erro ao buscar Ordens');
+      throw Exception('Ordem de Servico não Encomtrada');
     }
   }
 

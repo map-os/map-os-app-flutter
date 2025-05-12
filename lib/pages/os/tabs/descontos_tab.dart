@@ -19,6 +19,8 @@ class _DescontosTabState extends State<DescontosTab> {
   final TextEditingController valorController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   double valorTotalOS = 0.0;
+  double totalProdutos = 0.0;
+  double totalServicos = 0.0;
   double valorComDesconto = 0.0;
   double valorDesconto = 0.0;
 
@@ -40,7 +42,10 @@ class _DescontosTabState extends State<DescontosTab> {
     if (widget.ordemServico != null) {
       tipoDescontoDropdown = _apiToDropdown(widget.ordemServico!['tipo_desconto']);
       valorController.text = widget.ordemServico!['desconto']?.toString() ?? '';
-      valorTotalOS = double.tryParse(widget.ordemServico!['valorTotal']?.toString() ?? '0') ?? 0.0;
+      totalProdutos = double.tryParse(widget.ordemServico!['totalProdutos']?.toString() ?? '0') ?? 0.0;
+      totalServicos = double.tryParse(widget.ordemServico!['totalServicos']?.toString() ?? '0') ?? 0.0;
+      valorTotalOS = totalProdutos + totalServicos;
+
       _calcularDesconto();
 
     }
