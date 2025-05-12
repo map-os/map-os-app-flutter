@@ -106,8 +106,30 @@ class _VisualizarOrdemServicoPageState
             return _buildShimmer();
           } else if (snapshot.hasError) {
             return Center(
-                child: Text('Erro: ${snapshot.error}',
-                    style: const TextStyle(color: Colors.red, fontSize: 18)));
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red, size: 60),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Ordem de serviço não encontrada',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Não conseguimos encontrar a ordem que você pesquisou, revise o Nº da OS e tente novamente',
+                    style: const TextStyle(color: Colors.black54),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            );
+
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(
                 child: Text('Nenhum detalhe da ordem de serviço encontrado',

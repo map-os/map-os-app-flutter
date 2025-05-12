@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mapos_app/api/apiConfig.dart';
 import 'package:mapos_app/pages/os/tabs/detalhes_tab.dart';
 import 'package:mapos_app/pages/os/tabs/descontos_tab.dart';
 import 'package:mapos_app/pages/os/tabs/servicos_tab.dart';
@@ -35,10 +36,11 @@ class _EditarOsPageState extends State<EditarOsPage> with SingleTickerProviderSt
         onAtualizar: _getOs,
       ),
       ProdutosTab(
-        // onAtualizar: _getOs,
+        ordemServico: ordemServico,
+        onAtualizar: _getOs,
       ),
       AnexosTab(ordemServico: ordemServico),
-      AnotacoesTab()
+
     ];
   }
 
@@ -49,7 +51,7 @@ class _EditarOsPageState extends State<EditarOsPage> with SingleTickerProviderSt
     Icons.build,
     Icons.shopping_cart,
     Icons.attachment,
-    Icons.note
+
   ];
 
   @override
