@@ -15,7 +15,7 @@ jobs:
     - uses: subosito/flutter-action@v1
       with:
         channel: stable
-        flutter-version: 3.22.2
+        flutter-version-file: pubspec.yaml
     - run: flutter pub get
     - run: flutter build apk --debug --split-per-abi
     - name: Push APK to Releases
