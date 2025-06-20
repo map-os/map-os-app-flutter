@@ -182,7 +182,7 @@ class _EditarClientePageState extends State<EditarClientePage> {
                       label: Text('Salvar Alterações', style: TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xff36374e),
-                        minimumSize: Size(200, 50),
+                        minimumSize: Size(350, 60),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),

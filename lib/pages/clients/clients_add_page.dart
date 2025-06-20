@@ -154,18 +154,24 @@ class _AdicionarClientePageState extends State<AdicionarClientePage> {
                   _buildTextField('Cidade', _cidadeController),
                   _buildTextField('Estado', _estadoController),
                   SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _addClient();
-                      }
-                    },
-                    child: Text('Salvar Cliente'),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Color(0xff333649),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  Center(
+                    child: SizedBox(
+                      width: 350,   // Largura fixa
+                      height: 60,   // Altura fixa
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _addClient();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: const Color(0xff333649),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text('Salvar Cliente'),
                       ),
                     ),
                   ),

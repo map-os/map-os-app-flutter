@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mapos_app/pages/os/os_view_page.dart';
+import 'package:mapos_app/pages/products/products_view_page.dart';
 
 class ItemListPage extends StatelessWidget {
   final String title;
@@ -187,7 +188,12 @@ class ItemListPage extends StatelessWidget {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
                 ),
                 onPressed: () {
-                  // Exemplo: abrir detalhes
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => VisualizarProdutosPage(idProdutos: int.parse(item['idProdutos'].toString())),
+                    ),
+                  );
                 },
               ),
             ),

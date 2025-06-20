@@ -7,6 +7,7 @@ import 'package:mapos_app/widgets/bottom_nav_menu.dart';
 import 'package:mapos_app/widgets/dashboard_status_widget.dart';
 import 'package:mapos_app/widgets/calendar_widget.dart';
 import 'package:shimmer/shimmer.dart';
+import '../about.dart';
 import 'dashboard_controller.dart';
 import 'package:http/http.dart' as http;
 import 'package:mapos_app/providers/theme_provider.dart';
@@ -23,15 +24,15 @@ class _DashboardPageState extends State<DashboardPage> {
   final DashboardController dashboardController = DashboardController();
   int _selectedIndex = 2;
   bool _isLoading = true;
-  bool _hasInternet = false;
+  // bool _hasInternet = false;
   late Timer _timer;
 
   @override
   void initState() {
     super.initState();
     _loadDashboardData();
-    _checkInternetConnection();
-    _timer = Timer.periodic(Duration(seconds: 30), (_) => _checkInternetConnection());
+    // _checkInternetConnection();
+    // _timer = Timer.periodic(Duration(seconds: 30), (_) => _checkInternetConnection());
   }
 
   @override
@@ -62,18 +63,18 @@ class _DashboardPageState extends State<DashboardPage> {
     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  Future<void> _checkInternetConnection() async {
-    final hasInternet = await hasInternetConnection();
-    setState(() {
-      _hasInternet = hasInternet;
-    });
-  }
+  // void _onItemTapped(int index) {
+  //   setState(() {
+  //     _selectedIndex = index;
+  //   });
+  // }
+  //
+  // Future<void> _checkInternetConnection() async {
+  //   final hasInternet = await hasInternetConnection();
+  //   setState(() {
+  //     _hasInternet = hasInternet;
+  //   });
+  // }
 
 
   Future<bool> hasInternetConnection() async {
@@ -140,64 +141,168 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text("Dashboard"),
+        title: const Text(
+          "Dashboard",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
         actions: [
-          FutureBuilder<bool>(
-            future: hasInternetConnection(),
-            builder: (context, snapshot) {
-              String statusText;
-              Color backgroundColor;
+          // Indicador de conexão (pill style)
+          // FutureBuilder<bool>(
+          //   future: hasInternetConnection(),
+          //   builder: (context, snapshot) {
+          //     String statusText = "Checando...";
+          //     Color backgroundColor = Colors.blue;
 
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                statusText = "Checando...";
-                backgroundColor = Colors.blue;
-              } else if (snapshot.hasError || (snapshot.hasData && !snapshot.data!)) {
-                statusText = "Offline";
-                backgroundColor = Colors.red;
-              } else if (snapshot.hasData && snapshot.data == true) {
-                statusText = "Online";
-                backgroundColor = Colors.green;
-              } else {
-                statusText = "Offline";
-                backgroundColor = Colors.red;
-              }
+              // if (snapshot.connectionState == ConnectionState.done) {
+              //   if (snapshot.hasError || (snapshot.hasData && !snapshot.data!)) {
+              //     statusText = "Offline";
+              //     backgroundColor = Colors.redAccent;
+              //   } else if (snapshot.hasData && snapshot.data == true) {
+              //     statusText = "Online";
+              //     backgroundColor = Colors.green;
+              //   }
+              // }
 
-              return InkWell(
-                onTap: () {
-                  _checkInternetConnection();
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: backgroundColor,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Text(
-                    statusText,
-                    style: TextStyle(color: Colors.white),
+          //     return Container(
+          //       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          //       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          //       decoration: BoxDecoration(
+          //         color: backgroundColor,
+          //         borderRadius: BorderRadius.circular(20),
+          //       ),
+          //       child: Text(
+          //         statusText,
+          //         style: const TextStyle(color: Colors.white, fontSize: 12),
+          //       ),
+          //     );
+          //   },
+          // ),
+
+          Tooltip(
+            message: themeProvider.themeMode == ThemeMode.dark ? 'Modo Claro' : 'Modo Escuro',
+            child: IconButton(
+              icon: Icon(
+                themeProvider.themeMode == ThemeMode.dark ? Icons.nightlight_round : Icons.wb_sunny_outlined,
+              ),
+              onPressed: () {
+                themeProvider.setThemeMode(
+                  themeProvider.themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark,
+                );
+              },
+            ),
+          ),
+
+          // Avatar com Dropdown (perfil)
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: PopupMenuButton<String>(
+              offset: const Offset(0, 50),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              icon: const CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.blueGrey,
+                child: Icon(Icons.person, color: Colors.white),
+              ),
+              onSelected: (value) {
+                switch (value) {
+                  case 'perfil':
+                  case 'config':
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Esta seção ainda está em desenvolvimento.')),
+                    );
+                    break;
+                  case 'Sobre':
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => const AboutAppPage()),
+                    );
+                    break;
+                  case 'logout':
+                    _logout();
+                    break;
+                }
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 'perfil',
+                  child: ListTile(
+                    leading: const Icon(Icons.person),
+                    title: Row(
+                      children: [
+                        const Text('Meu Perfil'),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade400,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Text(
+                            'Em Breve',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              );
-            },
-          ),
-
-          IconButton(
-            icon: Icon(themeProvider.themeMode == ThemeMode.dark ? Icons.nights_stay : Icons.sunny),
-            onPressed: () {
-              if (themeProvider.themeMode == ThemeMode.dark) {
-                themeProvider.setThemeMode(ThemeMode.light);
-              } else {
-                themeProvider.setThemeMode(ThemeMode.dark);
-              }
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _logout,
+                PopupMenuItem(
+                  value: 'config',
+                  child: ListTile(
+                    leading: const Icon(Icons.settings),
+                    title: Row(
+                      children: [
+                        const Text('Configurações'),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade400,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Text(
+                            'Em Breve',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: 'Sobre',
+                  child: ListTile(
+                    leading: Icon(Icons.info),
+                    title: Text('Sobre'),
+                  ),
+                ),
+                const PopupMenuDivider(),
+                const PopupMenuItem(
+                  value: 'logout',
+                  child: ListTile(
+                    leading: Icon(Icons.logout, color: Colors.redAccent),
+                    title: Text('Sair'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
-        body: SingleChildScrollView(
+
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -214,10 +319,10 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBarWidget(
-        activeIndex: _selectedIndex,
-        onTap: _onItemTapped, context: context,
-      ),
+      // bottomNavigationBar: BottomNavigationBarWidget(
+      //   activeIndex: _selectedIndex,
+      //   onTap: _onItemTapped, context: context,
+      // ),
     );
   }
 
