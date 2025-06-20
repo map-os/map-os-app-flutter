@@ -25,7 +25,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
       description: "Entre no seu sistema MAP-OS através do navegador usando suas credenciais de administrador.",
       icon: Icons.computer,
       iconColor: Colors.blue,
-      image: "assets/1.png", // Adicione as imagens correspondentes
+      image: "assets/images/1.png", // Adicione as imagens correspondentes
     ),
     TutorialStep(
       title: "2. Vá para Configurações",
