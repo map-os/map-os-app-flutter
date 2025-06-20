@@ -19,7 +19,6 @@ void main() async {
       ),
     );
   });
-
 }
 
 class MaposApp extends StatelessWidget {
@@ -28,6 +27,7 @@ class MaposApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+
     return MaterialApp(
       title: 'MAP-OS',
       theme: ThemeData(
@@ -45,7 +45,7 @@ class MaposApp extends StatelessWidget {
         useMaterial3: true,
       ),
       themeMode: themeProvider.themeMode,
-      home: InitialPage(),
+      home:  InitialPage(),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -56,6 +56,16 @@ class MaposApp extends StatelessWidget {
         Locale('pt', 'BR'),
       ],
       locale: const Locale('pt', 'BR'),
+
+      builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
+        final bottomPadding = mediaQuery.padding.bottom;
+
+        return Padding(
+          padding: EdgeInsets.only(bottom: bottomPadding),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
   }
 }
