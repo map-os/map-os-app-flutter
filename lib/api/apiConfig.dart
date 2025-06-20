@@ -1,7 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class APIConfig {
-  static const String appVersion = '2.1.0';
+  static const String appVersion = '2.1.0-Dev';
 
   static String? baseURL;
 

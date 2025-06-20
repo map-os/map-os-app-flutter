@@ -63,11 +63,11 @@ class _DashboardPageState extends State<DashboardPage> {
     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
   }
 
-  // void _onItemTapped(int index) {
-  //   setState(() {
-  //     _selectedIndex = index;
-  //   });
-  // }
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
   //
   // Future<void> _checkInternetConnection() async {
   //   final hasInternet = await hasInternetConnection();
@@ -319,10 +319,10 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ),
       ),
-      // bottomNavigationBar: BottomNavigationBarWidget(
-      //   activeIndex: _selectedIndex,
-      //   onTap: _onItemTapped, context: context,
-      // ),
+      bottomNavigationBar: BottomNavigationBarWidget(
+        activeIndex: _selectedIndex,
+        onTap: _onItemTapped, context: context,
+      ),
     );
   }
 

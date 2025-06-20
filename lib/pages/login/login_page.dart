@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
+import 'package:mapos_app/api/apiConfig.dart';
 import 'package:mapos_app/controllers/url_controller.dart';
 import 'package:mapos_app/controllers/login_controller.dart';
 import 'package:mapos_app/pages/dashboard/dashboard_page.dart';
@@ -374,7 +375,7 @@ class _LoginPageState extends State<LoginPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const Text(
-                        '© 2025 - MAP-OS APP V 2.0.0-Dev',
+                        '© 2025 - MAP-OS APP V ${APIConfig.appVersion}',
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 12,

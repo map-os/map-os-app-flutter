@@ -25,7 +25,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
       description: "Entre no seu sistema MAP-OS através do navegador usando suas credenciais de administrador.",
       icon: Icons.computer,
       iconColor: Colors.blue,
-      image: "assets/images/1.png", // Adicione as imagens correspondentes
+      image: "assets/images/1.png",
     ),
     TutorialStep(
       title: "2. Vá para Configurações",
@@ -485,31 +485,13 @@ class TutorialStepWidget extends StatelessWidget {
             ],
 
             // Image placeholder (if applicable)
-            if (step.image != null) ...[
+            if (step.image != null && step.image!.isNotEmpty) ...[
               const SizedBox(height: 24),
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey[300]!),
-                ),
-                child: const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.image, size: 48, color: Colors.grey),
-                      SizedBox(height: 8),
-                      Text(
-                        'Imagem ilustrativa\n(adicione a screenshot correspondente)',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(
+                  step.image!,
+                  fit: BoxFit.contain,
                 ),
               ),
             ],
