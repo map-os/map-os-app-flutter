@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mapos_app/pages/os/os_view_page.dart';
 
 class ItemListPage extends StatelessWidget {
   final String title;
@@ -13,18 +14,22 @@ class ItemListPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
+        backgroundColor: const Color(0xfffdfdff),
       ),
       body: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
         itemCount: items.length,
         itemBuilder: (context, index) {
           var item = items[index];
           if (item.containsKey('idOs')) {
-            return _buildOrderServiceCard(item);
+            return _buildOrderServiceCard(context, item);
           } else if (item.containsKey('idProdutos')) {
-            return _buildLowStockProductCard(item);
+            return _buildLowStockProductCard(context, item);
           } else {
             return Card(
-              child: ListTile(
+              elevation: 2,
+              margin: const EdgeInsets.only(bottom: 12.0),
+              child: const ListTile(
                 title: Text("Item desconhecido"),
               ),
             );
@@ -34,111 +39,157 @@ class ItemListPage extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderServiceCard(Map<dynamic, dynamic> item) {
+  Widget _buildOrderServiceCard(BuildContext context, Map<dynamic, dynamic> item) {
     return Card(
-      margin: EdgeInsets.all(8.0),
-      child: ListTile(
-        title: Text(item['nomeCliente'] ?? "Cliente não especificado"),
-        subtitle: Column(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+      margin: const EdgeInsets.only(bottom: 12.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("ID OS: ${item['idOs']}"),
-            SelectableText(item['descricaoProduto']?.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), '') ?? ''),
-            Text("Status: ${item['status']}"),
+            Text(
+              item['nomeCliente'] ?? "Cliente não especificado",
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "ID OS: ${item['idOs']}",
+              style: const TextStyle(color: Colors.grey),
+            ),
+            const SizedBox(height: 4),
+            SelectableText(
+              item['descricaoProduto']?.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), '') ?? '',
+              style: const TextStyle(fontSize: 14),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Status: ${item['status']}",
+              style: const TextStyle(color: Colors.blueGrey),
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.visibility, size: 18),
+                label: const Text("Visualizar"),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xff333649),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                  textStyle: const TextStyle(fontSize: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                ),
+                onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VisualizarOrdemServicoPage(idOrdemServico: int.parse(item['idOs'].toString())),
+                      ),
+                    );
+                },
+              ),
+            ),
           ],
         ),
-        onTap: () {},
       ),
     );
   }
 
-  Widget _buildLowStockProductCard(Map<dynamic, dynamic> item) {
+  Widget _buildLowStockProductCard(BuildContext context, Map<dynamic, dynamic> item) {
     return Card(
-      elevation: 4.0, // Sombra para dar profundidade
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      margin: EdgeInsets.all(8.0),
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+      margin: const EdgeInsets.only(bottom: 12.0),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Row(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Color(0xff333649),
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-              padding: EdgeInsets.all(13.0),
-              margin: EdgeInsets.only(top: 15),
-              child: Text(
-                "${item['idProdutos']}",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            SizedBox(width: 16.0),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Descrição do produto
-                  Text(
-                    item['descricao'] ?? "Produto não especificado",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.0,
-                      color: Colors.black87,
-                    ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Badge ID
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xff333649),
+                    borderRadius: BorderRadius.circular(6.0),
                   ),
-                  SizedBox(height: 8.0),
-                  Row(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                  child: Text(
+                    "${item['idProdutos']}",
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(width: 12.0),
+                // Descrição
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Estoque: ${item['estoque']}",
-                              style: TextStyle(color: Colors.grey[700]),
-                            ),
-                            Text(
-                              "Estoque Mínimo: ${item['estoqueMinimo']}",
-                              style: TextStyle(color: Colors.grey[700]),
-                            ),
-                          ],
-                        ),
+                      Text(
+                        item['descricao'] ?? "Produto não especificado",
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                       ),
-                      SizedBox(width: 16.0),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Compra: R\$ ${item['precoCompra']}",
-                              style: TextStyle(color: Colors.grey[700]),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Estoque: ${item['estoque']}",
+                                  style: TextStyle(color: Colors.grey[700]),
+                                ),
+                                Text(
+                                  "Estoque Mínimo: ${item['estoqueMinimo']}",
+                                  style: TextStyle(color: Colors.grey[700]),
+                                ),
+                              ],
                             ),
-                            Text(
-                              "Venda: R\$ ${item['precoVenda']}",
-                              style: TextStyle(color: Colors.grey[700]),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Compra: R\$ ${item['precoCompra']}",
+                                  style: TextStyle(color: Colors.grey[700]),
+                                ),
+                                Text(
+                                  "Venda: R\$ ${item['precoVenda']}",
+                                  style: TextStyle(color: Colors.grey[700]),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            SizedBox(width: 16.0),
-            IconButton(
-              padding: EdgeInsets.only(top: 10.0, left: 9.0),
-              icon: Icon(Icons.edit, color: Color(0xff333649)),
-              onPressed: () {
-                // ............
-              },
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.visibility, size: 18),
+                label: const Text("Visualizar"),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xff333649),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                  textStyle: const TextStyle(fontSize: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                ),
+                onPressed: () {
+                  // Exemplo: abrir detalhes
+                },
+              ),
             ),
           ],
         ),
