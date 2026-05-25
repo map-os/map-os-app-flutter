@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 import 'package:mapos_app/controllers/calendarController.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:mapos_app/models/eventModel.dart';
@@ -132,7 +135,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                             width: 20,
                             height: 20,
                             decoration: BoxDecoration(
-                              color: Color(0xfffb6986),
+                              color: AppColors.tabOS,
                               borderRadius: BorderRadius.circular(5),
                             ),
                             child: Center(
@@ -197,8 +200,8 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       child: Column(
         children: [
           Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
+            baseColor: AppColors.shimmerBase,
+            highlightColor: AppColors.shimmerHighlight,
             child: Container(
               height: 400,
               width: double.infinity,
@@ -209,8 +212,8 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           Container(
             height: 200, // Altura fixa para a lista de eventos no shimmer
             child: Shimmer.fromColors(
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[100]!,
+              baseColor: AppColors.shimmerBase,
+              highlightColor: AppColors.shimmerHighlight,
               child: ListView.builder(
                 itemCount: 5,
                 itemBuilder: (context, index) {

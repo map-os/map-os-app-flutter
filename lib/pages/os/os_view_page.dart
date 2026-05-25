@@ -1,7 +1,8 @@
+import 'dart:js_interop';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart' as intlBR;
 import 'package:mapos_app/controllers/os/osController.dart';
 import 'package:mapos_app/pages/os/os_page.dart';
@@ -9,7 +10,11 @@ import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mapos_app/helpers/format.dart';
 import 'package:mapos_app/pages/os/os_edit_page.dart';
-import 'package:mapos_app/pages/os/os_page.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:web/web.dart' as web;
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 
 
 class VisualizarOrdemServicoPage extends StatefulWidget {
@@ -25,8 +30,6 @@ class VisualizarOrdemServicoPage extends StatefulWidget {
 class _VisualizarOrdemServicoPageState
     extends State<VisualizarOrdemServicoPage> {
   late Future<Map<String, dynamic>> futureOrder;
-  final Color primaryColor = const Color(0xff333649);
-  final Color accentColor = const Color(0xffff7e15);
 
   @override
   void initState() {
@@ -60,41 +63,53 @@ class _VisualizarOrdemServicoPageState
     return Scaffold(
       appBar: AppBar(
         title: const Text('Visualizar Ordem de Serviço'),
-        backgroundColor: const Color(0xfffcf5fd),
+        backgroundColor: AppColors.appBarView,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
           FutureBuilder<Map<String, dynamic>>(
             future: futureOrder,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done &&
-                  snapshot.hasData &&
-                  snapshot.data!['contato'] != null) {
-                return IconButton(
-                  icon: const Icon(
-                    Boxicons.bxl_whatsapp,
-                    color: Colors.green,
-                  ),
-                  onPressed: () async {
-                    String celular = snapshot.data!['celular'] ?? '';
-                    String cleanedCelular =
-                    celular.replaceAll(RegExp(r'[^\d+]'), '');
-                    if (cleanedCelular.isNotEmpty) {
-                      final Uri whatsappUrl = Uri.parse(
-                        'https://api.whatsapp.com/send?phone=+55$cleanedCelular&text=${Uri.encodeComponent(snapshot.data!['textoWhatsApp'] ?? '')}',
-                      );
-                      await _launchInBrowser(whatsappUrl);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Número de celular não disponível'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  },
-                );
-              } else {
-                return Container();
+              if (snapshot.connectionState != ConnectionState.done || !snapshot.hasData) {
+                return const SizedBox.shrink();
               }
+              final order = snapshot.data!;
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.print, color: AppColors.primary),
+                    tooltip: 'Imprimir',
+                    onPressed: () => _printOs(order),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.share, color: AppColors.primary),
+                    tooltip: 'Compartilhar',
+                    onPressed: () => _shareOs(order),
+                  ),
+                  if (order['contato'] != null)
+                    IconButton(
+                      icon: const Icon(Boxicons.bxl_whatsapp, color: Colors.green),
+                      tooltip: 'WhatsApp',
+                      onPressed: () async {
+                        String celular = order['celular'] ?? '';
+                        String cleanedCelular = celular.replaceAll(RegExp(r'[^\d+]'), '');
+                        if (cleanedCelular.isNotEmpty) {
+                          final Uri whatsappUrl = Uri.parse(
+                            'https://api.whatsapp.com/send?phone=+55$cleanedCelular&text=${Uri.encodeComponent(order['textoWhatsApp'] ?? '')}',
+                          );
+                          await _launchInBrowser(whatsappUrl);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Numero de celular nao disponivel'), backgroundColor: Colors.red),
+                          );
+                        }
+                      },
+                    ),
+                ],
+              );
             },
           ),
         ],
@@ -171,9 +186,9 @@ class _VisualizarOrdemServicoPageState
 
   Widget _buildMainInfoCard(Map<String, dynamic> order, num calcTotal) {
     return Card(
-      elevation: 1.0,
+      elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -182,23 +197,19 @@ class _VisualizarOrdemServicoPageState
           children: [
             Row(
               children: [
-                Icon(Icons.build, color: primaryColor, size: 28),
+                Icon(Icons.build, color: AppColors.primary, size: 28),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     'Detalhes da OS #${order['idOs']}',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: primaryColor,
-                    ),
+                    style: AppTypography.h1Style(AppColors.primary),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
                   ),
                 ),
               ],
             ),
-            Divider(height: 30, color: primaryColor),
+            Divider(height: 30, color: AppColors.primary),
 
             // Informações do cliente
             _buildSectionTitle('Informações Gerais', Icons.person),
@@ -262,14 +273,14 @@ class _VisualizarOrdemServicoPageState
   Widget _buildSectionTitle(String title, IconData icon) {
     return Row(
       children: [
-        Icon(icon, color: primaryColor, size: 24),
+        Icon(icon, color: AppColors.primary, size: 24),
         const SizedBox(width: 10),
         Text(
           title,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: primaryColor,
+            color: AppColors.primary,
           ),
         ),
       ],
@@ -284,17 +295,13 @@ class _VisualizarOrdemServicoPageState
           width: 120,
           child: Text(
             label,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: primaryColor,
-            ),
+            style: AppTypography.bodyBold(AppColors.primary),
           ),
         ),
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(fontSize: 16, color: Color(0xff555555)),
+            style: AppTypography.bodyStyle(AppColors.textMuted),
           ),
         ),
       ],
@@ -309,11 +316,7 @@ class _VisualizarOrdemServicoPageState
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: primaryColor,
-          ),
+          style: AppTypography.bodyBold(AppColors.primary),
         ),
         const SizedBox(height: 5),
         isEmpty
@@ -323,7 +326,7 @@ class _VisualizarOrdemServicoPageState
         )
             : ExpandableText(
           value,
-          style: const TextStyle(fontSize: 16, color: Color(0xff555555)),
+          style: AppTypography.bodyStyle(AppColors.textMuted),
         ),
         const Divider(height: 20),
       ],
@@ -341,9 +344,9 @@ class _VisualizarOrdemServicoPageState
     );
 
     return Card(
-      elevation: 1.0,
+      elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -355,15 +358,11 @@ class _VisualizarOrdemServicoPageState
               children: [
                 Row(
                   children: [
-                    Icon(Icons.shopping_basket, color: primaryColor, size: 28),
+                    Icon(Icons.shopping_basket, color: AppColors.primary, size: 28),
                     const SizedBox(width: 10),
-                    const Text(
+                    Text(
                       'Produtos',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xff333649),
-                      ),
+                      style: AppTypography.h1Style(AppColors.primary),
                     ),
                   ],
                 ),
@@ -373,7 +372,7 @@ class _VisualizarOrdemServicoPageState
                 ),
               ],
             ),
-            Divider(height: 30, color: primaryColor),
+            Divider(height: 30, color: AppColors.primary),
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -396,9 +395,9 @@ class _VisualizarOrdemServicoPageState
   Widget _buildServicesCard(List<dynamic>? servicos) {
     if (servicos == null || servicos.isEmpty) {
       return Card(
-        elevation: 8.0,
+        elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -407,19 +406,15 @@ class _VisualizarOrdemServicoPageState
             children: [
               Row(
                 children: [
-                  Icon(Icons.miscellaneous_services, color: primaryColor, size: 28),
+                  Icon(Icons.miscellaneous_services, color: AppColors.primary, size: 28),
                   const SizedBox(width: 10),
-                  const Text(
+                  Text(
                     'Serviços',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xff333649),
-                    ),
+                    style: AppTypography.h1Style(AppColors.primary),
                   ),
                 ],
               ),
-              Divider(height: 30, color: primaryColor),
+              Divider(height: 30, color: AppColors.primary),
               const Text(
                 'Nenhum serviço executado.',
                 style: TextStyle(fontSize: 16, color: Colors.grey, fontStyle: FontStyle.italic),
@@ -436,9 +431,9 @@ class _VisualizarOrdemServicoPageState
     });
 
     return Card(
-      elevation: 1.0,
+      elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -450,15 +445,11 @@ class _VisualizarOrdemServicoPageState
               children: [
                 Row(
                   children: [
-                    Icon(Icons.build, color: primaryColor, size: 28),
+                    Icon(Icons.build, color: AppColors.primary, size: 28),
                     const SizedBox(width: 10),
-                    const Text(
+                    Text(
                       'Serviços',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xff333649),
-                      ),
+                      style: AppTypography.h1Style(AppColors.primary),
                     ),
                   ],
                 ),
@@ -468,7 +459,7 @@ class _VisualizarOrdemServicoPageState
                 ),
               ],
             ),
-            Divider(height: 30, color: primaryColor),
+            Divider(height: 30, color: AppColors.primary),
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -494,7 +485,7 @@ class _VisualizarOrdemServicoPageState
     required double preco,
   }) {
     return Card(
-      elevation: 1,
+      elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -507,7 +498,7 @@ class _VisualizarOrdemServicoPageState
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: accentColor,
+                    color: AppColors.accent,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
@@ -585,7 +576,7 @@ class _VisualizarOrdemServicoPageState
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: accentColor,
+                      color: AppColors.accent,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -654,9 +645,9 @@ class _VisualizarOrdemServicoPageState
           label: const Text('Editar'),
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white,
-            backgroundColor: accentColor,
+            backgroundColor: AppColors.accent,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
         ),
@@ -671,7 +662,7 @@ class _VisualizarOrdemServicoPageState
             foregroundColor: Colors.white,
             backgroundColor: Colors.red,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
         ),
@@ -690,7 +681,7 @@ class _VisualizarOrdemServicoPageState
             Card(
               elevation: 1.0,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0)),
+                  borderRadius: BorderRadius.circular(12)),
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -712,7 +703,7 @@ class _VisualizarOrdemServicoPageState
                       ],
                     ),
                     const SizedBox(height: 30),
-                    Divider(height: 30, color: primaryColor),
+                    Divider(height: 30, color: AppColors.primary),
                     _buildShimmerRow(),
                     const SizedBox(height: 10),
                     _buildShimmerRow(),
@@ -730,7 +721,7 @@ class _VisualizarOrdemServicoPageState
             Card(
               elevation: 1.0,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0)),
+                  borderRadius: BorderRadius.circular(12)),
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -794,6 +785,110 @@ class _VisualizarOrdemServicoPageState
         borderRadius: BorderRadius.circular(8),
       ),
     );
+  }
+
+  void _printOs(Map<String, dynamic> order) {
+    final produtos = order['produtos'] as List? ?? [];
+    final servicos = order['servicos'] as List? ?? [];
+    num calcTotal = 0;
+    try {
+      String s = order['calcTotal']?.toString() ?? '0';
+      s = s.replaceAll(',', '');
+      calcTotal = intlBR.NumberFormat.decimalPattern().parse(s);
+    } catch (_) {}
+
+    String produtosHtml = '';
+    for (var p in produtos) {
+      final qtd = int.tryParse(p['quantidade']?.toString() ?? '1') ?? 1;
+      final preco = double.tryParse(p['preco']?.toString() ?? '0') ?? 0;
+      produtosHtml += '<tr><td>${p['descricao'] ?? ''}</td><td>$qtd</td><td>R\$ ${preco.toStringAsFixed(2)}</td><td>R\$ ${(preco * qtd).toStringAsFixed(2)}</td></tr>';
+    }
+
+    String servicosHtml = '';
+    for (var s in servicos) {
+      final preco = double.tryParse(s['preco']?.toString() ?? '0') ?? 0;
+      final qtd = s['quantidade'] is int ? s['quantidade'] : (int.tryParse(s['quantidade']?.toString() ?? '1') ?? 1);
+      servicosHtml += '<tr><td>${s['nome'] ?? ''}</td><td>$qtd</td><td>R\$ ${preco.toStringAsFixed(2)}</td><td>R\$ ${(preco * qtd).toStringAsFixed(2)}</td></tr>';
+    }
+
+    final html = '''<!DOCTYPE html><html><head><title>OS #${order['idOs']}</title>
+<style>
+  body{font-family:Arial,sans-serif;padding:20px;color:#333}
+  h1{color:#333649;border-bottom:2px solid #333649;padding-bottom:8px}
+  h2{color:#333649;margin-top:24px}
+  table{width:100%;border-collapse:collapse;margin:10px 0}
+  td,th{border:1px solid #ddd;padding:8px;text-align:left}
+  th{background:#333649;color:#fff}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+  .info-label{font-weight:bold;color:#333649}
+  .total-box{text-align:right;font-size:18px;font-weight:bold;margin-top:16px;padding:12px;background:#f5f5f5;border-radius:8px}
+  @media print{body{padding:0}}
+</style></head><body>
+<h1>Ordem de Servico #${order['idOs']}</h1>
+<div class="info-grid">
+  <div><span class="info-label">Cliente:</span> ${order['nomeCliente'] ?? ''}</div>
+  <div><span class="info-label">Status:</span> ${order['status'] ?? ''}</div>
+  <div><span class="info-label">Entrada:</span> ${order['dataInicial'] != null ? intlBR.DateFormat('dd/MM/yyyy').format(DateTime.parse(order['dataInicial'])) : ''}</div>
+  <div><span class="info-label">Prev. Saida:</span> ${order['dataFinal'] != null ? intlBR.DateFormat('dd/MM/yyyy').format(DateTime.parse(order['dataFinal'])) : ''}</div>
+  <div><span class="info-label">Responsavel:</span> ${order['nome'] ?? ''}</div>
+  <div><span class="info-label">Desconto:</span> R\$ ${double.tryParse(order['desconto']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}</div>
+</div>
+<h2>Dados Tecnicos</h2>
+<p><b>Descricao:</b> ${removeHtmlTags(order['descricaoProduto'])}</p>
+<p><b>Defeito:</b> ${removeHtmlTags(order['defeito'])}</p>
+<p><b>Laudo Tecnico:</b> ${removeHtmlTags(order['laudoTecnico'])}</p>
+<p><b>Observacoes:</b> ${removeHtmlTags(order['observacoes'])}</p>
+${produtos.isNotEmpty ? '<h2>Produtos</h2><table><tr><th>Descricao</th><th>Qtd</th><th>Preco Unit.</th><th>Subtotal</th></tr>$produtosHtml</table>' : ''}
+${servicos.isNotEmpty ? '<h2>Servicos</h2><table><tr><th>Nome</th><th>Qtd</th><th>Preco Unit.</th><th>Subtotal</th></tr>$servicosHtml</table>' : ''}
+<div class="total-box">Valor Total: R\$ ${Format.formatCurrency.format(calcTotal)}</div>
+<script>window.onload=function(){window.print();}</script>
+</body></html>''';
+
+    final win = web.window.open('', '_blank');
+    if (win != null) {
+      win.document.write(html.toJS);
+      win.document.close();
+    }
+  }
+
+  void _shareOs(Map<String, dynamic> order) {
+    final produtos = order['produtos'] as List? ?? [];
+    final servicos = order['servicos'] as List? ?? [];
+
+    String text = 'Ordem de Servico #${order['idOs']}\n';
+    text += 'Cliente: ${order['nomeCliente'] ?? ''}\n';
+    text += 'Status: ${order['status'] ?? ''}\n';
+    text += 'Entrada: ${order['dataInicial'] != null ? intlBR.DateFormat('dd/MM/yyyy').format(DateTime.parse(order['dataInicial'])) : ''}\n';
+    text += 'Responsavel: ${order['nome'] ?? ''}\n\n';
+
+    if (produtos.isNotEmpty) {
+      text += '--- Produtos ---\n';
+      for (var p in produtos) {
+        final qtd = int.tryParse(p['quantidade']?.toString() ?? '1') ?? 1;
+        final preco = double.tryParse(p['preco']?.toString() ?? '0') ?? 0;
+        text += '${p['descricao'] ?? ''} x$qtd - R\$ ${(preco * qtd).toStringAsFixed(2)}\n';
+      }
+      text += '\n';
+    }
+
+    if (servicos.isNotEmpty) {
+      text += '--- Servicos ---\n';
+      for (var s in servicos) {
+        final preco = double.tryParse(s['preco']?.toString() ?? '0') ?? 0;
+        text += '${s['nome'] ?? ''} - R\$ ${preco.toStringAsFixed(2)}\n';
+      }
+      text += '\n';
+    }
+
+    num calcTotal = 0;
+    try {
+      String s = order['calcTotal']?.toString() ?? '0';
+      s = s.replaceAll(',', '');
+      calcTotal = intlBR.NumberFormat.decimalPattern().parse(s);
+    } catch (_) {}
+    text += 'Valor Total: R\$ ${Format.formatCurrency.format(calcTotal)}';
+
+    Share.share(text);
   }
 
   Future<void> _launchInBrowser(Uri url) async {
@@ -905,30 +1000,22 @@ class _VisualizarOrdemServicoPageState
     try {
       await ControllerOs().deleteOrdemServico(widget.idOrdemServico);
       if (mounted) {
-        Fluttertoast.showToast(
-          msg: 'Ordem de Serviço exluida com Sucesso',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0,
-
-        );
+          content: Text('Ordem de Serviço excluida com Sucesso'),
+        ));
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => OrdemServicoList()),
         );
       }
     } catch (error) {
       if (mounted) {
-        Fluttertoast.showToast(
-          msg: 'Erro ao exluir Ordem de serviço',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-
-        );
+          content: Text('Erro ao excluir Ordem de serviço'),
+        ));
       }
     }
   }
@@ -992,7 +1079,7 @@ class _ExpandableTextState extends State<ExpandableText> {
                   child: Text(
                     _expanded ? "Mostrar menos" : "Mostrar mais",
                     style: TextStyle(
-                      color: const Color(0xffff7e15),
+                      color: AppColors.accent,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

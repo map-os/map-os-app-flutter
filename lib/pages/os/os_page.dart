@@ -4,6 +4,9 @@ import 'package:mapos_app/widgets/bottom_nav_menu.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/pages/os/os_view_page.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_status_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
 
 import 'os_add_page.dart';
 
@@ -26,18 +29,6 @@ class _OrdemServicoListState extends State<OrdemServicoList> {
   String selectedStatus = "Todos";
   final List<String> statusOptions = ["Todos", "Orçamento", "Aberto", "Faturado", "Negociação", "Em Andamento", "Finalizado", "Cancelado", "Aguardando Peças", "Aprovado"];
   bool showFilters = false;
-
-  final Map<String, Color> statusColors = {
-    'Orçamento': Color(0xffccb27f),
-    'Aberto': Color(0xff00cc00),
-    'Faturado': Color(0xffb166fd),
-    'Negociação': Color(0xffadb304),
-    'Em Andamento': Color(0xff436ded),
-    'Finalizado': Color(0xff225566),
-    'Cancelado': Colors.red,
-    'Aguardando Peças': Color(0xfffd7e00),
-    'Aprovado': Color(0xff7f7f7f),
-  };
 
   @override
   void initState() {
@@ -110,7 +101,7 @@ class _OrdemServicoListState extends State<OrdemServicoList> {
               padding: EdgeInsets.symmetric(horizontal: 8.0),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Colors.grey),
               ),
               child: DropdownButtonHideUnderline(
@@ -149,15 +140,15 @@ class _OrdemServicoListState extends State<OrdemServicoList> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => EmDesenvolvimentoPage()),
+                      MaterialPageRoute(builder: (context) => AdicionarOsPage()),
                     );
                   },
                   icon: Icon(Icons.add),
                   label: Text('Adicionar'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Color(0xff333649),
-                    side: BorderSide(color: Color(0xff333649)),
+                    backgroundColor: AppColors.primary,
+                    side: BorderSide(color: AppColors.primary),
                   ),
                 ),
                 OutlinedButton.icon(
@@ -172,8 +163,8 @@ class _OrdemServicoListState extends State<OrdemServicoList> {
                   label: Text('Atualizar'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Color(0xff333649),
-                    side: BorderSide(color: Color(0xff333649)),
+                    backgroundColor: AppColors.primary,
+                    side: BorderSide(color: AppColors.primary),
                   ),
                 ),
                 OutlinedButton.icon(
@@ -186,8 +177,8 @@ class _OrdemServicoListState extends State<OrdemServicoList> {
                   label: Text(showFilters ? 'Esconder' : 'Filtrar'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Color(0xff333649),
-                    side: BorderSide(color: Color(0xff333649)),
+                    backgroundColor: AppColors.primary,
+                    side: BorderSide(color: AppColors.primary),
                   ),
                 ),
               ],
@@ -260,8 +251,8 @@ class _OrdemServicoListState extends State<OrdemServicoList> {
 
   Widget _buildShimmerEffect(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: AppColors.shimmerBase,
+      highlightColor: AppColors.shimmerHighlight,
       child: Card(
         margin: EdgeInsets.all(8.0),
         child: ListTile(
@@ -287,23 +278,31 @@ class _OrdemServicoListState extends State<OrdemServicoList> {
   }
 
   Widget _buildCard(BuildContext context, int index) {
+    final ordem = filteredOrdemServico[index];
     return Card(
-      margin: EdgeInsets.all(5.0),
-      color: Colors.white,
+      margin: AppSpacing.cardMargin,
       child: ListTile(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VisualizarOrdemServicoPage(idOrdemServico: int.parse(ordem['idOs'].toString())),
+            ),
+          );
+        },
         leading: CircleAvatar(
-          backgroundColor: Color(0xff333649),
+          backgroundColor: AppColors.primary,
           child: Text(
-            filteredOrdemServico[index]['idOs'].toString(),
+            ordem['idOs'].toString(),
             style: TextStyle(color: Colors.white),
           ),
         ),
         title: Text(
-          filteredOrdemServico[index]['nomeCliente'],
-          style: TextStyle(color: Colors.black87),
+          ordem['nomeCliente'],
+          style: TextStyle(color: AppColors.textMuted),
         ),
         subtitle: Text(
-          filteredOrdemServico[index]['celular_cliente'],
+          ordem['celular_cliente'],
           style: TextStyle(color: Colors.grey),
         ),
         trailing: Row(
@@ -312,24 +311,29 @@ class _OrdemServicoListState extends State<OrdemServicoList> {
             Container(
               padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
               decoration: BoxDecoration(
-                color: statusColors[filteredOrdemServico[index]['status']] ?? Colors.black,
-                borderRadius: BorderRadius.circular(4),
+                color: AppStatusColors.getStatusColor(ordem['status']),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                filteredOrdemServico[index]['status'],
+                ordem['status'],
                 style: TextStyle(color: Colors.white, fontSize: 12),
               ),
             ),
-            IconButton(
-              icon: Icon(Icons.visibility, color: Color(0xff333649)),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => VisualizarOrdemServicoPage(idOrdemServico: int.parse(filteredOrdemServico[index]['idOs'].toString())),
-                  ),
-                );
-              },
+            SizedBox(width: 4),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.visibility, color: Colors.white, size: 14),
+                  SizedBox(width: 4),
+                  Text('Visualizar', style: TextStyle(color: Colors.white, fontSize: 11)),
+                ],
+              ),
             ),
           ],
         ),

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 import 'package:mapos_app/widgets/ButtonMenu.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:mapos_app/pages/services/services_page.dart';
@@ -23,11 +26,11 @@ class BottomNavigationBarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final List<Color> activeCircleColors = [
-      Color(0xfff8b02a),
-      Color(0xff2cc4c4),
+      AppColors.tabProdutos,
+      AppColors.tabServicos,
       Colors.white,
-      Color(0xff32a7f4),
-      Color(0xfffb6986)
+      AppColors.tabClientes,
+      AppColors.tabOS
     ];
 
     return CircleNavBar(
@@ -49,7 +52,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
       ],
       height: 70,
       circleWidth: 60,
-      color: Color(0xff343e77),
+      color: AppColors.navBar,
       circleColor: activeCircleColors[activeIndex],
       padding: EdgeInsets.symmetric(horizontal: 0.0),
       cornerRadius: BorderRadius.circular(0),
@@ -62,7 +65,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
     if (onTap != null) {
       onTap!(index);
       if (index == 0) {
-        Navigator.push(
+        Navigator.pushReplacement(
             context,
             PageTransition(
               child: productsList(),
@@ -71,7 +74,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
         );
       }
       if (index == 1) {
-        Navigator.push(
+        Navigator.pushReplacement(
             context,
             PageTransition(
               child: ServicesList(),
@@ -80,7 +83,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
         );
       }
       if (index == 2) {
-        Navigator.push(
+        Navigator.pushReplacement(
             context,
             PageTransition(
               child: DashboardPage(),
@@ -89,7 +92,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
         );
       }
       if (index == 3) {
-        Navigator.push(
+        Navigator.pushReplacement(
             context,
             PageTransition(
               child: ClientsList(),
@@ -98,7 +101,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
         );
       }
       if (index == 4) {
-        Navigator.push(
+        Navigator.pushReplacement(
             context,
             PageTransition(
               child: OrdemServicoList(),

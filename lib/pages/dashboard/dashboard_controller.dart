@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/api/apiConfig.dart';
 import 'package:mapos_app/controllers/TokenController.dart';
+import 'package:mapos_app/utils/cache_helper.dart';
+import 'package:flutter/foundation.dart';
 
 
 class DashboardController {
@@ -20,14 +22,15 @@ class DashboardController {
     if (await _hasInternetConnection()) {
       await _fetchDataFromAPI();
     } else {
-      print('Sem acesso à internet, carregando dados locais.');
+      debugPrint('Sem acesso à internet, carregando dados locais.');
       await _loadLocalData();
     }
   }
 
   Future<bool> _hasInternetConnection() async {
+    if (kIsWeb) return true;
     try {
-      final result = await http.get(Uri.parse('http://clients3.google.com/generate_204'));
+      final result = await http.get(Uri.parse('https://www.google.com/generate_204'));
       return result.statusCode == 204;
     } catch (_) {
       return false;
@@ -35,22 +38,34 @@ class DashboardController {
   }
 
   Future<void> _fetchDataFromAPI() async {
-    await APIConfig.ensureBaseURLInitialized();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('access_token');
+    try {
+      await APIConfig.ensureBaseURLInitialized();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('access_token');
 
-    var response = await _tryFetchWithRenewal(token);
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      if (data['status']) {
-        _updateDashboardData(data['result']);
-        await _saveLocalData(data['result']);
+      var response = await _tryFetchWithRenewal(token);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['status']) {
+          _updateDashboardData(data['result']);
+          await _saveLocalData(data['result']);
+        } else {
+          if (kIsWeb) {
+            await _loadLocalData();
+            return;
+          }
+          throw Exception('Erro ao buscar dados do dashboard: ${data['message']}');
+        }
       } else {
-        throw Exception('Erro ao buscar dados do dashboard: ${data['message']}');
+        debugPrint('Erro ao fazer requisição: ${response.body}');
+        await _loadLocalData();
       }
-    } else {
-      print('Erro ao fazer requisição: ${response.body}');
-      await _loadLocalData();
+    } catch (e) {
+      if (kIsWeb) {
+        await _loadLocalData();
+        return;
+      }
+      rethrow;
     }
   }
 
@@ -92,7 +107,7 @@ class DashboardController {
 
   Future<void> _saveLocalData(dynamic data) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('dashboard_data', jsonEncode(data));
+    await CacheHelper.safeSetString(prefs, 'dashboard_data', jsonEncode(data));
   }
 
   Future<void> _loadLocalData() async {
@@ -102,7 +117,7 @@ class DashboardController {
       final data = jsonDecode(jsonData);
       _updateDashboardData(data);
     } else {
-      print('Nenhum dado local encontrado. Operando com dados padrões.');
+      debugPrint('Nenhum dado local encontrado. Operando com dados padrões.');
     }
   }
 }

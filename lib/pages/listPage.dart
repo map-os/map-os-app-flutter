@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mapos_app/pages/os/os_view_page.dart';
 import 'package:mapos_app/pages/products/products_view_page.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
 
 class ItemListPage extends StatelessWidget {
   final String title;
@@ -15,10 +17,9 @@ class ItemListPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
-        backgroundColor: const Color(0xfffdfdff),
       ),
       body: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: AppSpacing.md),
         itemCount: items.length,
         itemBuilder: (context, index) {
           var item = items[index];
@@ -46,7 +47,7 @@ class ItemListPage extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       margin: const EdgeInsets.only(bottom: 12.0),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: AppSpacing.paddingAllMd,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -57,7 +58,7 @@ class ItemListPage extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               "ID OS: ${item['idOs']}",
-              style: const TextStyle(color: Colors.grey),
+              style: const TextStyle(color: AppColors.textMuted),
             ),
             const SizedBox(height: 4),
             SelectableText(
@@ -67,7 +68,7 @@ class ItemListPage extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               "Status: ${item['status']}",
-              style: const TextStyle(color: Colors.blueGrey),
+              style: const TextStyle(color: AppColors.textMuted),
             ),
             const SizedBox(height: 12),
             Align(
@@ -77,7 +78,7 @@ class ItemListPage extends StatelessWidget {
                 label: const Text("Visualizar"),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: const Color(0xff333649),
+                  backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
                   textStyle: const TextStyle(fontSize: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
@@ -104,7 +105,7 @@ class ItemListPage extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       margin: const EdgeInsets.only(bottom: 12.0),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: AppSpacing.paddingAllMd,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -114,7 +115,7 @@ class ItemListPage extends StatelessWidget {
                 // Badge ID
                 Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xff333649),
+                    color: AppColors.primary,
                     borderRadius: BorderRadius.circular(6.0),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
@@ -142,11 +143,11 @@ class ItemListPage extends StatelessWidget {
                               children: [
                                 Text(
                                   "Estoque: ${item['estoque']}",
-                                  style: TextStyle(color: Colors.grey[700]),
+                                  style: TextStyle(color: AppColors.textMuted),
                                 ),
                                 Text(
                                   "Estoque Mínimo: ${item['estoqueMinimo']}",
-                                  style: TextStyle(color: Colors.grey[700]),
+                                  style: TextStyle(color: AppColors.textMuted),
                                 ),
                               ],
                             ),
@@ -158,11 +159,11 @@ class ItemListPage extends StatelessWidget {
                               children: [
                                 Text(
                                   "Compra: R\$ ${item['precoCompra']}",
-                                  style: TextStyle(color: Colors.grey[700]),
+                                  style: TextStyle(color: AppColors.textMuted),
                                 ),
                                 Text(
                                   "Venda: R\$ ${item['precoVenda']}",
-                                  style: TextStyle(color: Colors.grey[700]),
+                                  style: TextStyle(color: AppColors.textMuted),
                                 ),
                               ],
                             ),
@@ -182,7 +183,7 @@ class ItemListPage extends StatelessWidget {
                 label: const Text("Visualizar"),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: const Color(0xff333649),
+                  backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
                   textStyle: const TextStyle(fontSize: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),

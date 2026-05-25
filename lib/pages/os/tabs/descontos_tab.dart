@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:mapos_app/api/apiConfig.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mapos_app/controllers/TokenController.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 
 class DescontosTab extends StatefulWidget {
   final Map<String, dynamic>? ordemServico;
@@ -61,7 +65,7 @@ class _DescontosTabState extends State<DescontosTab> {
       } else {
         valorDesconto = (valorTotalOS * valorDigitado) / 100;
         valorComDesconto = valorTotalOS - valorDesconto;
-        print(valorDesconto);
+        debugPrint(valorDesconto.toString());
       }
 
       // Garantir que não fique negativo
@@ -86,18 +90,19 @@ class _DescontosTabState extends State<DescontosTab> {
     final url = "${APIConfig.baseURL}${APIConfig.osEndpoint}/$idOs/desconto";
     final uri = Uri.parse(url);
 
-    final accessToken = await getAccessToken();
+    var accessToken = await getAccessToken();
     if (accessToken == null) {
       _showToast('Token de acesso não encontrado!', isError: true);
       return;
     }
 
     try {
-      final response = await http.post(
+      var response = await http.post(
         uri,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
+          'App-Version': APIConfig.appVersion,
         },
         body: jsonEncode({
           'desconto': valorController.text,
@@ -105,6 +110,26 @@ class _DescontosTabState extends State<DescontosTab> {
           'valor_desconto': valorTotalOS - valorDesconto,
         }),
       );
+
+      if (response.statusCode == 403) {
+        await TokenController().regenerateToken();
+        final prefs = await SharedPreferences.getInstance();
+        accessToken = prefs.getString('access_token');
+        response = await http.post(
+          uri,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $accessToken',
+            'App-Version': APIConfig.appVersion,
+          },
+          body: jsonEncode({
+            'desconto': valorController.text,
+            'tipo_desconto': _dropdownToApi(tipoDescontoDropdown),
+            'valor_desconto': valorTotalOS - valorDesconto,
+          }),
+        );
+      }
+
       final data = jsonDecode(response.body);
       if (data['status'] == true) {
         _showToast('Desconto salvo com sucesso!');
@@ -117,20 +142,17 @@ class _DescontosTabState extends State<DescontosTab> {
   }
 
   void _showToast(String message, {bool isError = false}) {
-    Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.TOP,
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
       backgroundColor: isError ? Colors.red : Colors.green,
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
+      content: Text(message),
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(20.0),
+      padding: AppSpacing.paddingAllLg,
       child: Form(
         key: _formKey,
         child: Column(
@@ -142,7 +164,7 @@ class _DescontosTabState extends State<DescontosTab> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: AppSpacing.paddingAllMd,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -197,7 +219,7 @@ class _DescontosTabState extends State<DescontosTab> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: AppSpacing.paddingAllMd,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -258,7 +280,7 @@ class _DescontosTabState extends State<DescontosTab> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: AppSpacing.paddingAllMd,
                 child: Column(
                   children: [
                     _buildInfoRow('Valor Total:', _formatCurrency(valorTotalOS)),
@@ -286,9 +308,9 @@ class _DescontosTabState extends State<DescontosTab> {
               child: ElevatedButton(
                 onPressed: salvarDesconto,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF36374E),
+                  backgroundColor: AppColors.primary,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   elevation: 2,
                 ),

@@ -1,10 +1,15 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:mapos_app/api/apiConfig.dart';
+import 'package:mapos_app/controllers/TokenController.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 
 class ProdutosTab extends StatefulWidget {
   final Map<String, dynamic>? ordemServico;
@@ -50,101 +55,112 @@ class _ProdutosTabState extends State<ProdutosTab> {
         throw Exception('Token de acesso não encontrado');
       }
 
-      final response = await http.get(
-        Uri.parse("${APIConfig.baseURL}${APIConfig.prodtuostesEndpoint}"),
+      var response = await http.get(
+        Uri.parse("${APIConfig.baseURL}${APIConfig.produtosEndpoint}"),
         headers: {
           'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json',
+          'App-Version': APIConfig.appVersion,
         },
       ).timeout(const Duration(seconds: 15));
 
+      if (response.statusCode == 403) {
+        await TokenController().regenerateToken();
+        accessToken = prefs.getString('access_token');
+        response = await http.get(
+          Uri.parse("${APIConfig.baseURL}${APIConfig.produtosEndpoint}"),
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+            'App-Version': APIConfig.appVersion,
+          },
+        ).timeout(const Duration(seconds: 15));
+      }
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        // Cache products locally
+        await prefs.setString('cached_produtos_catalog', json.encode(data['result']));
         setState(() {
           produtosList = data['result'];
           isLoading = false;
         });
         widget.onAtualizar();
       } else {
-        throw Exception('Erro ao carregar os produtos: ${response.statusCode} - ${response.body}');
+        throw Exception('Erro ao carregar os produtos: ${response.statusCode}');
       }
     } catch (e) {
+      // Try loading from cache on CORS/network error
+      try {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String? cached = prefs.getString('cached_produtos_catalog');
+        if (cached != null) {
+          setState(() {
+            produtosList = json.decode(cached);
+            isLoading = false;
+          });
+          return;
+        }
+      } catch (_) {}
       setState(() {
-        errorMessage = 'Erro ao carregar produtos: ${e.toString()}';
+        errorMessage = 'Erro ao carregar produtos. Verifique a conexao com a API.';
         isLoading = false;
       });
     }
   }
 
-  // Exibir diálogo para selecionar a quantidade
-  Future<int?> _selecionarQuantidade(dynamic produto) async {
+  // Exibir diálogo para selecionar quantidade e preço
+  Future<Map<String, dynamic>?> _selecionarQuantidadePreco(dynamic produto) async {
     int quantidade = 1;
+    double precoUnitario = double.tryParse(produto['precoVenda']?.toString() ?? produto['preco']?.toString() ?? '0') ?? 0.0;
+    final precoController = TextEditingController(text: precoUnitario.toStringAsFixed(2));
 
-    return showDialog<int>(
+    return showDialog<Map<String, dynamic>>(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-          elevation: 8,
-          title: Container(
-            padding: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              color: Color(0xff181824),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16.0),
-                topRight: Radius.circular(16.0),
-              ),
-            ),
-            child: Text(
-              'Quantidade para ${produto['descricao']}',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setDialogState) {
-              final precoUnitario = double.tryParse(produto['precoVenda'] ?? produto['preco'] ?? '0') ?? 0.0;
-              final total = precoUnitario * quantidade;
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setDialogState) {
+            final currentPreco = double.tryParse(precoController.text) ?? 0.0;
+            final total = currentPreco * quantidade;
 
-              return Column(
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              elevation: 8,
+              title: Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: AppColors.cardDark,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16.0),
+                    topRight: Radius.circular(16.0),
+                  ),
+                ),
+                child: Text(
+                  '${produto['descricao']}',
+                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+              content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
-                    'Selecione a quantidade desejada:',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Color(0xff181822),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Contador de quantidade
+                  const Text('Quantidade:', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                  const SizedBox(height: 8),
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.grey[50],
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: Colors.grey[200]!),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.remove_circle,
-                            color: quantidade > 1
-                                ? Color(0xffc50808)
-                                : Colors.grey[400],
-                            size: 32,
-                          ),
-                          onPressed: quantidade > 1
-                              ? () => setDialogState(() => quantidade--)
-                              : null,
+                          icon: Icon(Icons.remove_circle, color: quantidade > 1 ? Colors.red : Colors.grey[400], size: 32),
+                          onPressed: quantidade > 1 ? () => setDialogState(() => quantidade--) : null,
                         ),
                         Container(
                           width: 60,
@@ -152,123 +168,72 @@ class _ProdutosTabState extends State<ProdutosTab> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(8),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
+                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
                           ),
-                          child: Text(
-                            '$quantidade',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: Text('$quantidade', textAlign: TextAlign.center, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                         ),
                         IconButton(
-                          icon: Icon(Icons.add_circle,
-                            color: Color(0xff36374e),
-                            size: 32,
-                          ),
+                          icon: Icon(Icons.add_circle, color: AppColors.primary, size: 32),
                           onPressed: () => setDialogState(() => quantidade++),
                         ),
                       ],
                     ),
                   ),
-
-                  const SizedBox(height: 24),
-
-                  // Informações de preço
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(12),
+                  const SizedBox(height: 16),
+                  const Text('Preco unitario (R\$):', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: precoController,
+                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      prefixText: 'R\$ ',
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                     ),
-                    child: Column(
+                    onChanged: (value) => setDialogState(() {}),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.green[200]!),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Valor unitário:',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xff181824),
-                              ),
-                            ),
-                            Text(
-                              formatoMoeda.format(precoUnitario),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        const Divider(height: 1),
-                        const SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Total:',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              formatoMoeda.format(total),
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xff181824),
-                              ),
-                            ),
-                          ],
-                        ),
+                        const Text('Total:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(formatoMoeda.format(total), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.cardDark)),
                       ],
                     ),
                   ),
                 ],
-              );
-            },
-          ),
-          actions: [
-            TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.grey[600],
               ),
-              onPressed: () => Navigator.of(context).pop(null),
-              child: const Text('CANCELAR'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xff181824),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+              actions: [
+                TextButton(
+                  style: TextButton.styleFrom(foregroundColor: Colors.grey[600]),
+                  onPressed: () => Navigator.of(context).pop(null),
+                  child: const Text('CANCELAR'),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              ),
-              onPressed: () => Navigator.of(context).pop(quantidade),
-              child: const Text(
-                'CONFIRMAR',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.cardDark,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                  onPressed: () => Navigator.of(context).pop({
+                    'quantidade': quantidade,
+                    'preco': currentPreco.toStringAsFixed(2),
+                  }),
+                  child: const Text('CONFIRMAR', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                 ),
-              ),
-            ),
-          ],
-          actionsAlignment: MainAxisAlignment.spaceBetween,
-          actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          contentPadding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+              ],
+              actionsAlignment: MainAxisAlignment.spaceBetween,
+              actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              contentPadding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+            );
+          },
         );
       },
     );
@@ -277,17 +242,17 @@ class _ProdutosTabState extends State<ProdutosTab> {
   // Adicionar produto à ordem
   Future<void> _adicionarProduto(dynamic produto) async {
     try {
+      final result = await _selecionarQuantidadePreco(produto);
+      if (result == null) return;
 
-      // Obter a quantidade do produto a ser adicionado
-      final quantidade = await _selecionarQuantidade(produto);
-      if (quantidade == null) return; // Usuário cancelou a operação
+      final int quantidade = result['quantidade'];
+      final String preco = result['preco'];
 
       final String idProduto = produto['idProdutos'];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? accessToken = prefs.getString('access_token');
       String idOs = widget.ordemServico!['idOs'];
-      String preco = produto['precoVenda'];
-      print(preco);
+
       if (accessToken == null) {
         throw Exception('Token de acesso não encontrado');
       }
@@ -298,14 +263,14 @@ class _ProdutosTabState extends State<ProdutosTab> {
         return;
       }
 
-      // Mostrar indicador de progresso
       _showProgressDialog('Adicionando produto...');
 
-      final response = await http.post(
+      var response = await http.post(
         Uri.parse("${APIConfig.baseURL}${APIConfig.osEndpoint}/$idOs/produtos/$idProduto"),
         headers: {
           'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json',
+          'App-Version': APIConfig.appVersion,
         },
         body: jsonEncode({
           'idProduto': idProduto,
@@ -315,15 +280,29 @@ class _ProdutosTabState extends State<ProdutosTab> {
         }),
       ).timeout(const Duration(seconds: 15));
 
-      print(response.body);
-      // Fechar o diálogo de progresso
-      Navigator.of(context, rootNavigator: true).pop();
+      if (response.statusCode == 403) {
+        await TokenController().regenerateToken();
+        accessToken = prefs.getString('access_token');
+        response = await http.post(
+          Uri.parse("${APIConfig.baseURL}${APIConfig.osEndpoint}/$idOs/produtos/$idProduto"),
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+            'App-Version': APIConfig.appVersion,
+          },
+          body: jsonEncode({
+            'idProduto': idProduto,
+            'idOs': idOs,
+            'quantidade': quantidade,
+            'preco': preco
+          }),
+        ).timeout(const Duration(seconds: 15));
+      }
 
-      print('Resposta da API (adicionar): ${response.body}');
+      Navigator.of(context, rootNavigator: true).pop();
 
       final data = jsonDecode(response.body);
       if (data['status'] == true) {
-        // Atualizar a lista de produtos no widget.ordemServico
         setState(() {
           if (widget.ordemServico!['produtos'] == null) {
             widget.ordemServico!['produtos'] = [];
@@ -333,12 +312,12 @@ class _ProdutosTabState extends State<ProdutosTab> {
         });
 
         widget.onAtualizar();
-        _showSnackBar('produto adicionado com sucesso');
+        _showSnackBar('Produto adicionado com sucesso');
       } else {
         throw Exception('Erro ao adicionar o produto: ${data['error'] ?? 'Erro desconhecido'}');
       }
     } catch (e) {
-      print('Erro ao adicionar produto: ${e.toString()}');
+      debugPrint('Erro ao adicionar produto: ${e.toString()}');
     }
   }
 
@@ -365,18 +344,32 @@ class _ProdutosTabState extends State<ProdutosTab> {
       // Mostrar indicador de progresso
       _showProgressDialog('Removendo produto...');
 
-      final response = await http.delete(
+      var response = await http.delete(
         Uri.parse('${APIConfig.baseURL}${APIConfig.osEndpoint}/$idOs/produtos/$idProduto'),
         headers: {
           'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json',
+          'App-Version': APIConfig.appVersion,
         },
       ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 403) {
+        await TokenController().regenerateToken();
+        accessToken = prefs.getString('access_token');
+        response = await http.delete(
+          Uri.parse('${APIConfig.baseURL}${APIConfig.osEndpoint}/$idOs/produtos/$idProduto'),
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+            'App-Version': APIConfig.appVersion,
+          },
+        ).timeout(const Duration(seconds: 15));
+      }
 
       // Fechar o diálogo de progresso
       Navigator.of(context, rootNavigator: true).pop();
 
-      print('Resposta da API (remover): ${response.body}');
+      debugPrint('Resposta da API (remover): ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -396,16 +389,18 @@ class _ProdutosTabState extends State<ProdutosTab> {
         throw Exception('Erro ao remover o produto: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      print('Erro ao remover produto: ${e.toString()}');
+      debugPrint('Erro ao remover produto: ${e.toString()}');
     }
   }
 
-  // Atualizar quantidade de um produto
+  // Atualizar quantidade/preco de um produto
   Future<void> _atualizarQuantidade(dynamic produto) async {
     try {
-      // Obter a nova quantidade
-      final novaQuantidade = await _selecionarQuantidade(produto);
-      if (novaQuantidade == null) return; // Usuário cancelou a operação
+      final result = await _selecionarQuantidadePreco(produto);
+      if (result == null) return;
+
+      final int novaQuantidade = result['quantidade'];
+      final String novoPreco = result['preco'];
 
       final String idproduto = produto['idProdutos_os'].toString();
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -416,24 +411,39 @@ class _ProdutosTabState extends State<ProdutosTab> {
         throw Exception('Token de acesso não encontrado');
       }
 
-      // Mostrar indicador de progresso
-      _showProgressDialog('Atualizando quantidade...');
+      _showProgressDialog('Atualizando produto...');
 
-      final response = await http.put(
+      var response = await http.put(
         Uri.parse('${APIConfig.baseURL}${APIConfig.osEndpoint}/$idOs/produtos/$idproduto'),
         headers: {
           'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json',
+          'App-Version': APIConfig.appVersion,
         },
         body: jsonEncode({
           'quantidade': novaQuantidade,
-          'preco': produto['preco']
+          'preco': novoPreco
         }),
       ).timeout(const Duration(seconds: 15));
 
-      Navigator.of(context, rootNavigator: true).pop();
+      if (response.statusCode == 403) {
+        await TokenController().regenerateToken();
+        accessToken = prefs.getString('access_token');
+        response = await http.put(
+          Uri.parse('${APIConfig.baseURL}${APIConfig.osEndpoint}/$idOs/produtos/$idproduto'),
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+            'App-Version': APIConfig.appVersion,
+          },
+          body: jsonEncode({
+            'quantidade': novaQuantidade,
+            'preco': novoPreco
+          }),
+        ).timeout(const Duration(seconds: 15));
+      }
 
-      print('Resposta da API (atualizar): ${response.body}');
+      Navigator.of(context, rootNavigator: true).pop();
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -444,22 +454,22 @@ class _ProdutosTabState extends State<ProdutosTab> {
             );
             if (index != -1) {
               widget.ordemServico!['produtos'][index]['quantidade'] = novaQuantidade.toString();
-
-              double preco = double.tryParse(produto['preco']?.toString() ?? '0') ?? 0;
-              widget.ordemServico!['produtos'][index]['subTotal'] = (novaQuantidade * preco).toString();
+              widget.ordemServico!['produtos'][index]['preco'] = novoPreco;
+              double precoVal = double.tryParse(novoPreco) ?? 0;
+              widget.ordemServico!['produtos'][index]['subTotal'] = (novaQuantidade * precoVal).toString();
             }
           });
 
-          widget.onAtualizar(); // Chama o callback para atualizar a OS
-          _showSnackBar('Quantidade atualizada com sucesso');
+          widget.onAtualizar();
+          _showSnackBar('Produto atualizado com sucesso');
         } else {
-          throw Exception('Erro ao atualizar a quantidade: ${data['error'] ?? 'Erro desconhecido'}');
+          throw Exception('Erro ao atualizar: ${data['error'] ?? 'Erro desconhecido'}');
         }
       } else {
-        throw Exception('Erro ao atualizar a quantidade: ${response.statusCode} - ${response.body}');
+        throw Exception('Erro ao atualizar: ${response.statusCode}');
       }
     } catch (e) {
-      print('Erro ao atualizar quantidade: ${e.toString()}');
+      debugPrint('Erro ao atualizar produto: ${e.toString()}');
     }
   }
 
@@ -621,7 +631,7 @@ class _ProdutosTabState extends State<ProdutosTab> {
               side: BorderSide(color: Colors.grey[400]!),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
             child: const Text('Cancelar'),
@@ -635,7 +645,7 @@ class _ProdutosTabState extends State<ProdutosTab> {
               // elevation: 2,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
             child: const Row(
@@ -681,7 +691,7 @@ class _ProdutosTabState extends State<ProdutosTab> {
       children: [
         // Campo de pesquisa e adição de produtos
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: AppSpacing.paddingAllMd,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -695,12 +705,15 @@ class _ProdutosTabState extends State<ProdutosTab> {
               const SizedBox(height: 8),
               TypeAheadField<dynamic>(
                 controller: _searchController,
+                debounceDuration: Duration(milliseconds: 200),
+                hideOnEmpty: false,
                 builder: (context, controller, focusNode) {
                   return TextField(
                     controller: controller,
                     focusNode: focusNode,
                     decoration: InputDecoration(
                       labelText: 'Pesquisar produto',
+                      hintText: isLoading ? 'Carregando...' : 'Digite para buscar...',
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -722,13 +735,12 @@ class _ProdutosTabState extends State<ProdutosTab> {
                 ),
                 suggestionsCallback: (pattern) {
                   if (pattern.isEmpty) {
-                    return const <dynamic>[];
+                    return produtosList.take(20).toList();
                   }
                   return produtosList.where((produto) {
-                    return produto['descricao']
-                        .toString()
-                        .toLowerCase()
-                        .contains(pattern.toLowerCase());
+                    final desc = (produto['descricao'] ?? '').toString().toLowerCase();
+                    final cod = (produto['codDeBarra'] ?? '').toString().toLowerCase();
+                    return desc.contains(pattern.toLowerCase()) || cod.contains(pattern.toLowerCase());
                   }).toList();
                 },
                 itemBuilder: (context, suggestion) {
@@ -819,7 +831,7 @@ class _ProdutosTabState extends State<ProdutosTab> {
                   margin: const EdgeInsets.symmetric(vertical: 4),
                   elevation: 2,
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: AppSpacing.paddingAllMd,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -912,8 +924,8 @@ class _ProdutosTabState extends State<ProdutosTab> {
 
         // Resumo no rodapé
         Container(
-          padding: const EdgeInsets.all(16),
-          color: Colors.grey[100],
+          padding: AppSpacing.paddingAllMd,
+          color: AppColors.shimmerHighlight,
           child: Column(
             children: [
               Row(

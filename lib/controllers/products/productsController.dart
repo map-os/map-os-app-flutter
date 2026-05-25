@@ -3,13 +3,16 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/api/apiConfig.dart';
 import 'package:mapos_app/controllers/TokenController.dart';
+import 'package:mapos_app/utils/cache_helper.dart';
+import 'package:flutter/foundation.dart';
 
 class ControllerProducts {
   static const String _productsKey = 'cached_products';
 
   Future<bool> hasInternetConnection() async {
+    if (kIsWeb) return true;
     try {
-      final result = await http.get(Uri.parse('http://clients3.google.com/generate_204'));
+      final result = await http.get(Uri.parse('https://www.google.com/generate_204'));
       return result.statusCode == 204;
     } catch (_) {
       return false;
@@ -20,44 +23,54 @@ class ControllerProducts {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     if (!await hasInternetConnection()) {
-      print('Você está offline, carregando dados salvos localmente...');
+      debugPrint('Você está offline, carregando dados salvos localmente...');
       return _loadProductsFromLocal(prefs);
     }
 
-    await APIConfig.ensureBaseURLInitialized();
-    String? token = prefs.getString('access_token');
-    var response = await _reqProducts(token, page);
+    try {
+      await APIConfig.ensureBaseURLInitialized();
+      String? token = prefs.getString('access_token');
+      var response = await _reqProducts(token, page);
 
-    if (response.statusCode == 403) {
-      await TokenController().regenerateToken();
-      token = prefs.getString('access_token');
-      response = await _reqProducts(token, page);
-    }
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      if (data['status']) {
-        await _saveProductsFromLocal(prefs, data['result']);
-        return data['result'];
-      } else {
-        throw Exception('${data['message']}');
+      if (response.statusCode == 403) {
+        await TokenController().regenerateToken();
+        token = prefs.getString('access_token');
+        response = await _reqProducts(token, page);
       }
-    } else {
-      throw Exception('Errro na conexão com a API');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['status']) {
+          await _saveProductsFromLocal(prefs, data['result']);
+          return data['result'];
+        } else {
+          throw Exception('${data['message']}');
+        }
+      } else {
+        if (kIsWeb) {
+          return _loadProductsFromLocal(prefs);
+        }
+        throw Exception('Erro na conexão com a API');
+      }
+    } catch (e) {
+      if (kIsWeb) {
+        return _loadProductsFromLocal(prefs);
+      }
+      rethrow;
     }
   }
 
   Future<void> _saveProductsFromLocal(SharedPreferences prefs, List<dynamic> products) async {
     String jsonProducts = jsonEncode(products);
-    await prefs.setString(_productsKey, jsonProducts);
-    print('produtos salvos para uso Offline');
+    await CacheHelper.safeSetString(prefs, _productsKey, jsonProducts);
+    debugPrint('produtos salvos para uso Offline');
   }
 
   Future<List<dynamic>> _loadProductsFromLocal(SharedPreferences prefs) async {
     String? jsonProducts = prefs.getString(_productsKey);
     if (jsonProducts != null) {
       List<dynamic> products = jsonDecode(jsonProducts);
-      print('produtos carregados localmente');
+      debugPrint('produtos carregados localmente');
       return products;
     } else {
       throw Exception('Nenhum registro encontrado Localmente');
@@ -65,11 +78,12 @@ class ControllerProducts {
   }
 
   Future<http.Response> _reqProducts(String? token, int page) async {
-    final url = Uri.parse('${APIConfig.baseURL}${APIConfig.prodtuostesEndpoint}?page=$page');
+    final url = Uri.parse('${APIConfig.baseURL}${APIConfig.produtosEndpoint}?page=$page');
     return await http.get(
       url,
       headers: {
         'Content-Type': 'application/json',
+        'App-Version': APIConfig.appVersion,
         'Authorization': 'Bearer $token',
       },
     );
@@ -79,38 +93,48 @@ class ControllerProducts {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     if (!await hasInternetConnection()) {
-      print('Sem conexão Carregando Produtos localmente');
+      debugPrint('Sem conexão Carregando Produtos localmente');
       return _loadProductByIdFromLocal(prefs, id);
     }
 
-    await APIConfig.ensureBaseURLInitialized();
-    String? token = prefs.getString('access_token');
-    var response = await _reqProductById(token, id);
+    try {
+      await APIConfig.ensureBaseURLInitialized();
+      String? token = prefs.getString('access_token');
+      var response = await _reqProductById(token, id);
 
-    if (response.statusCode == 403) {
-      await TokenController().regenerateToken();
-      token = prefs.getString('access_token');
-      response = await _reqProductById(token, id);
-    }
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      if (data['status']) {
-        await _saveProductToLocal(prefs, id, data['result']);
-        return data['result'];
-      } else {
-        throw Exception('${data['message']}');
+      if (response.statusCode == 403) {
+        await TokenController().regenerateToken();
+        token = prefs.getString('access_token');
+        response = await _reqProductById(token, id);
       }
-    } else {
-      throw Exception('Error requesting product by ID');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['status']) {
+          await _saveProductToLocal(prefs, id, data['result']);
+          return data['result'];
+        } else {
+          throw Exception('${data['message']}');
+        }
+      } else {
+        if (kIsWeb) {
+          return _loadProductByIdFromLocal(prefs, id);
+        }
+        throw Exception('Error requesting product by ID');
+      }
+    } catch (e) {
+      if (kIsWeb) {
+        return _loadProductByIdFromLocal(prefs, id);
+      }
+      rethrow;
     }
   }
 
   Future<void> _saveProductToLocal(SharedPreferences prefs, int id, Map<String, dynamic> product) async {
     String key = 'product_$id';
     String jsonproduct = jsonEncode(product);
-    await prefs.setString(key, jsonproduct);
-    print('product details saved locally.');
+    await CacheHelper.safeSetString(prefs, key, jsonproduct);
+    debugPrint('product details saved locally.');
   }
 
   Future<Map<String, dynamic>> _loadProductByIdFromLocal(SharedPreferences prefs, int id) async {
@@ -118,7 +142,7 @@ class ControllerProducts {
     String? jsonproduct = prefs.getString(key);
     if (jsonproduct != null) {
       Map<String, dynamic> product = jsonDecode(jsonproduct);
-      print('Dados salvos Localmente');
+      debugPrint('Dados salvos Localmente');
       return product;
     } else {
       throw Exception('O Produto $id não foi salvo localmente 😢.');
@@ -126,11 +150,12 @@ class ControllerProducts {
   }
 
   Future<http.Response> _reqProductById(String? token, int id) async {
-    final url = Uri.parse('${APIConfig.baseURL}${APIConfig.prodtuostesEndpoint}/$id');
+    final url = Uri.parse('${APIConfig.baseURL}${APIConfig.produtosEndpoint}/$id');
     return await http.get(
       url,
       headers: {
         'Content-Type': 'application/json',
+        'App-Version': APIConfig.appVersion,
         'Authorization': 'Bearer $token',
       },
     );
@@ -157,12 +182,13 @@ class ControllerProducts {
   }
 
   Future<http.Response> _reqUpdateProduct(String? token, int id, String? codDeBarra, String descricao, double precoVenda, double precoCompra, int estoque, int estoqueMinimo) async {
-    final url = Uri.parse('${APIConfig.baseURL}${APIConfig.prodtuostesEndpoint}/$id');
+    final url = Uri.parse('${APIConfig.baseURL}${APIConfig.produtosEndpoint}/$id');
 
     return await http.put(
       url,
       headers: {
         'Content-Type': 'application/json',
+        'App-Version': APIConfig.appVersion,
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
@@ -200,11 +226,12 @@ class ControllerProducts {
   }
 
   Future<http.Response> _reqAddProduct(String? token, String? codDeBarra, String descricao, double precoVenda, double precoCompra, int estoque, int estoqueMinimo) async {
-    final url = Uri.parse('${APIConfig.baseURL}${APIConfig.prodtuostesEndpoint}');
+    final url = Uri.parse('${APIConfig.baseURL}${APIConfig.produtosEndpoint}');
     return await http.post(
       url,
       headers: {
         'Content-Type': 'application/json',
+        'App-Version': APIConfig.appVersion,
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
@@ -241,11 +268,12 @@ class ControllerProducts {
   }
 
   Future<http.Response> _reqDeleteProduct(String? token, int id) async {
-    final url = Uri.parse('${APIConfig.baseURL}${APIConfig.prodtuostesEndpoint}/$id');
+    final url = Uri.parse('${APIConfig.baseURL}${APIConfig.produtosEndpoint}/$id');
     return await http.delete(
       url,
       headers: {
         'Content-Type': 'application/json',
+        'App-Version': APIConfig.appVersion,
         'Authorization': 'Bearer $token',
       },
     );

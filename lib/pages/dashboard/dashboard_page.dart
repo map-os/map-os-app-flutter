@@ -7,12 +7,19 @@ import 'package:mapos_app/widgets/bottom_nav_menu.dart';
 import 'package:mapos_app/widgets/dashboard_status_widget.dart';
 import 'package:mapos_app/widgets/calendar_widget.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
+import 'package:mapos_app/pages/profile/profile_page.dart';
+import 'package:mapos_app/pages/settings/settings_page.dart';
 import '../about.dart';
 import 'dashboard_controller.dart';
 import 'package:http/http.dart' as http;
 import 'package:mapos_app/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:mapos_app/pages/os/os_view_page.dart';
+import 'package:mapos_app/pages/chamados/chamados_page.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -25,7 +32,7 @@ class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 2;
   bool _isLoading = true;
   // bool _hasInternet = false;
-  late Timer _timer;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -37,7 +44,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -78,13 +85,10 @@ class _DashboardPageState extends State<DashboardPage> {
 
 
   Future<bool> hasInternetConnection() async {
+    if (kIsWeb) return true;
     try {
-      final result = await http.get(Uri.parse('http://clients3.google.com/generate_204'));
-      if (result.statusCode == 204) {
-        return true;
-      } else {
-        return false;
-      }
+      final result = await http.get(Uri.parse('https://www.google.com/generate_204'));
+      return result.statusCode == 204;
     } catch (_) {
       return false;
     }
@@ -141,12 +145,9 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text(
+        title: Text(
           "Dashboard",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
+          style: AppTypography.h2Style(),
         ),
         actions: [
           // Indicador de conexão (pill style)
@@ -211,9 +212,13 @@ class _DashboardPageState extends State<DashboardPage> {
               onSelected: (value) {
                 switch (value) {
                   case 'perfil':
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => const ProfilePage()),
+                    );
+                    break;
                   case 'config':
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Esta seção ainda está em desenvolvimento.')),
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => const SettingsPage()),
                     );
                     break;
                   case 'Sobre':
@@ -227,58 +232,18 @@ class _DashboardPageState extends State<DashboardPage> {
                 }
               },
               itemBuilder: (context) => [
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: 'perfil',
                   child: ListTile(
-                    leading: const Icon(Icons.person),
-                    title: Row(
-                      children: [
-                        const Text('Meu Perfil'),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.orange.shade400,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Text(
-                            'Em Breve',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    leading: Icon(Icons.person),
+                    title: Text('Meu Perfil'),
                   ),
                 ),
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: 'config',
                   child: ListTile(
-                    leading: const Icon(Icons.settings),
-                    title: Row(
-                      children: [
-                        const Text('Configurações'),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.orange.shade400,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Text(
-                            'Em Breve',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    leading: Icon(Icons.settings),
+                    title: Text('Configurações'),
                   ),
                 ),
                 const PopupMenuItem(
@@ -304,7 +269,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: AppSpacing.paddingAllMd,
           child: Column(
             children: [
               _buildSearchField(),
@@ -369,18 +334,25 @@ class _DashboardPageState extends State<DashboardPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildInfoCard(_isLoading ? null : '${dashboardController.clientes}', 'Clientes', Color(0xff32a8f6), Boxicons.bxs_group),
-            _buildInfoCard(_isLoading ? null : '${dashboardController.produtos}', 'Produtos', const Color(0xfffab12a), Boxicons.bxs_package),
-            _buildInfoCard(_isLoading ? null : '${dashboardController.servicos}', 'Serviços', const Color(0xff2cc5c5), Boxicons.bxs_stopwatch),
+            _buildInfoCard(_isLoading ? null : '${dashboardController.clientes}', 'Clientes', AppColors.dashClientes, Boxicons.bxs_group),
+            _buildInfoCard(_isLoading ? null : '${dashboardController.produtos}', 'Produtos', AppColors.dashProdutos, Boxicons.bxs_package),
+            _buildInfoCard(_isLoading ? null : '${dashboardController.servicos}', 'Serviços', AppColors.dashServicos, Boxicons.bxs_stopwatch),
           ],
         ),
-        SizedBox(height: 16.0), // Espaço entre as linhas de cartões
+        SizedBox(height: 16.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildInfoCard(_isLoading ? null : '${dashboardController.countOs}', 'Ordens', Color(0xfffd6987), Boxicons.bxs_spreadsheet),
-            _buildInfoCard(_isLoading ? null : '${dashboardController.garantias}', 'Garantias', Color(0xff966abd), Boxicons.bxs_receipt),
-            _buildInfoCard(_isLoading ? null : '${dashboardController.vendas}', 'Vendas', Color(0xff15b597), Icons.shopping_cart),
+            _buildInfoCard(_isLoading ? null : '${dashboardController.countOs}', 'Ordens', AppColors.dashOrdens, Boxicons.bxs_spreadsheet),
+            _buildInfoCard(_isLoading ? null : '${dashboardController.garantias}', 'Garantias', AppColors.dashGarantias, Boxicons.bxs_receipt),
+            _buildInfoCard(_isLoading ? null : '${dashboardController.vendas}', 'Vendas', AppColors.dashVendas, Icons.shopping_cart),
+          ],
+        ),
+        SizedBox(height: 16.0),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildChamadosCard(),
           ],
         ),
       ],
@@ -392,8 +364,8 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildStatusWidget() {
     return _isLoading
         ? Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: AppColors.shimmerBase,
+      highlightColor: AppColors.shimmerHighlight,
       child: Container(
         height: 100,
         width: double.infinity,
@@ -413,8 +385,8 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildCalendarWidget() {
     return _isLoading
         ? Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: AppColors.shimmerBase,
+      highlightColor: AppColors.shimmerHighlight,
       child: Container(
         height: 200,
         width: double.infinity,
@@ -438,7 +410,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return Expanded(
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 8),
-        padding: EdgeInsets.all(16),
+        padding: AppSpacing.paddingAllMd,
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(8),
@@ -467,7 +439,7 @@ class _DashboardPageState extends State<DashboardPage> {
             )
                 : Text(
               value,
-              style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+              style: AppTypography.h2Style(Colors.white),
             ),
             const SizedBox(height: 4),
             Text(
@@ -475,6 +447,50 @@ class _DashboardPageState extends State<DashboardPage> {
               style: const TextStyle(color: Colors.white, fontSize: 14),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChamadosCard() {
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ChamadosList()),
+          );
+        },
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 8),
+          padding: AppSpacing.paddingAllMd,
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.headset_mic, color: Colors.white, size: 30),
+              SizedBox(height: 8),
+              Text(
+                'Chamados',
+                style: AppTypography.h2Style(Colors.white),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Abrir chamado',
+                style: const TextStyle(color: Colors.white70, fontSize: 14),
+              ),
+            ],
+          ),
         ),
       ),
     );

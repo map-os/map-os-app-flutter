@@ -4,6 +4,9 @@ import 'package:mapos_app/widgets/bottom_nav_menu.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:mapos_app/pages/services/services_view_page.dart';
 import 'package:mapos_app/pages/services/services_add_page.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 
 class ServicesList extends StatefulWidget {
   @override
@@ -90,8 +93,8 @@ class _ServicesListState extends State<ServicesList> {
 
   Widget _buildShimmerEffect(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: AppColors.shimmerBase,
+      highlightColor: AppColors.shimmerHighlight,
       child: Card(
         margin: EdgeInsets.all(8.0),
         child: ListTile(
@@ -118,11 +121,10 @@ class _ServicesListState extends State<ServicesList> {
 
   Widget _buildCard(BuildContext context, int index) {
     return Card(
-      margin: EdgeInsets.all(5.0),
-      color: Colors.white,
+      margin: AppSpacing.cardMargin,
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: Color(0xff333649),
+          backgroundColor: AppColors.primary,
           child: Text(
             services[index]['idServicos'].toString(),
             style: TextStyle(color: Colors.white),
@@ -130,7 +132,7 @@ class _ServicesListState extends State<ServicesList> {
         ),
         title: Text(
           services[index]['nome'],
-          style: TextStyle(color: Colors.black87),
+          style: AppTypography.bodyStyle(AppColors.textMuted),
         ),
         subtitle: Text(
           services[index]['descricao'],
@@ -141,10 +143,10 @@ class _ServicesListState extends State<ServicesList> {
           children: [
             Text(
               'R\$ ${services[index]['preco']}',
-              style: TextStyle(color: Color(0xff333649), fontSize: 16),
+              style: TextStyle(color: AppColors.primary, fontSize: 16),
             ),
             IconButton(
-              icon: Icon(Icons.visibility, color: Color(0xff333649)),
+              icon: Icon(Icons.visibility, color: AppColors.primary),
               onPressed: () {
                 Navigator.push(
                   context,

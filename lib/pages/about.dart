@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mapos_app/api/apiConfig.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
+import 'package:mapos_app/theme/app_colors.dart';
 
 class AboutAppPage extends StatelessWidget {
   const AboutAppPage({super.key});
@@ -24,7 +25,7 @@ class AboutAppPage extends StatelessWidget {
       backgroundColor: isDark ? const Color(0xFF0D1117) : const Color(0xFFF6F8FA),
       appBar: AppBar(
         elevation: 0,
-        foregroundColor: isDark ? Colors.white : Colors.black87,
+        foregroundColor: isDark ? Colors.white : AppColors.textMuted,
         title: const Text('Sobre o App', style: TextStyle(fontWeight: FontWeight.w600)),
       ),
       body: SingleChildScrollView(
@@ -149,7 +150,7 @@ class AboutAppPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : Colors.black87,
+                            color: isDark ? Colors.white : AppColors.textMuted,
                           ),
                         ),
                       ],
@@ -209,7 +210,7 @@ class AboutAppPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : Colors.black87,
+                            color: isDark ? Colors.white : AppColors.textMuted,
                           ),
                         ),
                       ],
@@ -231,7 +232,7 @@ class AboutAppPage extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: isDark ? Colors.white : Colors.black87,
+                                color: isDark ? Colors.white : AppColors.textMuted,
                               ),
                             ),
                             // Text(
@@ -263,7 +264,7 @@ class AboutAppPage extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: isDark ? Colors.white : Colors.black87,
+                                color: isDark ? Colors.white : AppColors.textMuted,
                               ),
                             ),
                             // Text(
@@ -274,6 +275,30 @@ class AboutAppPage extends StatelessWidget {
                             //   ),
                             // ),
 
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundColor: AppColors.accent,
+                          child: const Text('N4', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'N4m3r',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? Colors.white : AppColors.textMuted,
+                              ),
+                            ),
                           ],
                         ),
                       ],

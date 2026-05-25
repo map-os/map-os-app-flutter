@@ -3,6 +3,9 @@ import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:mapos_app/controllers/products/productsController.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:mapos_app/pages/products/products_view_page.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 
 class EditarProdutosPage extends StatefulWidget {
   final int idProdutos;
@@ -59,7 +62,7 @@ class _EditarProdutosPageState extends State<EditarProdutosPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Editar Produto'),
-        backgroundColor: Color(0xfffcf5fd),
+        backgroundColor: AppColors.appBarView,
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: futureProduct,
@@ -80,28 +83,28 @@ class _EditarProdutosPageState extends State<EditarProdutosPage> {
             _estoqueMinimoController.text = product['estoqueMinimo'];
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: AppSpacing.paddingAllMd,
               child: Form(
                 key: _formKey,
                 child: Card(
-                  elevation: 8.0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   child: Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: AppSpacing.paddingAllLg,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.shopping_basket_rounded, color: Color(0xff333649), size: 28),
+                            Icon(Icons.shopping_basket_rounded, color: AppColors.primary, size: 28),
                             SizedBox(width: 10),
                             Text(
                               'Editando Produto #${product['idProdutos'].toString()}',
-                              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xff333649)),
+                              style: AppTypography.h1Style(AppColors.primary),
                             ),
                           ],
                         ),
-                        const Divider(height: 30, color: Color(0xff333649)),
+                        const Divider(height: 30, color: AppColors.primary),
                         SizedBox(height: 20),
                         _buildTextField('Descrição', _descricaoController),
                         SizedBox(height: 10),
@@ -128,9 +131,9 @@ class _EditarProdutosPageState extends State<EditarProdutosPage> {
                               label: Text('Salvar'),
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white,
-                                backgroundColor: Color(0xff333649), // Cor do botão
+                                backgroundColor: AppColors.primary, // Cor do botão
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
                             ),
@@ -208,17 +211,17 @@ class _EditarProdutosPageState extends State<EditarProdutosPage> {
 
   Widget _buildShimmer() {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: AppColors.shimmerBase,
+      highlightColor: AppColors.shimmerHighlight,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: AppSpacing.paddingAllMd,
         child: Column(
           children: [
             Card(
-              elevation: 8.0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: AppSpacing.paddingAllLg,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: List.generate(5, (index) => _buildShimmerRow()),

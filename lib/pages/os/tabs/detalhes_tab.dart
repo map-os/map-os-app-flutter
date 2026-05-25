@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:html/parser.dart' as html_parser;
@@ -8,6 +8,10 @@ import 'package:shimmer/shimmer.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:mapos_app/api/apiConfig.dart';
+import 'package:mapos_app/controllers/TokenController.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 
 class DetalhesTab extends StatefulWidget {
   final Map<String, dynamic>? ordemServico;
@@ -75,7 +79,7 @@ class _DetalhesTabState extends State<DetalhesTab> {
       num calcTotal = format.parse(calcTotalString);
       valorTotal = calcTotal.toDouble();
     } catch (e) {
-      print('Erro ao converter valor: $e');
+      debugPrint('Erro ao converter valor: $e');
       // Tenta converter diretamente para double como fallback
       valorTotal = double.tryParse(calcTotalString) ?? 0.0;
     }
@@ -136,7 +140,7 @@ class _DetalhesTabState extends State<DetalhesTab> {
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('access_token');
+      var token = prefs.getString('access_token');
 
       if (token == null || token.isEmpty) {
         _showSnackBar('Token de acesso não encontrado.', isError: true);
@@ -158,7 +162,9 @@ class _DetalhesTabState extends State<DetalhesTab> {
         'idOs': idOs,
         'clientes_id': widget.ordemServico?['clientes_id'],
         'usuarios_id': widget.ordemServico?['usuarios_id'],
-        'dataInicial': widget.ordemServico?['dataInicial'],
+        'dataInicial': widget.ordemServico?['dataInicial'] != null
+            ? DateTime.parse(widget.ordemServico!['dataInicial']).toIso8601String()
+            : null,
         'faturado': widget.ordemServico?['faturado'],
         'garantia': widget.ordemServico?['garantia'],
         'ref_os': widget.ordemServico?['ref_os'],
@@ -177,46 +183,52 @@ class _DetalhesTabState extends State<DetalhesTab> {
         'observacoes': _observacoesController.text,
       };
 
-      final response = await http.put(
+      var response = await http.put(
         Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
+          'App-Version': APIConfig.appVersion,
         },
         body: jsonEncode(dados),
       );
 
+      if (response.statusCode == 403) {
+        await TokenController().regenerateToken();
+        token = prefs.getString('access_token');
+        response = await http.put(
+          Uri.parse(url),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+            'App-Version': APIConfig.appVersion,
+          },
+          body: jsonEncode(dados),
+        );
+      }
+
       final data = jsonDecode(response.body);
 
       if (data['status'] == true) {
-        Fluttertoast.showToast(
-          msg: data['message'],
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+          content: Text(data['message']),
+        ));
       } else {
-        Fluttertoast.showToast(
-          msg: data['message'],
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+          content: Text(data['message']),
+        ));
         try {
           final errorResponse = jsonDecode(response.body);
           if (errorResponse['error'] != null) {
-            Fluttertoast.showToast(
-              msg: errorResponse['error'],
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              backgroundColor: Colors.green,
-              textColor: Colors.white,
-              fontSize: 16.0,
-            );
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.red,
+              content: Text(errorResponse['error']),
+            ));
           }
         } catch (e) {
           // catch vaizo kkkkkkkkk
@@ -224,7 +236,7 @@ class _DetalhesTabState extends State<DetalhesTab> {
         // foda-se
       }
     } catch (e) {
-      print('Erro na requisição: $e');
+      debugPrint('Erro na requisição: $e');
       _showSnackBar('Erro na requisição: $e', isError: true);
     } finally {
       if (mounted) {
@@ -242,14 +254,14 @@ class _DetalhesTabState extends State<DetalhesTab> {
         : ScaffoldMessenger(
       key: _scaffoldMessengerKey,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: AppSpacing.paddingAllMd,
         child: SingleChildScrollView(
           child: Form(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Ordem de Serviço N° ${widget.ordemServico!['idOs']}',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    style: AppTypography.h1Style(AppColors.primary)),
                 SizedBox(height: 16),
                 _buildNonEditableField('Cliente', _nomeClienteController),
                 Row(
@@ -286,11 +298,11 @@ class _DetalhesTabState extends State<DetalhesTab> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xff36374e),
+                      backgroundColor: AppColors.primary,
                       // padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      minimumSize: Size(200, 50),
+                      minimumSize: Size(350, 56),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       elevation: 1,
                     ),
@@ -306,8 +318,8 @@ class _DetalhesTabState extends State<DetalhesTab> {
 
   Widget _buildShimmerEffect() {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: AppColors.shimmerBase,
+      highlightColor: AppColors.shimmerHighlight,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: List.generate(8, (index) {
@@ -334,7 +346,7 @@ class _DetalhesTabState extends State<DetalhesTab> {
           labelText: label,
           border: OutlineInputBorder(),
           filled: true,
-          fillColor: Colors.grey[100],
+          fillColor: AppColors.shimmerHighlight,
         ),
       ),
     );
@@ -387,7 +399,7 @@ class _DetalhesTabState extends State<DetalhesTab> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5.0),
-          color: Color(0xff36384d),
+          color: AppColors.primary,
         ),
         child: TextFormField(
           textAlign: TextAlign.center,

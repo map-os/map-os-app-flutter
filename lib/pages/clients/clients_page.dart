@@ -4,6 +4,7 @@ import 'package:mapos_app/widgets/bottom_nav_menu.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:mapos_app/pages/clients/clients_view_page.dart';
 import 'package:mapos_app/pages/clients/clients_add_page.dart';
+import 'package:mapos_app/theme/app_colors.dart';
 
 class ClientsList extends StatefulWidget {
   @override
@@ -90,8 +91,8 @@ class _ClientsListState extends State<ClientsList> {
 
   Widget _buildShimmerEffect(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: AppColors.shimmerBase,
+      highlightColor: AppColors.shimmerHighlight,
       child: Card(
         margin: EdgeInsets.all(8.0),
         child: ListTile(
@@ -119,10 +120,9 @@ class _ClientsListState extends State<ClientsList> {
   Widget _buildCard(BuildContext context, int index) {
     return Card(
       margin: EdgeInsets.all(5.0),
-      color: Colors.white,
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: Color(0xff333649),
+          backgroundColor: AppColors.primary,
           child: Text(
             Clients[index]['idClientes'].toString(),
             style: TextStyle(color: Colors.white),
@@ -130,7 +130,7 @@ class _ClientsListState extends State<ClientsList> {
         ),
         title: Text(
           Clients[index]['nomeCliente'],
-          style: TextStyle(color: Colors.black87),
+          style: TextStyle(color: AppColors.textMuted),
         ),
         subtitle: Text(
           Clients[index]['celular'],
@@ -141,10 +141,10 @@ class _ClientsListState extends State<ClientsList> {
           children: [
             // Text(
             //   'R\$ ${Clients[index]['preco']}',
-            //   style: TextStyle(color: Color(0xff333649), fontSize: 16),
+            //   style: TextStyle(color: AppColors.primary, fontSize: 16),
             // ),
             IconButton(
-              icon: Icon(Icons.visibility, color: Color(0xff333649)),
+              icon: Icon(Icons.visibility, color: AppColors.primary),
               onPressed: () {
                 Navigator.push(
                   context,

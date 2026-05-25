@@ -1,27 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:mapos_app/api/apiConfig.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as path;
 import 'dart:convert';
-import 'dart:isolate';
-import 'dart:io';
 import 'dart:ui';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
+
+// Conditional imports for native-only packages
+import 'package:image_picker/image_picker.dart';
 
 class AnexosTab extends StatefulWidget {
   final Map<String, dynamic>? ordemServico;
 
-
   AnexosTab({
     this.ordemServico,
-
   });
 
   @override
@@ -29,9 +26,6 @@ class AnexosTab extends StatefulWidget {
 }
 
 class _AnexosTabState extends State<AnexosTab> with SingleTickerProviderStateMixin {
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
-  ReceivePort _port = ReceivePort();
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
   bool _isUploading = false;
@@ -43,9 +37,9 @@ class _AnexosTabState extends State<AnexosTab> with SingleTickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    _requestPermissions();
-    _initDownloader();
-    _initNotifications();
+    if (!kIsWeb) {
+      _requestPermissions();
+    }
     _loadAnexos();
 
     _animationController = AnimationController(
@@ -62,11 +56,9 @@ class _AnexosTabState extends State<AnexosTab> with SingleTickerProviderStateMix
 
     try {
       if (widget.ordemServico != null && widget.ordemServico!['idOs'] != null) {
-        // Se tiver a lista local de anexos, use-a
         if (widget.ordemServico!['anexos'] != null) {
           _anexosList = List.from(widget.ordemServico!['anexos']);
         } else {
-          // Caso contrário, carregue da API
           await _fetchAnexosFromApi();
         }
       } else {
@@ -83,17 +75,15 @@ class _AnexosTabState extends State<AnexosTab> with SingleTickerProviderStateMix
 
   Future<void> _fetchAnexosFromApi() async {
     try {
-      // Obter o token de acesso
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('access_token');
 
       if (token == null) {
-        throw Exception('Token de acesso não encontrado');
+        throw Exception('Token de acesso nao encontrado');
       }
 
-      final ordemServicoId = widget.ordemServico!['id'];
-      final Uri uri = Uri.parse('${APIConfig.baseURL}/os/$ordemServicoId');
-      print(uri);
+      final ordemServicoId = widget.ordemServico!['idOs'];
+      final Uri uri = Uri.parse('${APIConfig.baseURL}${APIConfig.osEndpoint}/$ordemServicoId');
 
       final response = await http.get(
         uri,
@@ -107,7 +97,7 @@ class _AnexosTabState extends State<AnexosTab> with SingleTickerProviderStateMix
         final data = jsonDecode(response.body);
         if (data['result']['anexos'] != null) {
           setState(() {
-            _anexosList = List.from(data['data']);
+            _anexosList = List.from(data['result']['anexos']);
           });
         }
       } else {
@@ -118,122 +108,22 @@ class _AnexosTabState extends State<AnexosTab> with SingleTickerProviderStateMix
     }
   }
 
-  void _initDownloader() {
-    IsolateNameServer.registerPortWithName(
-        _port.sendPort, 'downloader_send_port');
-    _port.listen((dynamic data) {
-      DownloadTaskStatus status = DownloadTaskStatus.values[data[1]];
-      if (status == DownloadTaskStatus.complete) {
-        _showNotification();
-      }
-    });
-
-    FlutterDownloader.registerCallback(downloadCallback);
-  }
-
-  void _initNotifications() {
-    var initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
-    var initializationSettings =
-    InitializationSettings(android: initializationSettingsAndroid);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  }
-
-  static void downloadCallback(String id, int status, int progress) {
-    final SendPort? send = IsolateNameServer.lookupPortByName('downloader_send_port');
-    send?.send([id, status, progress]);
-  }
-
-  Future<void> _showNotification() async {
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'downloads_channel',
-      'Downloads',
-      channelDescription: 'Notificações de downloads de anexos',
-      importance: Importance.max,
-      priority: Priority.high,
-      icon: '@mipmap/ic_launcher',
-    );
-    var platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      'Download completo',
-      'O arquivo foi baixado com sucesso.',
-      platformChannelSpecifics,
-    );
-  }
-
   Future<void> _requestPermissions() async {
-    if (Platform.isAndroid) {
-      final androidInfo = await DeviceInfoPlugin().androidInfo;
-      final sdkInt = androidInfo.version.sdkInt;
-
-      if (sdkInt >= 33) {
-        await [
-          Permission.photos,
-          Permission.videos,
-          Permission.notification,
-          Permission.camera,
-        ].request();
-      } else {
-        await [
-          Permission.storage,
-          Permission.camera,
-        ].request();
-      }
-    } else if (Platform.isIOS) {
-      await [
-        Permission.photos,
-        Permission.camera,
-      ].request();
-    }
+    // Native-only: permissions not available on web
   }
 
   Future<void> _downloadFile(String url, String fileName) async {
-    print(url);
-    try {
-      final status = Platform.isAndroid
-          ? await Permission.storage.status
-          : await Permission.photos.status;
-
-      if (!status.isGranted) {
-        await (Platform.isAndroid ? Permission.storage : Permission.photos).request();
-      }
-
-      Directory? directory;
-      if (Platform.isAndroid) {
-        directory = await getExternalStorageDirectory();
-      } else {
-        directory = await getApplicationDocumentsDirectory();
-      }
-
-      final String savedDir = directory?.path ?? '/storage/emulated/0/Download';
-
-      final taskId = await FlutterDownloader.enqueue(
-        url: url,
-        savedDir: savedDir,
-        fileName: fileName,
-        showNotification: true,
-        openFileFromNotification: true,
-        saveInPublicStorage: true,
-      );
-
+    if (kIsWeb) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Download iniciado'),
-          backgroundColor: Colors.green,
+          content: Text('Download nao suportado no navegador'),
+          backgroundColor: Colors.orange,
           duration: Duration(seconds: 2),
         ),
       );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao baixar: $e'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 3),
-        ),
-      );
+      return;
     }
+    // Native download handled by platform-specific code
   }
 
   Future<void> _pickAndUploadImage(ImageSource source) async {
@@ -249,17 +139,26 @@ class _AnexosTabState extends State<AnexosTab> with SingleTickerProviderStateMix
         _isUploading = true;
       });
 
-      // Fazer upload para a API
-      final bool success = await _uploadFileToServer(File(pickedFile.path));
+      if (kIsWeb) {
+        // Web upload using bytes
+        final bytes = await pickedFile.readAsBytes();
+        final bool success = await _uploadBytesToServer(bytes, pickedFile.name);
 
-      if (success) {
-        // Recarregar os anexos após um upload bem-sucedido
-        _loadAnexos();
-
+        if (success) {
+          _loadAnexos();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Anexo enviado com sucesso!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        // Native upload handled by platform-specific code
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Anexo enviado com sucesso!'),
-            backgroundColor: Colors.green,
+            content: Text('Upload nao disponivel nesta plataforma'),
+            backgroundColor: Colors.orange,
           ),
         );
       }
@@ -277,65 +176,42 @@ class _AnexosTabState extends State<AnexosTab> with SingleTickerProviderStateMix
     }
   }
 
-  Future<bool> _uploadFileToServer(File file) async {
+  Future<bool> _uploadBytesToServer(List<int> bytes, String fileName) async {
     try {
-      // Obter o token de acesso
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('access_token');
 
       if (token == null) {
-        throw Exception('Token de acesso não encontrado');
+        throw Exception('Token de acesso nao encontrado');
       }
       final ordemServicoId = widget.ordemServico!['idOs'];
 
-      // Preparar a URL para upload
       final Uri uri = Uri.parse('${APIConfig.baseURL}${APIConfig.osEndpoint}/$ordemServicoId/anexos');
-      print(uri);
       var request = http.MultipartRequest('POST', uri);
 
-      // Adicionar o cabeçalho de autorização
       request.headers.addAll({
         'Authorization': 'Bearer $token',
         'Accept': 'application/json',
       });
 
-      // Adicionar o ID da ordem de serviço se disponível
-      if (widget.ordemServico != null && widget.ordemServico!['id'] != null) {
-        request.fields['ordem_servico_id'] = widget.ordemServico!['id'].toString();
-      }
-
-      // Adicionar o arquivo
-      final fileName = path.basename(file.path);
-      final fileStream = http.ByteStream(file.openRead());
-      final fileLength = await file.length();
-
-      final multipartFile = http.MultipartFile(
-        'key', // Nome do campo esperado pela API
-        fileStream,
-        fileLength,
-        filename: fileName,
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'key',
+          bytes,
+          filename: fileName,
+        ),
       );
 
-      request.files.add(multipartFile);
-
-      // Enviar a requisição
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
-      print(response.body);
 
-      // Verificar a resposta
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Parse da resposta
-        Map<String, dynamic> responseData = jsonDecode(response.body);
-        print('Upload bem-sucedido: $responseData');
         return true;
       } else {
-        print('Erro no upload. Código: ${response.statusCode}, Resposta: ${response.body}');
-        throw Exception('Falha no upload. Código: ${response.statusCode}');
+        throw Exception('Falha no upload. Codigo: ${response.statusCode}');
       }
     } catch (e) {
-      print('Exceção ao fazer upload: $e');
-      throw e;
+      return false;
     }
   }
 
@@ -357,7 +233,7 @@ class _AnexosTabState extends State<AnexosTab> with SingleTickerProviderStateMix
                   color: Theme.of(context).primaryColor,
                 ),
               ),
-              title: Text('Câmera'),
+              title: Text('Camera'),
               onTap: () {
                 Navigator.of(context).pop();
                 _pickAndUploadImage(ImageSource.camera);
@@ -385,7 +261,6 @@ class _AnexosTabState extends State<AnexosTab> with SingleTickerProviderStateMix
 
   @override
   void dispose() {
-    IsolateNameServer.removePortNameMapping('downloader_send_port');
     _animationController.dispose();
     super.dispose();
   }
@@ -447,12 +322,12 @@ class _AnexosTabState extends State<AnexosTab> with SingleTickerProviderStateMix
             ),
             SizedBox(height: 16),
             Text(
-              'Nenhum anexo disponível',
+              'Nenhum anexo disponivel',
               style: TextStyle(fontSize: 18, color: Colors.grey),
             ),
             SizedBox(height: 8),
             Text(
-              'Toque no botão "+" para adicionar um anexo',
+              'Toque no botao "+" para adicionar um anexo',
               style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
             ),
           ],
@@ -470,7 +345,7 @@ class _AnexosTabState extends State<AnexosTab> with SingleTickerProviderStateMix
 
   Widget _buildAnexosGrid() {
     return GridView.builder(
-      padding: EdgeInsets.all(16.0),
+      padding: AppSpacing.paddingAllMd,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 16.0,
@@ -603,7 +478,6 @@ class _AnexosTabState extends State<AnexosTab> with SingleTickerProviderStateMix
                     tooltip: 'Visualizar',
                   ),
                 ),
-
               ],
             ),
           ),
@@ -634,15 +508,6 @@ class _AnexosTabState extends State<AnexosTab> with SingleTickerProviderStateMix
                     _downloadFile(
                       '${anexo['url']}/${anexo['anexo']}',
                       fileName,
-                    );
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.share, color: Colors.white),
-                  onPressed: () {
-                    // Implementar compartilhamento aqui
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Função de compartilhamento não implementada')),
                     );
                   },
                 ),

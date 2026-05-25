@@ -156,6 +156,13 @@ class _CircleNavBarState extends State<CircleNavBar> with TickerProviderStateMix
   }
 
   @override
+  void dispose() {
+    tabAc.dispose();
+    activeIconAc.dispose();
+    super.dispose();
+  }
+
+  @override
   void didUpdateWidget(covariant CircleNavBar oldWidget) {
     super.didUpdateWidget(oldWidget);
     _animation();

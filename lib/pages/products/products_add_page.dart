@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:mapos_app/controllers/products/productsController.dart';
 import 'package:mapos_app/pages/products/products_page.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 
 class AdicionarProdutosPage extends StatefulWidget {
   const AdicionarProdutosPage({Key? key}) : super(key: key);
@@ -31,10 +34,6 @@ class _AdicionarProdutosPageState extends State<AdicionarProdutosPage> {
     leftSymbol: 'R\$ ',
   );
 
-  // Constantes para cores
-  static const Color _primaryColor = Color(0xff333649);
-  static const Color _appBarColor = Color(0xFFE1BEE7); // Material Purple 100
-
   @override
   void dispose() {
     // Liberar os recursos dos controllers
@@ -52,24 +51,24 @@ class _AdicionarProdutosPageState extends State<AdicionarProdutosPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Adicionar Novo Produto'),
-        backgroundColor: _appBarColor,
+        backgroundColor: AppColors.surface,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: AppSpacing.paddingAllMd,
         child: Form(
           key: _formKey,
           child: Card(
-            elevation: 8.0,
+            elevation: 2,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: AppSpacing.paddingAllLg,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildPageHeader(),
-                  const Divider(height: 30, color: _primaryColor),
+                  const Divider(height: 30, color: AppColors.primary),
                   _buildFormFields(),
                   const SizedBox(height: 20),
                   _buildSubmitButton(),
@@ -84,16 +83,12 @@ class _AdicionarProdutosPageState extends State<AdicionarProdutosPage> {
 
   Widget _buildPageHeader() {
     return Row(
-      children: const [
-        Icon(Icons.shopping_basket_rounded, color: _primaryColor, size: 28),
+      children: [
+        Icon(Icons.shopping_basket_rounded, color: AppColors.primary, size: 28),
         SizedBox(width: 10),
         Text(
           'Adicionar Produto',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: _primaryColor,
-          ),
+          style: AppTypography.h1Style(AppColors.primary),
         ),
       ],
     );
@@ -146,7 +141,7 @@ class _AdicionarProdutosPageState extends State<AdicionarProdutosPage> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: AppSpacing.paddingH_mdV_sm,
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -167,10 +162,10 @@ class _AdicionarProdutosPageState extends State<AdicionarProdutosPage> {
           label: const Text('Adicionar'),
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white,
-            backgroundColor: _primaryColor,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            backgroundColor: AppColors.primary,
+            padding: AppSpacing.paddingH_mdV_sm,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
         ),

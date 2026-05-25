@@ -4,6 +4,9 @@ import 'dart:convert';
 import 'package:mapos_app/controllers/clients/clientsController.dart';
 import 'package:mapos_app/pages/clients/clients_page.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 
 class EditarClientePage extends StatefulWidget {
   final Map<String, dynamic> cliente;
@@ -94,7 +97,7 @@ class _EditarClientePageState extends State<EditarClientePage> {
 
   Widget _buildCEPField() {
     return Padding(
-      padding: const EdgeInsets.only(top: 10),
+      padding: EdgeInsets.only(top: AppSpacing.sm),
       child: TextFormField(
         controller: _cepController,
         keyboardType: TextInputType.number,
@@ -133,31 +136,31 @@ class _EditarClientePageState extends State<EditarClientePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Editar Cliente'),
-        backgroundColor: Color(0xfff6eff8),
+        backgroundColor: AppColors.surface,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: AppSpacing.paddingAllMd,
         child: Form(
           key: _formKey,
           child: Card(
-            elevation: 8.0,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+            elevation: 2,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: AppSpacing.paddingAllLg,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      Icon(Icons.edit, color: Color(0xff333649), size: 28),
+                      Icon(Icons.edit, color: AppColors.primary, size: 28),
                       SizedBox(width: 10),
                       Text(
                         'Editar cliente',
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xff333649)),
+                        style: AppTypography.h1Style(AppColors.primary),
                       ),
                     ],
                   ),
-                  Divider(height: 30, color: Color(0xff55596e)),
+                  Divider(height: 30, color: AppColors.divider),
                   _buildTextField('Nome', _nomeController),
                   _buildDocumentField(),
                   _buildTextField('Telefone', _telefoneController),
@@ -181,10 +184,10 @@ class _EditarClientePageState extends State<EditarClientePage> {
                       icon: Icon(Icons.save, color: Colors.white), // Ícone adicionado
                       label: Text('Salvar Alterações', style: TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xff36374e),
-                        minimumSize: Size(350, 60),
+                        backgroundColor: AppColors.primary,
+                        minimumSize: Size(350, 56),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         elevation: 1,
                       ),
@@ -201,7 +204,7 @@ class _EditarClientePageState extends State<EditarClientePage> {
 
   Widget _buildDocumentField() {
     return Padding(
-      padding: const EdgeInsets.only(top: 10),
+      padding: EdgeInsets.only(top: AppSpacing.sm),
       child: TextFormField(
         controller: _documentoController,
         keyboardType: TextInputType.number,
@@ -229,7 +232,7 @@ class _EditarClientePageState extends State<EditarClientePage> {
 
   Widget _buildTextField(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text}) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10),
+      padding: EdgeInsets.only(top: AppSpacing.sm),
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
@@ -245,7 +248,7 @@ class _EditarClientePageState extends State<EditarClientePage> {
 
   Widget _buildPasswordField(String label, TextEditingController controller) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10),
+      padding: EdgeInsets.only(top: AppSpacing.sm),
       child: TextFormField(
         controller: controller,
         obscureText: true,

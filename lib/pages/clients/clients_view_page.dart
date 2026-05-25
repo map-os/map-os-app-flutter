@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:mapos_app/controllers/clients/clientsController.dart';
 import 'package:mapos_app/pages/clients/clients_edit_page.dart';
@@ -9,6 +8,9 @@ import 'package:shimmer/shimmer.dart';
 import 'package:mapos_app/pages/clients/clients_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mapos_app/pages/os/os_view_page.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 
 class VisualizarClientesPage extends StatefulWidget {
   final int idClientes;
@@ -33,7 +35,7 @@ class _VisualizarClientesPageState extends State<VisualizarClientesPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Visualizar Cliente'),
-        backgroundColor: Color(0xfffcf5fd),
+        backgroundColor: AppColors.appBarView,
         actions: [
           FutureBuilder<Map<String, dynamic>>(
             future: futureclient,
@@ -73,28 +75,28 @@ class _VisualizarClientesPageState extends State<VisualizarClientesPage> {
             final client = snapshot.data!;
             final ordensServicos = client['ordensServicos'];
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: AppSpacing.paddingAllMd,
               child: Column(
                 children: [
                   Card(
-                    elevation: 8.0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     child: Padding(
-                      padding: const EdgeInsets.all(20.0),
+                      padding: AppSpacing.paddingAllLg,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.build, color: Color(0xff333649), size: 28),
+                              Icon(Icons.build, color: AppColors.primary, size: 28),
                               SizedBox(width: 10),
                               Text(
                                 'Detalhes do cliente #${client['idClientes']}',
-                                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xff333649)),
+                                style: AppTypography.h1Style(AppColors.primary),
                               ),
                             ],
                           ),
-                          Divider(height: 30, color: Color(0xff333649)),
+                          Divider(height: 30, color: AppColors.primary),
                           _buildDetailRow('Nome:', client['nomeCliente']),
                           SizedBox(height: 10),
                           _buildDetailRow('CPF/CNPJ:', client['documento']),
@@ -103,14 +105,14 @@ class _VisualizarClientesPageState extends State<VisualizarClientesPage> {
                           SizedBox(height: 10),
                           _buildDetailRow('Data do Cadastro:', DateFormat('dd/MM/yyyy').format(DateTime.parse(client['dataCadastro']))),
                           SizedBox(height: 10),
-                          Divider(height: 30, color: Color(0xff55596e)),
-                          const Row(
+                          Divider(height: 30, color: AppColors.divider),
+                          Row(
                             children: [
-                              Icon(Icons.contact_mail, color: Color(0xff333649), size: 28),
+                              Icon(Icons.contact_mail, color: AppColors.primary, size: 28),
                               SizedBox(width: 10),
                               Text(
                                 'Contatos',
-                                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xff333649)),
+                                style: AppTypography.h1Style(AppColors.primary),
                               ),
                             ],
                           ),
@@ -121,14 +123,14 @@ class _VisualizarClientesPageState extends State<VisualizarClientesPage> {
                           SizedBox(height: 10),
                           _buildDetailRow('Email:', client['email']),
                           SizedBox(height: 10),
-                          Divider(height: 30, color: Color(0xff55596e)),
-                          const Row(
+                          Divider(height: 30, color: AppColors.divider),
+                          Row(
                             children: [
-                              Icon(Icons.map, color: Color(0xff333649), size: 28),
+                              Icon(Icons.map, color: AppColors.primary, size: 28),
                               SizedBox(width: 10),
                               Text(
                                 'Endereço',
-                                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xff333649)),
+                                style: AppTypography.h1Style(AppColors.primary),
                               ),
                             ],
                           ),
@@ -168,9 +170,9 @@ class _VisualizarClientesPageState extends State<VisualizarClientesPage> {
                                 label: Text('Editar'),
                                 style: ElevatedButton.styleFrom(
                                   foregroundColor: Colors.white,
-                                  backgroundColor: Color(0xffff7e15),
+                                  backgroundColor: AppColors.accent,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
                               ),
@@ -185,7 +187,7 @@ class _VisualizarClientesPageState extends State<VisualizarClientesPage> {
                                   foregroundColor: Colors.white,
                                   backgroundColor: Colors.red,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
                               ),
@@ -198,36 +200,36 @@ class _VisualizarClientesPageState extends State<VisualizarClientesPage> {
 
                   SingleChildScrollView(
                     child: Card(
-                      elevation: 8.0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       child: Padding(
-                        padding: const EdgeInsets.all(20.0),
+                        padding: AppSpacing.paddingAllLg,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Row(
+                            Row(
                               children: [
-                                Icon(Icons.receipt_rounded, color: Color(0xff333649), size: 28),
+                                Icon(Icons.receipt_rounded, color: AppColors.primary, size: 28),
                                 SizedBox(width: 10),
                                 Text(
                                   'Ordens de Serviço',
-                                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xff333649)),
+                                  style: AppTypography.h1Style(AppColors.primary),
                                 ),
                               ],
                             ),
-                            const Divider(height: 30, color: Color(0xff333649)),
+                            const Divider(height: 30, color: AppColors.primary),
                             for (var ordem in ordensServicos)
                               ListTile(
                                 title: Text(
                                   'OS N°: ${ordem['idOs']}',
-                                  style: TextStyle(fontSize: 16, color: Colors.black87),
+                                  style: TextStyle(fontSize: 16, color: AppColors.textMuted),
                                 ),
                                 subtitle: Text(
                                   'Status: ${ordem['status']}',
                                   style: TextStyle(fontSize: 14, color: Colors.black54),
                                 ),
                                 trailing: IconButton(
-                                  icon: Icon(Icons.visibility, color: Color(0xff333649)),
+                                  icon: Icon(Icons.visibility, color: AppColors.primary),
                                   onPressed: () {
                                     Navigator.push(
                                       context,
@@ -263,17 +265,17 @@ class _VisualizarClientesPageState extends State<VisualizarClientesPage> {
 
   Widget _buildShimmer() {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: AppColors.shimmerBase,
+      highlightColor: AppColors.shimmerHighlight,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: AppSpacing.paddingAllMd,
         child: Column(
           children: [
             Card(
-              elevation: 8.0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: AppSpacing.paddingAllLg,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -293,7 +295,7 @@ class _VisualizarClientesPageState extends State<VisualizarClientesPage> {
                       ],
                     ),
                     SizedBox(height: 30),
-                    Divider(height: 30, color: Color(0xff333649)),
+                    Divider(height: 30, color: AppColors.primary),
                     _buildShimmerRow(),
                     SizedBox(height: 10),
                     _buildShimmerRow(),
@@ -335,13 +337,13 @@ class _VisualizarClientesPageState extends State<VisualizarClientesPage> {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xff333649)),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primary),
         ),
         SizedBox(width: 10),
         Expanded(
           child: Text(
             value,
-            style: TextStyle(fontSize: 16, color: Color(0xff555555)),
+            style: TextStyle(fontSize: 16, color: AppColors.textMuted),
           ),
         ),
       ],
@@ -435,15 +437,11 @@ class _VisualizarClientesPageState extends State<VisualizarClientesPage> {
       bool success = await ControllerClients().deleteClient(widget.idClientes);
       print(success);
       if (success) {
-        Fluttertoast.showToast(
-          msg: 'Cliente  exluido com Sucesso',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0,
-
-        );
+          content: Text('Cliente  exluido com Sucesso'),
+        ));
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -451,26 +449,18 @@ class _VisualizarClientesPageState extends State<VisualizarClientesPage> {
           ),
         );
       } else {
-        Fluttertoast.showToast(
-          msg: 'Ops... erro ao exluir cliente!',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-
-        );
+          content: Text('Ops... erro ao excluir cliente!'),
+        ));
       }
     } catch (e) {
-      Fluttertoast.showToast(
-        msg: 'Erro no servidor ...',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
-
-      );
+        content: Text('Erro no servidor ...'),
+      ));
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mapos_app/api/apiConfig.dart';
 import 'package:mapos_app/pages/os/tabs/detalhes_tab.dart';
@@ -9,6 +10,9 @@ import 'package:mapos_app/pages/os/tabs/anexos_tab.dart';
 import 'package:mapos_app/pages/os/tabs/anotacoes_tab.dart';
 import 'package:mapos_app/controllers/os/osController.dart';
 import 'package:mapos_app/pages/os/os_view_page.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 
 class EditarOsPage extends StatefulWidget {
   final int idOs;
@@ -80,7 +84,7 @@ class _EditarOsPageState extends State<EditarOsPage> with SingleTickerProviderSt
 
       });
     } catch (e) {
-      print("Erro ao buscar a ordem de serviço: $e");
+      debugPrint("Erro ao buscar a ordem de serviço: $e");
       setState(() {
         _isLoading = false;
       });
@@ -118,7 +122,21 @@ class _EditarOsPageState extends State<EditarOsPage> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    final int idOs = int.parse(ordemServico!['idOs']);
+    if (_isLoading || ordemServico == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Carregando OS...', style: TextStyle(color: Colors.white)),
+          backgroundColor: AppColors.primary,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final int idOs = int.parse(ordemServico!['idOs'].toString());
 
     return Scaffold(
       appBar: AppBar(
@@ -127,7 +145,7 @@ class _EditarOsPageState extends State<EditarOsPage> with SingleTickerProviderSt
           'Editando a OS N° ${ordemServico!['idOs']}',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Color(0xff333649),
+        backgroundColor: AppColors.primary,
         elevation: 2,
         leading: IconButton(
           icon: Icon(
@@ -135,10 +153,7 @@ class _EditarOsPageState extends State<EditarOsPage> with SingleTickerProviderSt
             color: Colors.white,
           ),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => VisualizarOrdemServicoPage(idOrdemServico: idOs)),
-            );
+            Navigator.pop(context);
           },
         ),
         actions: [
@@ -169,7 +184,7 @@ class _EditarOsPageState extends State<EditarOsPage> with SingleTickerProviderSt
               icon: Icon(
                 entry.value,
                 color: _currentIndex == entry.key
-                    ? Color(0xfffc7504)
+                    ? AppColors.accent
                     : Colors.grey,
               ),
             ),
@@ -192,11 +207,11 @@ class _EditarOsPageState extends State<EditarOsPage> with SingleTickerProviderSt
             child: NavigationRail(
               selectedIndex: _currentIndex,
               onDestinationSelected: _onNavItemTap,
-              indicatorColor: Color(0xff44475c),
+              indicatorColor: AppColors.primary,
               labelType: NavigationRailLabelType.selected,
-              selectedIconTheme: IconThemeData(color: Color(0xfffd6e03)),
+              selectedIconTheme: IconThemeData(color: AppColors.accent),
               unselectedIconTheme: IconThemeData(color: Colors.white),
-              backgroundColor: Color(0xff333649),
+              backgroundColor: AppColors.primary,
               elevation: 2,
               destinations: _tabIcons
                   .asMap()

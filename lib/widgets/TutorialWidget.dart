@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 
 class TutorialScreen extends StatefulWidget {
   const TutorialScreen({Key? key}) : super(key: key);
@@ -47,14 +50,14 @@ class _TutorialScreenState extends State<TutorialScreen> {
       description: "Role a página até encontrar a seção de configurações da API. Aqui você verá a URL da API do seu sistema.",
       icon: Icons.api,
       iconColor: Colors.green,
-      highlights: ["Procure por 'API'", "A URL geralmente termina com '/api/v1'"],
+      highlights: ["Procure por 'API'", "Copie a URL base do sistema (sem /api/v1)"],
     ),
     TutorialStep(
       title: "5. Copie a URL da API",
-      description: "Copie a URL completa da API. Ela deve ter um formato similar a: https://seudominio.com/index.php/api/v1",
+      description: "Copie a URL base do sistema. O app adiciona /api/v1 automaticamente. Use apenas o domínio e caminho base, ex: https://seudominio.com/mapos/index.php",
       icon: Icons.content_copy,
       iconColor: Colors.purple,
-      example: "https://exemplo.com/index.php/api/v1",
+      example: "https://exemplo.com/mapos/index.php",
       isExample: true,
     ),
     TutorialStep(
@@ -102,13 +105,13 @@ class _TutorialScreenState extends State<TutorialScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffe4ecfb),
+      backgroundColor: AppColors.loginBg,
       appBar: AppBar(
         title: const Text(
           'Primeiros passos',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: const Color(0xff333649),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -128,7 +131,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xff333649),
+                        color: AppColors.primary,
                       ),
                     ),
                     Text(
@@ -136,7 +139,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xfff3742f),
+                        color: AppColors.accent,
                       ),
                     ),
                   ],
@@ -145,7 +148,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                 LinearProgressIndicator(
                   value: (_currentPage + 1) / _steps.length,
                   backgroundColor: Colors.grey[300],
-                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xfff3742f)),
+                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accent),
                   minHeight: 6,
                 ),
               ],
@@ -168,7 +171,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: _currentPage == index
-                          ? const Color(0xfff3742f)
+                          ? AppColors.accent
                           : Colors.grey[400],
                     ),
                   ),
@@ -209,12 +212,12 @@ class _TutorialScreenState extends State<TutorialScreen> {
                   icon: const Icon(Icons.arrow_back),
                   label: const Text('Anterior'),
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: const Color(0xff333649),
+                    foregroundColor: AppColors.primary,
                     backgroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
-                      side: const BorderSide(color: Color(0xff333649)),
+                      side: const BorderSide(color: AppColors.primary),
                     ),
                   ),
                 )
@@ -233,7 +236,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                       : 'Finalizar'),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: const Color(0xfff3742f),
+                    backgroundColor: AppColors.accent,
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -327,7 +330,7 @@ class TutorialStepWidget extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Color(0xff333649),
+                color: AppColors.primary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -338,7 +341,7 @@ class TutorialStepWidget extends StatelessWidget {
               step.description,
               style: const TextStyle(
                 fontSize: 16,
-                color: Color(0xff666666),
+                color: AppColors.textMuted,
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
@@ -350,7 +353,7 @@ class TutorialStepWidget extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xfff8f9fa),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.grey[300]!),
                 ),
@@ -361,7 +364,7 @@ class TutorialStepWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xff333649),
+                        color: AppColors.primary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -380,7 +383,7 @@ class TutorialStepWidget extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontFamily: 'monospace',
-                                color: Color(0xff333649),
+                                color: AppColors.primary,
                               ),
                             ),
                           ),
@@ -396,7 +399,7 @@ class TutorialStepWidget extends StatelessWidget {
                               ),
                             );
                           },
-                          icon: const Icon(Icons.copy, color: Color(0xfff3742f)),
+                          icon: const Icon(Icons.copy, color: AppColors.accent),
                           tooltip: 'Copiar exemplo',
                         ),
                       ],
@@ -445,7 +448,7 @@ class TutorialStepWidget extends StatelessWidget {
                               highlight,
                               style: const TextStyle(
                                 fontSize: 14,
-                                color: Color(0xff333649),
+                                color: AppColors.primary,
                               ),
                             ),
                           ),

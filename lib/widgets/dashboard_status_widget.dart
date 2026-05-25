@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mapos_app/pages/listPage.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
 
 class DashboardStatusWidget extends StatelessWidget {
   final int openOrders;
@@ -28,8 +30,8 @@ class DashboardStatusWidget extends StatelessWidget {
       builder: (context, constraints) {
         if (isLoading) {
           return Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
+            baseColor: AppColors.shimmerBase,
+            highlightColor: AppColors.shimmerHighlight,
             child: _buildLoadingStatusCards(constraints.maxWidth),
           );
         }
@@ -90,7 +92,7 @@ class DashboardStatusWidget extends StatelessWidget {
   Widget _buildLoadingCard(double width) {
     return Container(
       width: width,
-      padding: const EdgeInsets.all(16),
+      padding: AppSpacing.paddingAllMd,
       decoration: BoxDecoration(
         color: Colors.grey,
         borderRadius: BorderRadius.circular(8),
@@ -137,7 +139,7 @@ class DashboardStatusWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 5.0),
       child: Container(
         width: width,
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.paddingAllMd,
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(8),

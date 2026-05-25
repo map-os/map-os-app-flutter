@@ -4,6 +4,9 @@ import 'package:mapos_app/controllers/services/servicesController.dart';
 import 'package:mapos_app/pages/services/services_edit_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:mapos_app/pages/services/services_page.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 
 class VisualizarServicosPage extends StatefulWidget {
   final int idServicos;
@@ -28,7 +31,7 @@ class _VisualizarServicosPageState extends State<VisualizarServicosPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Visualizar Serviço'),
-        backgroundColor: Color(0xfffcf5fd),
+        backgroundColor: AppColors.appBarView,
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: futureService,
@@ -42,26 +45,26 @@ class _VisualizarServicosPageState extends State<VisualizarServicosPage> {
           } else {
             final service = snapshot.data!;
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: AppSpacing.paddingAllMd,
               child: Card(
-                elevation: 8.0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                elevation: 2,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 child: Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: AppSpacing.paddingAllLg,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.build, color: Color(0xff333649), size: 28),
+                          Icon(Icons.build, color: AppColors.primary, size: 28),
                           SizedBox(width: 10),
                           Text(
                             'Detalhes do Serviço #${service['idServicos']}',
-                            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xff333649)),
+                            style: AppTypography.h1Style(AppColors.primary),
                           ),
                         ],
                       ),
-                      Divider(height: 30, color: Color(0xff333649)),
+                      Divider(height: 30, color: AppColors.primary),
                       _buildDetailRow('Nome:', service['nome']),
                       SizedBox(height: 10),
                       _buildDetailRow('Descrição:', service['descricao']),
@@ -84,9 +87,9 @@ class _VisualizarServicosPageState extends State<VisualizarServicosPage> {
                             label: Text('Editar'),
                             style: ElevatedButton.styleFrom(
                               foregroundColor: Colors.white,
-                              backgroundColor: Color(0xffff7e15), // Cor do texto
+                              backgroundColor: AppColors.accent,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(10),
                               ),
                             ),
                           ),
@@ -99,9 +102,9 @@ class _VisualizarServicosPageState extends State<VisualizarServicosPage> {
                             label: Text('Excluir'),
                             style: ElevatedButton.styleFrom(
                               foregroundColor: Colors.white,
-                              backgroundColor: Colors.red, // Cor do texto
+                              backgroundColor: Colors.red,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(10),
                               ),
                             ),
                           ),
@@ -120,17 +123,17 @@ class _VisualizarServicosPageState extends State<VisualizarServicosPage> {
 
   Widget _buildShimmer() {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: AppColors.shimmerBase,
+      highlightColor: AppColors.shimmerHighlight,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: AppSpacing.paddingAllMd,
         child: Column(
           children: [
             Card(
-              elevation: 8.0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: AppSpacing.paddingAllLg,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -150,7 +153,7 @@ class _VisualizarServicosPageState extends State<VisualizarServicosPage> {
                       ],
                     ),
                     SizedBox(height: 30),
-                    Divider(height: 30, color: Color(0xff333649)),
+                    Divider(height: 30, color: AppColors.primary),
                     _buildShimmerRow(),
                     SizedBox(height: 10),
                     _buildShimmerRow(),
@@ -178,7 +181,7 @@ class _VisualizarServicosPageState extends State<VisualizarServicosPage> {
         SizedBox(width: 10),
         Expanded(
           child: Container(
-            height: 16,
+            height:  16,
             color: Colors.white,
           ),
         ),
@@ -192,13 +195,13 @@ class _VisualizarServicosPageState extends State<VisualizarServicosPage> {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xff333649)),
+          style: AppTypography.bodyBold(AppColors.primary),
         ),
         SizedBox(width: 10),
         Expanded(
           child: Text(
             value,
-            style: TextStyle(fontSize: 16, color: Color(0xff555555)),
+            style: AppTypography.bodyStyle(AppColors.textMuted),
           ),
         ),
       ],
@@ -214,7 +217,7 @@ class _VisualizarServicosPageState extends State<VisualizarServicosPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.0),
+            borderRadius: BorderRadius.circular(12),
           ),
           title: Text(
             'Confirmar Exclusão',
@@ -254,7 +257,7 @@ class _VisualizarServicosPageState extends State<VisualizarServicosPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
               onPressed: () {
@@ -266,7 +269,7 @@ class _VisualizarServicosPageState extends State<VisualizarServicosPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
               onPressed: () {

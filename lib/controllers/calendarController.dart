@@ -4,6 +4,8 @@ import 'package:mapos_app/api/apiConfig.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mapos_app/models/eventModel.dart';
 import 'package:mapos_app/controllers/TokenController.dart';
+import 'package:mapos_app/utils/cache_helper.dart';
+import 'package:flutter/foundation.dart';
 
 class CalendarController {
   Future<List<Event>> fetchCalendarData() async {
@@ -12,33 +14,27 @@ class CalendarController {
       try {
         return await _fetchEventsFromAPI();
       } catch (e) {
-        print('Erro na requisição à API: $e, tentando carregar dados locais.');
         return await _loadEventsFromLocal();
       }
     } else {
-      print('Sem acesso à internet, carregando dados locais.');
+      debugPrint('Sem acesso à internet, carregando dados locais.');
       return await _loadEventsFromLocal();
     }
   }
 
 
   Future<void> _checkAPIConfig() async {
+    await APIConfig.ensureBaseURLInitialized();
     if (APIConfig.baseURL == null) {
-      await APIConfig.initBaseURL();
-      if (APIConfig.baseURL == null) {
-        throw Exception('API URL não configurada. Por favor configure nas configurações.');
-      }
+      throw Exception('API URL não configurada. Por favor configure nas configurações.');
     }
   }
 
   Future<bool> hasInternetConnection() async {
+    if (kIsWeb) return true;
     try {
-      final result = await http.get(Uri.parse('http://clients3.google.com/generate_204'));
-      if (result.statusCode == 204) {
-        return true;
-      } else {
-        return false;
-      }
+      final result = await http.get(Uri.parse('https://www.google.com/generate_204'));
+      return result.statusCode == 204;
     } catch (_) {
       return false;
     }
@@ -91,7 +87,7 @@ class CalendarController {
   Future<void> _saveEventsToLocal(List<Event> events) async {
     final prefs = await SharedPreferences.getInstance();
     String jsonEvents = jsonEncode(events.map((e) => e.toJson()).toList());
-    await prefs.setString('cached_events', jsonEvents);
+    await CacheHelper.safeSetString(prefs, 'cached_events', jsonEvents);
     // print('Eventos salvos localmente.');
   }
 
@@ -102,7 +98,7 @@ class CalendarController {
       Iterable data = jsonDecode(jsonEvents);
       return data.map((item) => Event.fromJson(item)).toList();
     } else {
-      throw Exception('Nenhum evento local encontrado.');
+      return [];
     }
   }
 }

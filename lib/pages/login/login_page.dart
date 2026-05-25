@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:mapos_app/api/apiConfig.dart';
@@ -7,6 +8,9 @@ import 'package:mapos_app/pages/dashboard/dashboard_page.dart';
 import 'package:mapos_app/widgets/TutorialWidget.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mapos_app/widgets/egg.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -27,6 +31,19 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _isLoading = false;
   bool _obscurePassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initURL();
+  }
+
+  Future<void> _initURL() async {
+    String? currentURL = await _settingsController.getBaseURL();
+    if (currentURL == null || currentURL.isEmpty) {
+      await _settingsController.saveBaseURL('https://exemplo.com/mapos/index.php');
+    }
+  }
 
   void _showTutorial(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) => TutorialScreen()));
@@ -72,15 +89,20 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: Color(0xfff1732f), width: 2.0),
+                      borderSide: const BorderSide(color: AppColors.accent, width: 2.0),
                     ),
                   ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  "Ex: https://seudominio.com/mapos/index.php",
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: const Color(0xfff1732f),
+                    backgroundColor: AppColors.accent,
                     padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 36),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -88,8 +110,37 @@ class _LoginPageState extends State<LoginPage> {
                     elevation: 2,
                   ),
                   onPressed: () async {
-                    await _settingsController.saveBaseURL(urlController.text);
-                    Navigator.of(context).pop();
+                    String url = urlController.text.trim();
+                    if (url.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('A URL não pode estar vazia'),
+                        backgroundColor: Colors.red,
+                        behavior: SnackBarBehavior.floating,
+                      ));
+                      return;
+                    }
+                    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                      url = 'https://$url';
+                    }
+                    if (kIsWeb && url.startsWith('http://')) {
+                      url = url.replaceFirst('http://', 'https://');
+                    }
+                    Uri? parsed;
+                    try {
+                      parsed = Uri.parse(url);
+                    } catch (_) {}
+                    if (parsed == null || parsed.host.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('URL inválida. Verifique o formato.'),
+                        backgroundColor: Colors.red,
+                        behavior: SnackBarBehavior.floating,
+                      ));
+                      return;
+                    }
+                    await _settingsController.saveBaseURL(url);
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                    }
                   },
                   child: const Text(
                     "Salvar",
@@ -99,11 +150,11 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.info_outline, color: Color(0xffed712d), size: 20),
+                    Icon(Icons.info_outline, color: AppColors.accent, size: 20),
                     SizedBox(width: 8),
                     Text(
                       "Aviso!",
@@ -111,14 +162,14 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xffed712d),
+                        color: AppColors.accent,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  "Lembre-se de copiar a URL diretamente do seu MAP-OS em configurações > sistema > api",
+                  "Cole a URL base do seu MAP-OS. O /api/v1 é adicionado automaticamente.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
@@ -137,6 +188,7 @@ class _LoginPageState extends State<LoginPage> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Por favor, preencha todos os campos'),
         backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
       ));
       return;
     }
@@ -159,12 +211,14 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(loginResult['message']),
           backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
         ));
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Erro de conexão. Verifique sua internet ou a URL da API'),
         backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
       ));
     } finally {
       if (mounted) {
@@ -190,7 +244,7 @@ class _LoginPageState extends State<LoginPage> {
     double height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color(0xffe4ecfb),
+      backgroundColor: AppColors.loginBg,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -202,7 +256,7 @@ class _LoginPageState extends State<LoginPage> {
                   padding: EdgeInsets.symmetric(horizontal: width * 0.06, vertical: height * 0.04),
                   margin: EdgeInsets.symmetric(horizontal: width * 0.05),
                   decoration: BoxDecoration(
-                    color: const Color(0xff333649),
+                    color: AppColors.primary,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: const [
                       BoxShadow(
@@ -273,18 +327,18 @@ class _LoginPageState extends State<LoginPage> {
                           SizedBox(height: height * 0.04),
                           TextField(
                             controller: _emailController,
-                            style: const TextStyle(color: Color(0xffe3ebf9)),
+                            style: const TextStyle(color: AppColors.textLight),
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               labelText: 'Email',
                               labelStyle: TextStyle(
-                                color: const Color(0xffe3ebf9),
+                                color: AppColors.textLight,
                                 fontWeight: FontWeight.w600,
                                 fontSize: width * 0.04,
                               ),
-                              prefixIcon: const Icon(Icons.email, color: Color(0xffe3ebf9)),
+                              prefixIcon: const Icon(Icons.email, color: AppColors.textLight),
                               filled: true,
-                              fillColor: const Color(0xff3c4058),
+                              fillColor: AppColors.inputFill,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide.none,
@@ -295,7 +349,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                borderSide: const BorderSide(color: Color(0xfff3742f), width: 1.5),
+                                borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
                               ),
                             ),
                           ),
@@ -303,19 +357,19 @@ class _LoginPageState extends State<LoginPage> {
                           TextField(
                             controller: _passwordController,
                             obscureText: _obscurePassword,
-                            style: const TextStyle(color: Color(0xffe3ebf9)),
+                            style: const TextStyle(color: AppColors.textLight),
                             decoration: InputDecoration(
                               labelText: 'Senha',
                               labelStyle: TextStyle(
-                                color: const Color(0xffe3ebf9),
+                                color: AppColors.textLight,
                                 fontWeight: FontWeight.w600,
                                 fontSize: width * 0.04,
                               ),
-                              prefixIcon: const Icon(Icons.lock, color: Color(0xffe3ebf9)),
+                              prefixIcon: const Icon(Icons.lock, color: AppColors.textLight),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                                  color: const Color(0xffe3ebf9),
+                                  color: AppColors.textLight,
                                 ),
                                 onPressed: () {
                                   setState(() {
@@ -324,7 +378,7 @@ class _LoginPageState extends State<LoginPage> {
                                 },
                               ),
                               filled: true,
-                              fillColor: const Color(0xff3c4058),
+                              fillColor: AppColors.inputFill,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide.none,
@@ -335,7 +389,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                borderSide: const BorderSide(color: Color(0xfff3742f), width: 1.5),
+                                borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
                               ),
                             ),
                           ),
@@ -344,7 +398,7 @@ class _LoginPageState extends State<LoginPage> {
                             onPressed: _isLoading ? null : () => _attemptLogin(context),
                             style: ElevatedButton.styleFrom(
                               foregroundColor: Colors.white,
-                              backgroundColor: const Color(0xfff3742f),
+                              backgroundColor: AppColors.accent,
                               minimumSize: Size(width * 0.8, height * 0.065),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -397,7 +451,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           const Text(
-                            'Felipe Santt & ',
+                            'Felipe Santt, ',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -421,6 +475,22 @@ class _LoginPageState extends State<LoginPage> {
                                 letterSpacing: 0.5,
 
                               ),
+                            ),
+                          const Text(
+                            ' & ',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          const Text(
+                            'N4m3r',
+                            style: TextStyle(
+                              color: AppColors.accent,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
                             ),
                           ),
                         ],

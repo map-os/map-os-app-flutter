@@ -8,6 +8,7 @@
 
 
     <application
+        android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true"
         android:label="MAP-OS APP"
         android:name="${applicationName}"

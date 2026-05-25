@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:mapos_app/controllers/services/servicesController.dart';
 import 'package:mapos_app/pages/services/services_page.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 
 class AdicionarServicoPage extends StatefulWidget {
   @override
@@ -39,31 +42,31 @@ class _AdicionarServicoPageState extends State<AdicionarServicoPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Adicionar Serviço'),
-        backgroundColor: Color(0xff333649),
+        backgroundColor: AppColors.surface,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: AppSpacing.paddingAllMd,
         child: Form(
           key: _formKey,
           child: Card(
-            elevation: 8.0,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+            elevation: 2,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: AppSpacing.paddingAllLg,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.add, color: Color(0xff333649), size: 28),
+                      Icon(Icons.add, color: AppColors.primary, size: 28),
                       SizedBox(width: 10),
                       Text(
                         'Adicionar Serviço',
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xff333649)),
+                        style: AppTypography.h1Style(AppColors.primary),
                       ),
                     ],
                   ),
-                  Divider(height: 30, color: Color(0xff333649)),
+                  Divider(height: 30, color: AppColors.primary),
                   _buildTextField('Nome', _nomeController),
                   SizedBox(height: 10),
                   _buildTextField('Descrição', _descricaoController),
@@ -83,9 +86,9 @@ class _AdicionarServicoPageState extends State<AdicionarServicoPage> {
                         label: Text('Salvar'),
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
-                          backgroundColor: Color(0xff333649),
+                          backgroundColor: AppColors.primary,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                       ),

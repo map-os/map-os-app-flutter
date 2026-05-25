@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mapos_app/theme/app_colors.dart';
 
 class AnotacoesTab extends StatelessWidget {
   final Map<String, dynamic>? ordemServico;

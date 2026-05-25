@@ -3,6 +3,9 @@ import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:mapos_app/controllers/services/servicesController.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:mapos_app/pages/services/services_view_page.dart';
+import 'package:mapos_app/theme/app_colors.dart';
+import 'package:mapos_app/theme/app_spacing.dart';
+import 'package:mapos_app/theme/app_typography.dart';
 
 class EditarServicosPage extends StatefulWidget {
   final int idServicos;
@@ -46,7 +49,7 @@ class _EditarServicosPageState extends State<EditarServicosPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Editar Serviço'),
-        backgroundColor: Color(0xfffaf3fb),
+        backgroundColor: AppColors.surface,
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: futureService,
@@ -64,28 +67,28 @@ class _EditarServicosPageState extends State<EditarServicosPage> {
             _precoController.text = service['preco'].toString().replaceAll('.', ',');
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: AppSpacing.paddingAllMd,
               child: Form(
                 key: _formKey,
                 child: Card(
-                  elevation: 8.0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   child: Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: AppSpacing.paddingAllLg,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.edit, color: Color(0xff333649), size: 28),
+                            Icon(Icons.edit, color: AppColors.primary, size: 28),
                             SizedBox(width: 10),
                             Text(
                                 'Editando o Serviço #${widget.idServicos}',
-                              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xff333649)),
+                              style: AppTypography.h1Style(AppColors.primary),
                             ),
                           ],
                         ),
-                        Divider(height: 30, color: Color(0xff333649)),
+                        Divider(height: 30, color: AppColors.primary),
                         _buildTextField('Nome', _nomeController),
                         SizedBox(height: 10),
                         _buildTextField('Descrição', _descricaoController),
@@ -105,9 +108,9 @@ class _EditarServicosPageState extends State<EditarServicosPage> {
                               label: Text('Salvar'),
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white,
-                                backgroundColor: Color(0xff333649), // Cor do texto
+                                backgroundColor: AppColors.primary,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
                             ),
@@ -179,17 +182,17 @@ class _EditarServicosPageState extends State<EditarServicosPage> {
 
   Widget _buildShimmer() {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: AppColors.shimmerBase,
+      highlightColor: AppColors.shimmerHighlight,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: AppSpacing.paddingAllMd,
         child: Column(
           children: [
             Card(
-              elevation: 8.0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: AppSpacing.paddingAllLg,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -209,7 +212,7 @@ class _EditarServicosPageState extends State<EditarServicosPage> {
                       ],
                     ),
                     SizedBox(height: 30),
-                    Divider(height: 30, color: Color(0xff333649)),
+                    Divider(height: 30, color: AppColors.primary),
                     _buildShimmerRow(),
                     SizedBox(height: 10),
                     _buildShimmerRow(),
