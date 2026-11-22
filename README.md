@@ -6,10 +6,10 @@ Aplicativo Android para o sistema MAP-OS.
 
 ## Screenshots
 
-<img src="https://github.com/user-attachments/assets/7d148007-6408-4316-8f72-1636f89102b5" width="200">
-<img src="https://github.com/user-attachments/assets/9ba3c8bb-edd0-4516-85e5-e04c74498548" width="200">
-<img src="https://github.com/user-attachments/assets/b32faa7f-ac9b-4c95-9002-ad922bca9f5c" width="200">
-<img src="https://github.com/user-attachments/assets/d8917b80-0af6-4c78-82db-863af655bafd1" width="200">
+<img src="https://github.com/user-attachments/assets/3aa24bd6-f48c-449f-a1cb-df90a5829402" width="200">
+<img src="https://github.com/user-attachments/assets/172c09c6-a6f1-4f01-a7a7-a8df8896be60" width="200">
+<img src="https://github.com/user-attachments/assets/756cc818-d903-43cd-b9a9-b542683ed3a0" width="200">
+<img src="https://github.com/user-attachments/assets/5e77252b-0699-43bd-a049-b15c5d1ac3fb" width="200">
 
 ## Ambiente de Desenvolvimento 💻
 
