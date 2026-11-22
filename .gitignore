@@ -13,7 +13,7 @@
 .swiftpm/
 migrate_working_dir/
 build/
-
+keystore/
 
 # IntelliJ related
 *.iml
