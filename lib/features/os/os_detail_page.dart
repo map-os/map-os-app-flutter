@@ -8,7 +8,9 @@ import '../../core/widgets/ui.dart';
 import '../../data/models/ordem_servico.dart';
 import '../../data/repositories/os_repository.dart';
 import '../clientes/cliente_detail_page.dart';
+import '../cobrancas/cobrancas_page.dart';
 import 'os_form_page.dart';
+import 'widgets/os_acoes.dart';
 import 'widgets/os_anexos_tab.dart';
 import 'widgets/os_dialogs.dart';
 import 'widgets/os_items_tab.dart';
@@ -47,25 +49,12 @@ class _OsDetailPageState extends State<OsDetailPage> {
     }
   }
 
-  OsInput _inputFrom(OrdemServico os, {String? status}) => OsInput(
-        clienteId: os.clienteId,
-        usuarioId: os.usuarioId,
-        status: status ?? os.status,
-        dataInicial: os.dataInicial ?? DateTime.now(),
-        dataFinal: os.dataFinal ?? os.dataInicial ?? DateTime.now(),
-        descricaoProduto: os.descricaoProduto,
-        defeito: os.defeito,
-        observacoes: os.observacoes,
-        laudoTecnico: os.laudoTecnico,
-        garantia: os.garantia,
-      );
-
   Future<void> _changeStatus(OrdemServico os) async {
     final s = await showStatusSheet(context, os.status);
     if (s == null || s == os.status || !mounted) return;
     final ok = await runAction(
       context,
-      () => context.read<OsRepository>().update(os.id, _inputFrom(os, status: s)),
+      () => context.read<OsRepository>().mudarStatus(os.id, s),
       success: 'Status alterado para "$s".',
     );
     if (ok) await _reload();
@@ -81,10 +70,34 @@ class _OsDetailPageState extends State<OsDetailPage> {
     if (r == null || !mounted) return;
     final ok = await runAction(
       context,
-      () => context.read<OsRepository>().aplicarDesconto(os.id, desconto: r.$1, tipo: r.$2, valorFinal: r.$3),
+      () => context.read<OsRepository>().aplicarDesconto(os.id, desconto: r.$1, tipo: r.$2),
       success: 'Desconto aplicado.',
     );
     if (ok) await _reload();
+  }
+
+  Future<void> _acao(String acao, OrdemServico os) async {
+    final repo = context.read<OsRepository>();
+    switch (acao) {
+      case 'pix':
+        await showPixSheet(context, carregar: () => repo.pix(os.id), titulo: 'PIX da OS #${os.id}');
+      case 'email':
+        await runAction(context, () => repo.enviarEmail(os.id), success: 'E-mail na fila de envio.');
+      case 'faturar':
+        final faturou = await showFaturarSheet(
+          context,
+          titulo: 'Faturar OS #${os.id}',
+          descricao: 'Fatura da OS #${os.id}',
+          total: os.total,
+          faturar: (f) => repo.faturar(os.id, f),
+          sucesso: 'OS faturada. A receita foi lançada no financeiro.',
+        );
+        if (faturou) await _reload();
+      case 'cobranca':
+        if (await showGerarCobrancaSheet(context, origem: 'os', origemId: os.id) != null) await _reload();
+      case 'delete':
+        await _delete(os);
+    }
   }
 
   Future<void> _delete(OrdemServico os) async {
@@ -131,7 +144,7 @@ class _OsDetailPageState extends State<OsDetailPage> {
   Widget build(BuildContext context) {
     final os = _os;
     final perms = context.watch<AuthState>().permissions;
-    final canEdit = perms.canEdit('Os');
+    final canEdit = perms.canEdit('Os') && (os?.editavel ?? true);
 
     if (os == null) {
       return Scaffold(
@@ -148,11 +161,18 @@ class _OsDetailPageState extends State<OsDetailPage> {
           actions: [
             IconButton(tooltip: 'Compartilhar', icon: const Icon(Icons.ios_share_rounded), onPressed: () => _share(os)),
             if (canEdit) IconButton(tooltip: 'Editar', icon: const Icon(Icons.edit_outlined), onPressed: () => _edit(os)),
-            if (perms.canDelete('Os'))
-              PopupMenuButton<String>(
-                onSelected: (_) => _delete(os),
-                itemBuilder: (_) => const [
-                  PopupMenuItem(
+            PopupMenuButton<String>(
+              onSelected: (acao) => _acao(acao, os),
+              itemBuilder: (_) => [
+                const PopupMenuItem(value: 'pix', child: ListTile(leading: Icon(Icons.qr_code_2_rounded), title: Text('Cobrar com PIX'), contentPadding: EdgeInsets.zero)),
+                if (perms.canEdit('Os'))
+                  const PopupMenuItem(value: 'email', child: ListTile(leading: Icon(Icons.mail_outline_rounded), title: Text('Enviar por e-mail'), contentPadding: EdgeInsets.zero)),
+                if (canEdit && !os.faturado && os.status != 'Cancelado')
+                  const PopupMenuItem(value: 'faturar', child: ListTile(leading: Icon(Icons.receipt_long_rounded), title: Text('Faturar'), contentPadding: EdgeInsets.zero)),
+                if (os.cobrancaId == null && os.total > 0 && perms.canAdd('Cobranca'))
+                  const PopupMenuItem(value: 'cobranca', child: ListTile(leading: Icon(Icons.request_quote_outlined), title: Text('Gerar cobrança'), contentPadding: EdgeInsets.zero)),
+                if (perms.canDelete('Os'))
+                  const PopupMenuItem(
                     value: 'delete',
                     child: ListTile(
                       leading: Icon(Icons.delete_outline_rounded, color: AppColors.danger),
@@ -160,8 +180,8 @@ class _OsDetailPageState extends State<OsDetailPage> {
                       contentPadding: EdgeInsets.zero,
                     ),
                   ),
-                ],
-              ),
+              ],
+            ),
           ],
         ),
         body: NestedScrollView(
@@ -278,7 +298,7 @@ class _Header extends StatelessWidget {
                       tooltip: 'WhatsApp',
                       style: IconButton.styleFrom(backgroundColor: const Color(0xFF25D366), foregroundColor: Colors.white),
                       icon: const Icon(Icons.chat_rounded, size: 20),
-                      onPressed: () => Launch.whatsapp(os.phone, text: os.textoWhatsApp),
+                      onPressed: () => abrirWhatsAppDaOs(context, os),
                     ),
                   ],
                 ],
@@ -362,7 +382,15 @@ class _ResumoTab extends StatelessWidget {
               TextBlock(title: 'Observações', text: os.observacoes, icon: Icons.notes_rounded),
               if (os.garantia.isNotEmpty) ...[
                 const Padding(padding: EdgeInsets.symmetric(vertical: Gaps.lg), child: Divider()),
-                TextBlock(title: 'Garantia', text: '${os.garantia} dias', icon: Icons.verified_user_outlined),
+                TextBlock(
+                  title: 'Garantia',
+                  text: [
+                    '${os.garantia} dias',
+                    if (os.garantiaAte != null) 'até ${Fmt.date(os.garantiaAte)}',
+                    if (os.termoGarantia.isNotEmpty) 'termo: ${os.termoGarantia}',
+                  ].join(' · '),
+                  icon: Icons.verified_user_outlined,
+                ),
               ],
             ],
           ),
@@ -373,6 +401,7 @@ class _ResumoTab extends StatelessWidget {
             children: [
               _line(context, 'Produtos', Fmt.money(os.totalProdutos)),
               _line(context, 'Serviços', Fmt.money(os.totalServicos)),
+              if (os.descontoItens > 0) _line(context, 'Descontos nos itens (já incluídos)', Fmt.money(os.descontoItens), color: AppColors.success),
               if (os.temDesconto)
                 _line(
                   context,
@@ -402,6 +431,28 @@ class _ResumoTab extends StatelessWidget {
             ],
           ),
         ),
+        if (!os.editavel)
+          Padding(
+            padding: const EdgeInsets.only(top: Gaps.md),
+            child: Text('Esta OS está faturada ou cancelada e não pode mais ser alterada.', style: context.text.bodySmall?.copyWith(color: context.tokens.muted)),
+          ),
+        if (os.historico.isNotEmpty) ...[
+          const SectionHeader('Histórico de status'),
+          AppCard(
+            child: Column(
+              children: [
+                for (final h in os.historico)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    leading: Icon(StatusColors.icon(h.novo), color: StatusColors.of(h.novo)),
+                    title: Text(h.anterior.isEmpty ? h.novo : '${h.anterior} → ${h.novo}'),
+                    subtitle: Text([Fmt.dateTime(h.dataHora), if (h.autor.isNotEmpty) h.autor].join(' · ')),
+                  ),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -435,4 +486,15 @@ class _TabsDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(covariant _TabsDelegate old) => old.tabs != tabs || old.color != color;
+}
+
+Future<void> abrirWhatsAppDaOs(BuildContext context, OrdemServico os) async {
+  var telefone = os.phone;
+  var texto = '';
+  try {
+    final r = await context.read<OsRepository>().whatsapp(os.id);
+    telefone = r.telefone;
+    texto = r.texto;
+  } catch (_) {}
+  await Launch.whatsapp(telefone, text: texto);
 }

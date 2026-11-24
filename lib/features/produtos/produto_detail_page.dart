@@ -31,6 +31,45 @@ class _ProdutoDetailPageState extends State<ProdutoDetailPage> {
     }
   }
 
+  Future<void> _ajustarEstoque(Produto p) async {
+    final controle = TextEditingController();
+    final quantidade = await showDialog<int>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ajustar estoque'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Estoque atual: ${Fmt.number(p.estoque)} ${p.unidade}'),
+            const SizedBox(height: Gaps.md),
+            TextField(
+              controller: controle,
+              autofocus: true,
+              keyboardType: const TextInputType.numberWithOptions(signed: true),
+              decoration: const InputDecoration(labelText: 'Quantidade', helperText: 'Use número negativo para retirar (ex.: -2).'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          FilledButton(onPressed: () => Navigator.pop(context, int.tryParse(controle.text.trim())), child: const Text('Ajustar')),
+        ],
+      ),
+    );
+    controle.dispose();
+    if (quantidade == null || quantidade == 0 || !mounted) return;
+    final ok = await runAction(
+      context,
+      () => context.read<ProdutosRepository>().ajustarEstoque(p.id, quantidade),
+      success: 'Estoque ajustado (${quantidade > 0 ? '+' : ''}$quantidade).',
+    );
+    if (ok) {
+      _changed = true;
+      _reload();
+    }
+  }
+
   Future<void> _delete(Produto p) async {
     final ok = await confirmDialog(
       context,
@@ -60,6 +99,8 @@ class _ProdutoDetailPageState extends State<ProdutoDetailPage> {
             appBar: AppBar(
               title: const Text('Produto'),
               actions: [
+                if (p != null && perms.canEdit('Produto'))
+                  IconButton(tooltip: 'Ajustar estoque', icon: const Icon(Icons.exposure_outlined), onPressed: () => _ajustarEstoque(p)),
                 if (p != null && perms.canEdit('Produto'))
                   IconButton(tooltip: 'Editar', icon: const Icon(Icons.edit_outlined), onPressed: () => _edit(p)),
                 if (p != null && perms.canDelete('Produto'))

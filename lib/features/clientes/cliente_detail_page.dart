@@ -84,7 +84,7 @@ class _ClienteDetailPageState extends State<ClienteDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SectionHeader(
-          'Ordens de serviço · ${ordens.length}',
+          'Ordens de serviço · ${c.totalOs > ordens.length ? c.totalOs : ordens.length}',
           action: perms.canAdd('Os') ? 'Nova OS' : null,
           onAction: () => _newOs(c),
         ),
@@ -106,7 +106,7 @@ class _ClienteDetailPageState extends State<ClienteDetailPage> {
         else ...[
           Row(
             children: [
-              Expanded(child: _OsStat(label: 'Total', value: ordens.length, color: AppColors.os)),
+              Expanded(child: _OsStat(label: 'Total', value: c.totalOs > ordens.length ? c.totalOs : ordens.length, color: AppColors.os)),
               const SizedBox(width: Gaps.sm),
               Expanded(child: _OsStat(label: 'Em aberto', value: abertas, color: AppColors.info)),
               const SizedBox(width: Gaps.sm),

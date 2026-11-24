@@ -44,11 +44,8 @@ class ProbeResult {
       ProbeResult._(ok: false, url: url, title: title, message: message, tips: tips);
 }
 
-/// Testa se uma URL aponta para uma API MAP-OS acessível.
-///
-/// Faz um POST em `/api/v1/login` com credenciais vazias: o MAP-OS sempre
-/// responde com o envelope JSON `{status, message}` (recusando o login), o que
-/// confirma que o servidor existe, responde e é de fato um MAP-OS.
+/// Faz um POST em `/api/v2/auth/login` sem credenciais: um MAP-OS com a API v2
+/// recusa com um erro RFC 9457 (`urn:mapos:erro:...`), o que confirma servidor e API.
 abstract final class ServerProbe {
   static const Duration timeout = Duration(seconds: 12);
 
@@ -89,18 +86,16 @@ abstract final class ServerProbe {
     final local = baseUrl.startsWith('http://');
     final sw = Stopwatch()..start();
     try {
-      final res = await c
-          .post(
-            Uri.parse('$baseUrl${AppConfig.apiPrefix}/login'),
-            headers: const {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              'App-Version': AppConfig.appVersion,
-            },
-            body: jsonEncode({'email': '', 'password': ''}),
-          )
-          .timeout(timeout);
+      final res = await _postLogin(c, '$baseUrl${AppConfig.apiPrefix}/auth/login');
       sw.stop();
+      if (res.statusCode == 404 && !_ehApiV2(res) && await _temApiV1(c, baseUrl)) {
+        return ProbeResult.fail(
+          baseUrl,
+          'MAP-OS desatualizado',
+          'Este servidor ainda usa a API antiga (v1). Este app precisa da API v2.',
+          const ['Peça ao administrador para atualizar o MAP-OS para a versão mais recente.'],
+        );
+      }
       return _classify(baseUrl, res, sw.elapsed);
     } on TimeoutException {
       return ProbeResult.fail(
@@ -113,6 +108,34 @@ abstract final class ServerProbe {
       return _classifyError(baseUrl, e.toString(), local);
     } finally {
       if (client == null) c.close();
+    }
+  }
+
+  static Future<http.Response> _postLogin(http.Client c, String url) => c
+      .post(
+        Uri.parse(url),
+        headers: const {'Content-Type': 'application/json', 'Accept': 'application/json', 'App-Version': AppConfig.appVersion},
+        body: jsonEncode(const <String, String>{}),
+      )
+      .timeout(timeout);
+
+  static Map<String, dynamic>? _json(http.Response res) {
+    try {
+      final decoded = jsonDecode(utf8.decode(res.bodyBytes));
+      return decoded is Map<String, dynamic> ? decoded : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static bool _ehApiV2(http.Response res) => (_json(res)?['type'] ?? '').toString().startsWith('urn:mapos:erro');
+
+  static Future<bool> _temApiV1(http.Client c, String baseUrl) async {
+    try {
+      final res = await _postLogin(c, '$baseUrl${AppConfig.legacyApiPrefix}/login');
+      return _json(res)?.containsKey('status') ?? false;
+    } catch (_) {
+      return false;
     }
   }
 
@@ -138,23 +161,15 @@ abstract final class ServerProbe {
       );
     }
 
-    Map<String, dynamic>? body;
-    try {
-      final decoded = jsonDecode(utf8.decode(res.bodyBytes));
-      if (decoded is Map<String, dynamic>) body = decoded;
-    } catch (_) {
-      // Corpo não é JSON (HTML, vazio...) — tratado abaixo.
-    }
-
-    if (body != null && body.containsKey('status')) {
-      final msg = (body['message'] ?? '').toString().toLowerCase();
-      if (msg.contains('desabilitad') || msg.contains('disabled')) {
-        return ProbeResult.fail(
-          url,
-          'API desativada',
-          'Encontramos o MAP-OS, mas a API dele está desativada.',
-          const ['Peça ao administrador para ativar a API nas configurações do MAP-OS.'],
-        );
+    final body = _json(res);
+    if (body != null && (body['type'] ?? '').toString().startsWith('urn:mapos:erro')) {
+      switch (body['codigo']) {
+        case 'chave_insegura':
+          return ProbeResult.fail(url, 'API sem chave configurada', 'Encontramos o MAP-OS, mas a chave dos tokens da API não foi configurada.',
+              const ['Peça ao administrador para gerar a chave em Configurações › API.']);
+        case 'banco_desatualizado':
+          return ProbeResult.fail(url, 'Banco de dados desatualizado', 'Encontramos o MAP-OS, mas o banco de dados precisa ser atualizado.',
+              const ['Peça ao administrador para abrir o painel e atualizar o banco de dados.']);
       }
       return ProbeResult.success(url, elapsed);
     }
@@ -167,7 +182,7 @@ abstract final class ServerProbe {
         const [
           'Confira se o caminho está completo (ex.: dominio.com.br/mapos).',
           'Abra o endereço no navegador: deve aparecer a tela de login do MAP-OS.',
-          'Verifique se a API está ativada e se o MAP-OS está atualizado.',
+          'Verifique se a API está ativada (Configurações › API) e se o MAP-OS está atualizado.',
         ],
       );
     }

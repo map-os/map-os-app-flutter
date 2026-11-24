@@ -35,42 +35,23 @@ class OsItemsTab extends StatelessWidget {
     String nome = '';
     double preco = 0;
 
-    if (_isProduto) {
-      final cat = context.read<ProdutosRepository>();
-      final p = await showSearchPicker<Produto>(
-        context,
-        title: 'Adicionar produto',
-        hint: 'Buscar produto',
-        fetch: (s) => cat.list(search: s),
-        itemBuilder: (context, p) => ListTile(
-          leading: const IconBadge(Icons.inventory_2_outlined, color: AppColors.produtos, size: 38),
-          title: Text(p.descricao, maxLines: 1, overflow: TextOverflow.ellipsis),
-          subtitle: Text('Estoque: ${Fmt.number(p.estoque)} ${p.unidade}'),
-          trailing: Text(Fmt.money(p.precoVenda), style: context.text.titleSmall),
-        ),
-      );
-      if (p == null) return;
-      refId = p.id;
-      nome = p.descricao;
-      preco = p.precoVenda;
-    } else {
-      final cat = context.read<ServicosRepository>();
-      final s = await showSearchPicker<Servico>(
-        context,
-        title: 'Adicionar serviço',
-        hint: 'Buscar serviço',
-        fetch: (q) => cat.list(search: q),
-        itemBuilder: (context, s) => ListTile(
-          leading: const IconBadge(Icons.handyman_outlined, color: AppColors.servicos, size: 38),
-          title: Text(s.nome, maxLines: 1, overflow: TextOverflow.ellipsis),
-          trailing: Text(Fmt.money(s.preco), style: context.text.titleSmall),
-        ),
-      );
-      if (s == null) return;
-      refId = s.id;
-      nome = s.nome;
-      preco = s.preco;
-    }
+    final cor = _isProduto ? AppColors.produtos : AppColors.servicos;
+    final escolhido = await showSearchPicker<Sugestao>(
+      context,
+      title: _isProduto ? 'Adicionar produto' : 'Adicionar serviço',
+      hint: _isProduto ? 'Buscar produto' : 'Buscar serviço',
+      fetch: (q) => _isProduto ? context.read<ProdutosRepository>().sugestoes(q) : context.read<ServicosRepository>().sugestoes(q),
+      itemBuilder: (context, item) => ListTile(
+        leading: IconBadge(_isProduto ? Icons.inventory_2_outlined : Icons.handyman_outlined, color: cor, size: 38),
+        title: Text(item.nome, maxLines: 1, overflow: TextOverflow.ellipsis),
+        subtitle: item.estoque == null ? null : Text('Estoque: ${item.estoque}'),
+        trailing: item.preco == null ? null : Text(Fmt.money(item.preco), style: context.text.titleSmall),
+      ),
+    );
+    if (escolhido == null) return;
+    refId = escolhido.id;
+    nome = escolhido.nome;
+    preco = escolhido.preco ?? 0;
 
     if (!context.mounted) return;
     final r = await showItemDialog(context, title: nome, subtitle: 'Defina quantidade e preço', preco: preco);
@@ -88,21 +69,12 @@ class OsItemsTab extends StatelessWidget {
 
   Future<void> _edit(BuildContext context, OsItem item) async {
     final repo = context.read<OsRepository>();
-    final r = await showItemDialog(
-      context,
-      title: item.nome,
-      subtitle: 'Editar item',
-      quantidade: item.quantidade,
-      preco: item.preco,
-      confirmLabel: 'Salvar',
-    );
+    final r = await showDescontoSheet(context, subtotal: item.bruto, descontoAtual: item.desconto?.valor ?? 0, tipoAtual: item.desconto?.tipo ?? 'real');
     if (r == null || !context.mounted) return;
     final ok = await runAction(
       context,
-      () => _isProduto
-          ? repo.updateProduto(os.id, item.itemId, quantidade: r.$1, preco: r.$2)
-          : repo.updateServico(os.id, item.itemId, quantidade: r.$1, preco: r.$2),
-      success: 'Item atualizado.',
+      () => repo.descontoDoItem(os.id, produto: _isProduto, itemId: item.itemId, tipo: r.$2, valor: r.$1),
+      success: r.$1 > 0 ? 'Desconto do item aplicado.' : 'Desconto do item removido.',
     );
     if (ok) await onChanged();
   }
@@ -152,7 +124,10 @@ class OsItemsTab extends StatelessWidget {
                     contentPadding: const EdgeInsets.fromLTRB(Gaps.lg, Gaps.xs, Gaps.xs, Gaps.xs),
                     leading: IconBadge(icon, color: color, size: 38),
                     title: Text(item.nome, maxLines: 2, overflow: TextOverflow.ellipsis),
-                    subtitle: Text('${Fmt.number(item.quantidade)} × ${Fmt.money(item.preco)}'),
+                    subtitle: Text([
+                      '${Fmt.number(item.quantidade)} × ${Fmt.money(item.preco)}',
+                      if (item.desconto != null) 'desconto ${item.desconto!.porcento ? '${Fmt.number(item.desconto!.valor)}%' : Fmt.money(item.desconto!.valor)}',
+                    ].join(' · ')),
                     onTap: canEdit ? () => _edit(context, item) : null,
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -163,7 +138,7 @@ class OsItemsTab extends StatelessWidget {
                             icon: const Icon(Icons.more_vert_rounded),
                             onSelected: (v) => v == 'edit' ? _edit(context, item) : _remove(context, item),
                             itemBuilder: (_) => const [
-                              PopupMenuItem(value: 'edit', child: Text('Editar')),
+                              PopupMenuItem(value: 'edit', child: Text('Desconto do item')),
                               PopupMenuItem(value: 'remove', child: Text('Remover')),
                             ],
                           ),

@@ -8,12 +8,15 @@ import '../../data/models/conta.dart';
 import '../../data/repositories/cadastros_repository.dart';
 import '../agenda/agenda_page.dart';
 import '../clientes/cliente_form_page.dart';
+import '../garantias/garantias_pages.dart';
 import '../os/os_detail_page.dart';
 import '../os/os_form_page.dart';
 import '../os/widgets/os_card.dart';
 import '../produtos/produto_detail_page.dart';
 import '../profile/account_menu.dart';
+import '../servicos/servicos_page.dart';
 import '../shell/home_shell.dart';
+import '../vendas/vendas_pages.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -27,8 +30,9 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Future<(DashboardData, Usuario?)> _load() async {
     final repo = context.read<ContaRepository>();
+    final permissoes = context.read<AuthState>().permissions;
     final results = await Future.wait([
-      repo.dashboard(),
+      repo.dashboard(permissoes),
       repo.perfil().then<Usuario?>((u) => u).catchError((_) => null),
     ]);
     return (results[0] as DashboardData, results[1] as Usuario?);
@@ -37,7 +41,9 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<void> _refresh() async {
     final f = _load();
     setState(() => _future = f);
-    await f.catchError((_) => (DashboardData.fromJson(const {}), null));
+    try {
+      await f;
+    } catch (_) {}
   }
 
   @override
@@ -254,6 +260,9 @@ class _Body extends StatefulWidget {
 }
 
 class _BodyState extends State<_Body> {
+  VoidCallback? _abrir(BuildContext context, bool permitido, Widget pagina) =>
+      permitido ? () => Navigator.push(context, MaterialPageRoute(builder: (_) => pagina)) : null;
+
   bool _showAbertas = false;
 
   @override
@@ -266,12 +275,12 @@ class _BodyState extends State<_Body> {
     final cols = width >= 900 ? 6 : 3;
 
     final kpis = [
-      (Icons.assignment_rounded, 'Ordens', data.countOs, AppColors.os, HomeShell.tabOs),
-      (Icons.people_rounded, 'Clientes', data.clientes, AppColors.clientes, HomeShell.tabClientes),
-      (Icons.inventory_2_rounded, 'Produtos', data.produtos, AppColors.produtos, HomeShell.tabProdutos),
-      (Icons.handyman_rounded, 'Serviços', data.servicos, AppColors.servicos, HomeShell.tabServicos),
-      (Icons.verified_user_rounded, 'Garantias', data.garantias, AppColors.garantias, null),
-      (Icons.point_of_sale_rounded, 'Vendas', data.vendas, AppColors.vendas, null),
+      (Icons.assignment_rounded, 'Ordens', data.countOs, AppColors.os, () => shell?.goTo(HomeShell.tabOs)),
+      (Icons.people_rounded, 'Clientes', data.clientes, AppColors.clientes, () => shell?.goTo(HomeShell.tabClientes)),
+      (Icons.inventory_2_rounded, 'Produtos', data.produtos, AppColors.produtos, () => shell?.goTo(HomeShell.tabProdutos)),
+      (Icons.handyman_rounded, 'Serviços', data.servicos, AppColors.servicos, _abrir(context, perms.canView('Servico'), const ServicosPage())),
+      (Icons.verified_user_rounded, 'Garantias', data.garantias, AppColors.garantias, _abrir(context, perms.canView('Garantia'), const GarantiasPage())),
+      (Icons.point_of_sale_rounded, 'Vendas', data.vendas, AppColors.vendas, _abrir(context, perms.canView('Venda'), const VendasPage())),
     ];
 
     final actions = [
@@ -322,7 +331,7 @@ class _BodyState extends State<_Body> {
                   label: k.$2,
                   value: k.$3,
                   color: k.$4,
-                  onTap: k.$5 == null ? null : () => shell?.goTo(k.$5!),
+                  onTap: k.$5,
                 ),
             ],
           ),

@@ -10,7 +10,7 @@ import '../dashboard/dashboard_page.dart';
 import '../os/os_list_page.dart';
 import '../produtos/produtos_page.dart';
 import '../profile/account_menu.dart';
-import '../servicos/servicos_page.dart';
+import 'mais_page.dart';
 
 /// Permite que telas filhas troquem a aba ativa (ex.: "ver todas" no dashboard).
 class ShellScope extends InheritedWidget {
@@ -31,7 +31,7 @@ class HomeShell extends StatefulWidget {
   static const int tabOs = 1;
   static const int tabClientes = 2;
   static const int tabProdutos = 3;
-  static const int tabServicos = 4;
+  static const int tabMais = 4;
 
   @override
   State<HomeShell> createState() => _HomeShellState();
@@ -50,7 +50,7 @@ class _HomeShellState extends State<HomeShell> {
     (Icons.assignment_outlined, Icons.assignment_rounded, 'Ordens'),
     (Icons.people_outline_rounded, Icons.people_rounded, 'Clientes'),
     (Icons.inventory_2_outlined, Icons.inventory_2_rounded, 'Produtos'),
-    (Icons.handyman_outlined, Icons.handyman_rounded, 'Serviços'),
+    (Icons.apps_outlined, Icons.apps_rounded, 'Mais'),
   ];
 
   void _go(int i) => setState(() {
@@ -71,7 +71,7 @@ class _HomeShellState extends State<HomeShell> {
       case 3:
         return const ProdutosPage();
       default:
-        return const ServicosPage();
+        return const MaisPage();
     }
   }
 

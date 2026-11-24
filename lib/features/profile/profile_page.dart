@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import '../../app/app_state.dart';
 import '../../core/widgets/ui.dart';
 import '../../data/models/conta.dart';
 import '../../data/repositories/cadastros_repository.dart';
+import 'seguranca_pages.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,27 +16,45 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  late Future<(Usuario, Emitente?)> _future = _load();
+  late Future<(Conta, Emitente?)> _future = _load();
 
-  Future<(Usuario, Emitente?)> _load() async {
+  Future<(Conta, Emitente?)> _load() async {
     final repo = context.read<ContaRepository>();
-    final u = await repo.perfil();
+    final c = await repo.conta();
     Emitente? e;
     try {
       e = await repo.emitente();
     } catch (_) {}
-    return (u, e);
+    return (c, e);
+  }
+
+  void _recarregar() => setState(() => _future = _load());
+
+  Future<void> _abrir(Widget pagina) async {
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => pagina));
+    if (mounted) _recarregar();
+  }
+
+  Future<void> _trocarFoto() async {
+    final arquivo = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 85, maxWidth: 800);
+    if (arquivo == null || !mounted) return;
+    final bytes = await arquivo.readAsBytes();
+    if (!mounted) return;
+    final ok = await runAction(context, () => context.read<ContaRepository>().trocarFoto(bytes, arquivo.name), success: 'Foto alterada.');
+    if (ok) _recarregar();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Meu perfil')),
-      body: AsyncView<(Usuario, Emitente?)>(
+      body: AsyncView<(Conta, Emitente?)>(
         future: _future,
-        onRetry: () => setState(() => _future = _load()),
+        onRetry: _recarregar,
         builder: (context, data) {
-          final (u, e) = data;
+          final (conta, e) = data;
+          final u = conta.usuario;
+          final podeFoto = context.read<AuthState>().permissions.can('cUsuario');
           return ListView(
             padding: Gaps.pageOf(context),
             children: [
@@ -42,7 +63,14 @@ class _ProfilePageState extends State<ProfilePage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(height: Gaps.lg),
-                    Center(child: InitialsAvatar(u.nome, size: 96, imageUrl: u.fotoUrl)),
+                    Center(
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: podeFoto ? _trocarFoto : null,
+                        child: InitialsAvatar(u.nome, size: 96, imageUrl: u.fotoUrl),
+                      ),
+                    ),
+                    if (podeFoto) Center(child: TextButton(onPressed: _trocarFoto, child: const Text('Trocar foto'))),
                     const SizedBox(height: Gaps.lg),
                     Text(u.nome, style: context.text.headlineSmall, textAlign: TextAlign.center),
                     Text(u.email, style: context.text.bodyMedium?.copyWith(color: context.tokens.muted), textAlign: TextAlign.center),
@@ -86,9 +114,36 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                     ],
+                    const SectionHeader('Segurança'),
+                    AppCard(
+                      padding: EdgeInsets.zero,
+                      child: Column(
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.password_rounded),
+                            title: const Text('Trocar senha'),
+                            trailing: const Icon(Icons.chevron_right_rounded),
+                            onTap: () => _abrir(const TrocarSenhaPage()),
+                          ),
+                          ListTile(
+                            leading: Icon(conta.doisFatoresAtivo ? Icons.verified_user_rounded : Icons.shield_outlined, color: conta.doisFatoresAtivo ? AppColors.success : null),
+                            title: const Text('Verificação em duas etapas'),
+                            subtitle: Text(conta.doisFatoresAtivo ? 'Ativa' : (conta.doisFatoresExigido ? 'Exigida pelo seu grupo: ative agora' : 'Desativada')),
+                            trailing: const Icon(Icons.chevron_right_rounded),
+                            onTap: () => _abrir(const DoisFatoresPage()),
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.devices_rounded),
+                            title: const Text('Sessões ativas'),
+                            trailing: const Icon(Icons.chevron_right_rounded),
+                            onTap: () => _abrir(const SessoesPage()),
+                          ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: Gaps.lg),
                     Text(
-                      'Para alterar seus dados ou senha, use o painel web do MAP-OS.',
+                      'Para alterar nome, e-mail e outros dados pessoais, fale com o administrador do MAP-OS.',
                       style: context.text.bodySmall,
                       textAlign: TextAlign.center,
                     ),

@@ -5,11 +5,13 @@ import 'package:provider/provider.dart';
 
 import '../../app/app_state.dart';
 import '../../core/network/server_probe.dart';
+import '../../core/storage/session_store.dart';
 import '../../core/widgets/ui.dart';
+import 'qr_servidor_page.dart';
 
 /// Onboarding do primeiro acesso: apresenta o app e configura o servidor.
 ///
-/// Com [serverOnly], abre direto na configuração do servidor (ex.: "Alterar"
+/// Com [serverOnly], abre na escolha do tipo de conta e do servidor ("Alterar"
 /// na tela de login) e, ao concluir, faz `pop` devolvendo a URL testada.
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key, this.serverOnly = false, this.initialUrl});
@@ -21,7 +23,7 @@ class OnboardingPage extends StatefulWidget {
   State<OnboardingPage> createState() => _OnboardingPageState();
 }
 
-enum _Step { intro, serverType, serverUrl, done }
+enum _Step { intro, perfil, serverType, serverUrl, done }
 
 class _Slide {
   const _Slide({
@@ -80,6 +82,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   late final List<_Step> _steps = [
     if (!widget.serverOnly) ...List.filled(_slides.length, _Step.intro),
+    _Step.perfil,
     _Step.serverType,
     _Step.serverUrl,
     if (!widget.serverOnly) _Step.done,
@@ -91,14 +94,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
   ProbeResult? _result;
   String? _formatError;
   bool _finishing = false;
+  TipoDeConta? _tipo;
 
   _Step get _step => _steps[_page];
-  int get _firstServerPage => _steps.indexOf(_Step.serverType);
+  int get _firstServerPage => _steps.indexOf(_Step.perfil);
+
+  String _passo(_Step passo) {
+    final passos = _steps.where((s) => s != _Step.intro && s != _Step.done).toList();
+    return 'Passo ${passos.indexOf(passo) + 1} de ${passos.length}';
+  }
   String get _builtUrl => _mode == null ? '' : ServerProbe.buildUrl(_url.text, _mode!);
 
   @override
   void initState() {
     super.initState();
+    _tipo = context.read<SessionStore>().tipoPreferido;
     final initial = widget.initialUrl ?? '';
     if (initial.isNotEmpty) {
       _mode = initial.startsWith('http://') ? ServerMode.local : ServerMode.hosted;
@@ -146,6 +156,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
       case _Step.intro:
       case _Step.serverType:
         _goTo(_page + 1);
+      case _Step.perfil:
+        await context.read<SessionStore>().setTipoPreferido(_tipo!);
+        _goTo(_page + 1);
       case _Step.serverUrl:
         if (_result?.ok ?? false) {
           _confirmServer(_result!.url);
@@ -174,6 +187,24 @@ class _OnboardingPageState extends State<OnboardingPage> {
   // ---------------------------------------------------------------------------
   // Servidor
   // ---------------------------------------------------------------------------
+
+  Future<void> _escanearQr() async {
+    FocusScope.of(context).unfocus();
+    final endereco = await Navigator.of(context).push<String>(MaterialPageRoute(builder: (_) => const QrServidorPage()));
+    if (endereco == null || !mounted) return;
+    setState(() {
+      _mode = endereco.startsWith('http://') ? ServerMode.local : ServerMode.hosted;
+      _url.text = endereco.replaceFirst(RegExp(r'^https?://'), '');
+      _result = null;
+      _formatError = null;
+    });
+    final pagina = _steps.indexOf(_Step.serverUrl);
+    if (_page != pagina) {
+      _goTo(pagina);
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+    }
+    if (mounted) await _test();
+  }
 
   void _selectMode(ServerMode mode) {
     setState(() {
@@ -240,6 +271,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
     switch (_step) {
       case _Step.intro:
         return _slides[_page].color;
+      case _Step.perfil:
+        return _tipo == TipoDeConta.cliente ? AppColors.clientes : AppColors.os;
       case _Step.serverType:
         return _mode == ServerMode.local ? AppColors.servicos : AppColors.clientes;
       case _Step.serverUrl:
@@ -254,8 +287,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
     switch (_step) {
       case _Step.intro:
         return _page == _firstServerPage - 1
-            ? ('Configurar servidor', Icons.arrow_forward_rounded, true)
+            ? ('Começar', Icons.arrow_forward_rounded, true)
             : ('Próximo', Icons.arrow_forward_rounded, true);
+      case _Step.perfil:
+        return ('Continuar', Icons.arrow_forward_rounded, _tipo != null);
       case _Step.serverType:
         return ('Continuar', Icons.arrow_forward_rounded, _mode != null);
       case _Step.serverUrl:
@@ -432,6 +467,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
     switch (_steps[i]) {
       case _Step.intro:
         return _IntroSlide(slide: _slides[i]);
+      case _Step.perfil:
+        return _perfilPage(context);
       case _Step.serverType:
         return _serverTypePage(context);
       case _Step.serverUrl:
@@ -440,6 +477,65 @@ class _OnboardingPageState extends State<OnboardingPage> {
         return _donePage(context);
     }
   }
+
+  // ---- Perfil ---------------------------------------------------------------
+
+  Widget _perfilPage(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(Gaps.xl, Gaps.xl, Gaps.xl, Gaps.lg),
+      child: _Entrance(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _StepLabel(_passo(_Step.perfil)),
+            const SizedBox(height: Gaps.sm),
+            Text('Como você vai\nusar o app?', style: _titleStyle(context)),
+            const SizedBox(height: Gaps.md),
+            Text(widget.serverOnly ? 'Escolha o tipo de conta e confirme o servidor.' : 'Dá para trocar depois em "Alterar", na tela de login.', style: _bodyStyle(context)),
+            const SizedBox(height: Gaps.xl),
+            _ModeCard(
+              selected: _tipo == TipoDeConta.usuario,
+              onTap: () => setState(() => _tipo = TipoDeConta.usuario),
+              icon: Icons.engineering_outlined,
+              color: AppColors.os,
+              title: 'Sou da assistência',
+              text: 'Técnico, atendente ou administrador: gerencie OS, clientes, estoque e financeiro.',
+              badgeIcon: Icons.badge_outlined,
+              badge: 'Login de usuário do painel',
+              example: 'tecnico@minhaempresa.com.br',
+            ),
+            const SizedBox(height: Gaps.md),
+            _ModeCard(
+              selected: _tipo == TipoDeConta.cliente,
+              onTap: () => setState(() => _tipo = TipoDeConta.cliente),
+              icon: Icons.person_outline_rounded,
+              color: AppColors.clientes,
+              title: 'Sou cliente',
+              text: 'Acompanhe suas ordens de serviço, compras e cobranças, e pague com PIX.',
+              badgeIcon: Icons.mail_outline_rounded,
+              badge: 'Login da área do cliente',
+              example: 'seuemail@exemplo.com',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _botaoQr() => SizedBox(
+        width: double.infinity,
+        child: OutlinedButton.icon(
+          onPressed: _escanearQr,
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.white,
+            side: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          ),
+          icon: const Icon(Icons.qr_code_scanner_rounded),
+          label: const Text('Escanear QR code do servidor'),
+        ),
+      );
 
   // ---- Tipo de servidor -----------------------------------------------------
 
@@ -450,15 +546,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const _StepLabel('Passo 1 de 2'),
+            _StepLabel(_passo(_Step.serverType)),
             const SizedBox(height: Gaps.sm),
             Text('Onde está o seu\nMAP-OS?', style: _titleStyle(context)),
             const SizedBox(height: Gaps.md),
             Text(
-              'Isso define como o app vai se conectar ao seu servidor.',
+              _tipo == TipoDeConta.cliente
+                  ? 'Use o endereço que a assistência passou para você, ou leia o QR code dela.'
+                  : 'Leia o QR code em Configurações › API do painel, ou escolha como o app vai se conectar.',
               style: _bodyStyle(context),
             ),
             const SizedBox(height: Gaps.xl),
+            _botaoQr(),
+            const SizedBox(height: Gaps.lg),
+            Text('ou informe manualmente', style: context.text.bodySmall?.copyWith(color: Colors.white54)),
+            const SizedBox(height: Gaps.md),
             _ModeCard(
               selected: _mode == ServerMode.hosted,
               onTap: () => _selectMode(ServerMode.hosted),
@@ -503,7 +605,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const _StepLabel('Passo 2 de 2'),
+            _StepLabel(_passo(_Step.serverUrl)),
             const SizedBox(height: Gaps.sm),
             Text('Qual o endereço\ndo servidor?', style: _titleStyle(context)),
             const SizedBox(height: Gaps.md),
@@ -550,8 +652,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   ),
                 ),
                 prefixIconConstraints: const BoxConstraints(minHeight: 56),
-                suffixIcon: _url.text.isEmpty || _testing
+                suffixIcon: _testing
                     ? null
+                    : _url.text.isEmpty
+                    ? IconButton(tooltip: 'Ler QR code', icon: const Icon(Icons.qr_code_scanner_rounded, size: 22), onPressed: _escanearQr)
                     : IconButton(
                         tooltip: 'Limpar',
                         icon: const Icon(Icons.close_rounded, size: 20),
@@ -586,7 +690,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               child: Text(
                 local
                     ? 'Dica: o celular precisa estar no mesmo Wi-Fi do servidor.'
-                    : 'Não precisa digitar "https://" nem "/api/v1".',
+                    : 'Não precisa digitar "https://" nem "/api/v2".',
                 style: context.text.bodySmall?.copyWith(color: Colors.white54),
               ),
             ),
@@ -644,7 +748,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 Text('Tudo pronto!', style: _titleStyle(context), textAlign: TextAlign.center),
                 const SizedBox(height: Gaps.md),
                 Text(
-                  'Seu servidor está configurado. Agora é só entrar com o seu usuário do MAP-OS.',
+                  _tipo == TipoDeConta.cliente
+                      ? 'Seu servidor está configurado. Agora é só entrar com o e-mail e a senha da área do cliente.'
+                      : 'Seu servidor está configurado. Agora é só entrar com o seu usuário do MAP-OS.',
                   style: _bodyStyle(context),
                   textAlign: TextAlign.center,
                 ),

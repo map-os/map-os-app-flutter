@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 
-/// Constantes globais do aplicativo.
 abstract final class AppConfig {
   static const String appName = 'MAP-OS';
-  static const String appVersion = '3.0.0';
-  static const String apiPrefix = '/api/v1';
+  static const String appVersion = '4.0.0';
+  static const String apiPrefix = '/api/v2';
+  static const String legacyApiPrefix = '/api/v1';
 
   static const Duration requestTimeout = Duration(seconds: 20);
   static const int pageSize = 20;
@@ -13,8 +13,6 @@ abstract final class AppConfig {
   static const String appSiteUrl = 'https://map-os.github.io/map-os-app-flutter';
   static const String communityUrl = 'https://chat.whatsapp.com/GVSg8tPQzXy0grfYpRfQps';
 
-  /// Normaliza a URL digitada pelo usuário:
-  /// adiciona https://, remove barras finais e o sufixo /api/v1.
   static String normalizeBaseUrl(String input) {
     var url = input.trim();
     if (url.isEmpty) return url;
@@ -27,8 +25,10 @@ abstract final class AppConfig {
     while (url.endsWith('/')) {
       url = url.substring(0, url.length - 1);
     }
-    if (url.endsWith(apiPrefix)) {
-      url = url.substring(0, url.length - apiPrefix.length);
+    for (final prefix in [apiPrefix, legacyApiPrefix, '/api/docs']) {
+      if (url.endsWith(prefix)) {
+        url = url.substring(0, url.length - prefix.length);
+      }
     }
     return url;
   }

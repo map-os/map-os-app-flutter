@@ -5,12 +5,13 @@ import '../../../data/models/ordem_servico.dart';
 import '../os_detail_page.dart';
 
 class OsCard extends StatelessWidget {
-  const OsCard({super.key, required this.os, this.onChanged});
+  const OsCard({super.key, required this.os, this.onChanged, this.destino});
 
   final OrdemServico os;
 
   /// Chamado ao voltar da tela de detalhe (para recarregar a lista).
   final VoidCallback? onChanged;
+  final Widget Function(int id)? destino;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class OsCard extends StatelessWidget {
     return AppCard(
       padding: const EdgeInsets.all(Gaps.lg),
       onTap: () async {
-        await Navigator.push(context, MaterialPageRoute(builder: (_) => OsDetailPage(osId: os.id)));
+        await Navigator.push(context, MaterialPageRoute(builder: (_) => destino?.call(os.id) ?? OsDetailPage(osId: os.id)));
         onChanged?.call();
       },
       child: Column(

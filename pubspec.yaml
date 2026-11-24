@@ -2,7 +2,7 @@ name: mapos_app
 description: "MAP-OS Mobile — gestão de ordens de serviço."
 publish_to: 'none'
 
-version: 3.0.0+30
+version: 4.0.0+40
 
 environment:
   sdk: ^3.7.2
@@ -29,6 +29,10 @@ dependencies:
   image_picker: ^1.1.2
   share_plus: ^13.3.1
   cupertino_icons: ^1.0.8
+  flutter_secure_storage: ^11.2.0
+  mobile_scanner: ^7.4.4
+  file_picker: ^13.3.2
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:

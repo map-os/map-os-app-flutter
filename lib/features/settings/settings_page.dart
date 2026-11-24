@@ -5,6 +5,7 @@ import '../../app/app_state.dart';
 import '../../core/config/app_config.dart';
 import '../../core/storage/session_store.dart';
 import '../../core/widgets/ui.dart';
+import '../../data/repositories/cadastros_repository.dart';
 import '../about/about_page.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -39,7 +40,17 @@ class SettingsPage extends StatelessWidget {
                           ButtonSegment(value: ThemeMode.dark, icon: Icon(Icons.dark_mode_outlined), label: Text('Escuro')),
                         ],
                         selected: {theme.mode},
-                        onSelectionChanged: (s) => theme.setMode(s.first),
+                        onSelectionChanged: (s) {
+                          theme.setMode(s.first);
+                          if (auth.loggedIn && !auth.isCliente) {
+                            final modo = switch (s.first) {
+                              ThemeMode.light => 'claro',
+                              ThemeMode.dark => 'escuro',
+                              ThemeMode.system => 'sistema',
+                            };
+                            context.read<ContaRepository>().salvarTema(modo).catchError((_) {});
+                          }
+                        },
                       ),
                     ],
                   ),

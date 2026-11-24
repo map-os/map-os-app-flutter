@@ -16,10 +16,13 @@ double asDouble(dynamic v, [double fallback = 0]) {
 
 String asString(dynamic v) => v == null ? '' : v.toString();
 
+Map<String, dynamic> asMap(dynamic v) => v is Map ? Map<String, dynamic>.from(v) : <String, dynamic>{};
+
 DateTime? asDate(dynamic v) {
   final s = asString(v);
   if (s.isEmpty || s.startsWith('0000')) return null;
-  return DateTime.tryParse(s);
+  final data = DateTime.tryParse(s);
+  return data != null && data.isUtc ? data.toLocal() : data;
 }
 
 abstract final class Fmt {
@@ -28,6 +31,7 @@ abstract final class Fmt {
   static final _date = DateFormat('dd/MM/yyyy', 'pt_BR');
   static final _dateShort = DateFormat("dd 'de' MMM", 'pt_BR');
   static final _dateTime = DateFormat('dd/MM/yyyy HH:mm', 'pt_BR');
+  static final _iso = DateFormat('yyyy-MM-dd');
 
   static String money(num? value) => _money.format(value ?? 0);
 
@@ -40,8 +44,7 @@ abstract final class Fmt {
   static String dateShort(DateTime? d) => d == null ? '—' : _dateShort.format(d);
   static String dateTime(DateTime? d) => d == null ? '—' : _dateTime.format(d);
 
-  /// Formato aceito pela API ao criar/editar OS.
-  static String apiDate(DateTime d) => _date.format(d);
+  static String apiDate(DateTime d) => _iso.format(d);
 
   static DateTime? parseDate(String text) {
     try {

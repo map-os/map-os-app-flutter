@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/app_state.dart';
+import '../../core/storage/session_store.dart';
 import '../../core/config/app_config.dart';
+import '../../core/network/api_exception.dart';
 import '../../core/utils/input_masks.dart';
 import '../../core/widgets/ui.dart';
 import '../easter_egg/julio_page.dart';
@@ -22,6 +24,9 @@ class _LoginPageState extends State<LoginPage> {
   final _server = TextEditingController();
   final _email = TextEditingController();
   final _password = TextEditingController();
+  final _codigo = TextEditingController();
+  String? _desafio;
+  late TipoDeConta _tipo = context.read<AuthState>().tipoPreferido;
   bool _obscure = true;
   bool _loading = false;
   String? _error;
@@ -39,6 +44,7 @@ class _LoginPageState extends State<LoginPage> {
     _server.dispose();
     _email.dispose();
     _password.dispose();
+    _codigo.dispose();
     super.dispose();
   }
 
@@ -50,12 +56,14 @@ class _LoginPageState extends State<LoginPage> {
         builder: (_) => OnboardingPage(serverOnly: true, initialUrl: _server.text),
       ),
     );
-    if (url == null || !mounted) return;
-    await context.read<AuthState>().setServer(url);
+    if (!mounted) return;
+    final tipo = context.read<AuthState>().tipoPreferido;
+    if (url != null) await context.read<AuthState>().setServer(url);
     if (!mounted) return;
     setState(() {
-      _server.text = url;
-      _error = null;
+      if (url != null) _server.text = url;
+      if (tipo != _tipo) _error = null;
+      _tipo = tipo;
     });
   }
 
@@ -67,13 +75,23 @@ class _LoginPageState extends State<LoginPage> {
       _error = null;
     });
     try {
-      await context.read<AuthState>().login(
-            serverUrl: _server.text,
-            email: _email.text,
-            password: _password.text,
-          );
+      final auth = context.read<AuthState>();
+      final desafio = _desafio == null
+          ? await auth.login(serverUrl: _server.text, email: _email.text, password: _password.text, tipo: _tipo)
+          : await auth.confirmarSegundoFator(desafio: _desafio!, codigo: _codigo.text);
+      if (mounted && desafio != null) {
+        setState(() {
+          _desafio = desafio;
+          _codigo.clear();
+        });
+      }
     } catch (e) {
-      if (mounted) setState(() => _error = e.toString());
+      if (mounted) {
+        setState(() {
+          _error = friendlyError(e);
+          if (e is ApiException && e.codigo == 'desafio_invalido') _desafio = null;
+        });
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -152,6 +170,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildForm(BuildContext context) {
+    if (_desafio != null) return _buildSegundoFator(context);
     return Form(
       key: _form,
       child: AutofillGroup(
@@ -160,7 +179,10 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             Text('Entrar', style: context.text.headlineSmall),
             const SizedBox(height: Gaps.xs),
-            Text('Acesse sua conta do MAP-OS para continuar.', style: context.text.bodyMedium?.copyWith(color: context.tokens.muted)),
+            Text(
+              _tipo == TipoDeConta.cliente ? 'Acompanhe suas OS, compras e cobranças.' : 'Acesse sua conta do MAP-OS para continuar.',
+              style: context.text.bodyMedium?.copyWith(color: context.tokens.muted),
+            ),
             const SizedBox(height: Gaps.xl),
             _serverField(context),
             const SizedBox(height: Gaps.md),
@@ -214,17 +236,59 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Widget _buildSegundoFator(BuildContext context) {
+    return Form(
+      key: _form,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('Verificação em duas etapas', style: context.text.headlineSmall),
+          const SizedBox(height: Gaps.xs),
+          Text(
+            'Digite o código de 6 dígitos do aplicativo autenticador ou um código de recuperação.',
+            style: context.text.bodyMedium?.copyWith(color: context.tokens.muted),
+          ),
+          const SizedBox(height: Gaps.xl),
+          AppTextField(
+            controller: _codigo,
+            label: 'Código',
+            icon: Icons.pin_outlined,
+            keyboardType: TextInputType.visiblePassword,
+            textInputAction: TextInputAction.done,
+            autofillHints: const [AutofillHints.oneTimeCode],
+            validator: (v) => Validators.required(v, 'Código'),
+          ),
+          if (_error != null) ...[
+            const SizedBox(height: Gaps.lg),
+            Text(_error!, style: const TextStyle(color: AppColors.danger)),
+          ],
+          const SizedBox(height: Gaps.xl),
+          SizedBox(height: 52, child: LoadingButton(label: 'Confirmar', loading: _loading, onPressed: _submit)),
+          const SizedBox(height: Gaps.sm),
+          TextButton(
+            onPressed: _loading ? null : () => setState(() {
+              _desafio = null;
+              _error = null;
+            }),
+            child: const Text('Voltar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _serverField(BuildContext context) {
     final empty = _server.text.isEmpty;
     final local = _server.text.startsWith('http://');
+    final cliente = _tipo == TipoDeConta.cliente;
     return AppCard(
       padding: const EdgeInsets.symmetric(horizontal: Gaps.md, vertical: Gaps.sm),
       onTap: _loading ? null : _changeServer,
       child: Row(
         children: [
           IconBadge(
-            empty ? Icons.dns_outlined : (local ? Icons.router_outlined : Icons.cloud_done_outlined),
-            color: empty ? AppColors.accent : AppColors.servicos,
+            empty ? Icons.dns_outlined : (cliente ? Icons.person_outline_rounded : Icons.engineering_outlined),
+            color: empty ? AppColors.accent : (cliente ? AppColors.clientes : AppColors.os),
             size: 36,
           ),
           const SizedBox(width: Gaps.md),
@@ -233,7 +297,7 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  empty ? 'Servidor' : (local ? 'Servidor · rede local' : 'Servidor · hospedado'),
+                  [cliente ? 'Cliente' : 'Assistência', if (!empty) local ? 'rede local' : 'hospedado'].join(' · '),
                   style: context.text.bodySmall,
                 ),
                 Text(

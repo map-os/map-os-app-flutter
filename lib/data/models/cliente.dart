@@ -20,6 +20,8 @@ class Cliente {
     this.contato = '',
     this.fornecedor = false,
     this.dataCadastro,
+    this.totalOs = 0,
+    this.totalVendas = 0,
     this.ordens = const [],
   });
 
@@ -40,62 +42,82 @@ class Cliente {
   final String contato;
   final bool fornecedor;
   final DateTime? dataCadastro;
-
-  /// OS do cliente (vem em `ordensServicos` no GET /clientes/{id}).
+  final int totalOs;
+  final int totalVendas;
   final List<OrdemServico> ordens;
 
   String get phone => celular.isNotEmpty ? celular : telefone;
 
   String get enderecoCompleto {
     final linha1 = [rua, numero].where((s) => s.isNotEmpty).join(', ');
-    final linha2 = [bairro, [cidade, estado].where((s) => s.isNotEmpty).join('/')]
-        .where((s) => s.isNotEmpty)
-        .join(' · ');
-    return [linha1, if (complemento.isNotEmpty) complemento, linha2, cep]
-        .where((s) => s.isNotEmpty)
-        .join('\n');
+    final linha2 = [bairro, [cidade, estado].where((s) => s.isNotEmpty).join('/')].where((s) => s.isNotEmpty).join(' · ');
+    return [linha1, if (complemento.isNotEmpty) complemento, linha2, cep].where((s) => s.isNotEmpty).join('\n');
   }
 
-  factory Cliente.fromJson(Map<String, dynamic> j) => Cliente(
-        id: asInt(j['idClientes']),
-        nome: Fmt.plain(j['nomeCliente']),
-        pessoaFisica: asString(j['pessoa_fisica']) != '0',
-        documento: asString(j['documento']),
-        telefone: asString(j['telefone']),
-        celular: asString(j['celular']),
-        email: asString(j['email']),
-        rua: asString(j['rua']),
-        numero: asString(j['numero']),
-        complemento: asString(j['complemento']),
-        bairro: asString(j['bairro']),
-        cidade: asString(j['cidade']),
-        estado: asString(j['estado']),
-        cep: asString(j['cep']),
-        contato: asString(j['contato']),
-        fornecedor: asString(j['fornecedor']) == '1',
-        dataCadastro: asDate(j['dataCadastro']),
-        ordens: (j['ordensServicos'] is List)
-            ? ((j['ordensServicos'] as List).whereType<Map>().map((e) => OrdemServico.fromJson(Map<String, dynamic>.from(e))).toList()
-              ..sort((a, b) => b.id.compareTo(a.id)))
-            : const [],
+  Cliente comOrdens(List<OrdemServico> ordens) => Cliente(
+        id: id,
+        nome: nome,
+        pessoaFisica: pessoaFisica,
+        documento: documento,
+        telefone: telefone,
+        celular: celular,
+        email: email,
+        rua: rua,
+        numero: numero,
+        complemento: complemento,
+        bairro: bairro,
+        cidade: cidade,
+        estado: estado,
+        cep: cep,
+        contato: contato,
+        fornecedor: fornecedor,
+        dataCadastro: dataCadastro,
+        totalOs: totalOs,
+        totalVendas: totalVendas,
+        ordens: ordens,
       );
 
+  factory Cliente.fromJson(Map<String, dynamic> j) {
+    final e = asMap(j['endereco']);
+    return Cliente(
+      id: asInt(j['id']),
+      nome: asString(j['nome']),
+      pessoaFisica: j['tipo_pessoa'] != 'juridica',
+      documento: asString(j['documento']),
+      telefone: asString(j['telefone']),
+      celular: asString(j['celular']),
+      email: asString(j['email']),
+      rua: asString(e['rua']),
+      numero: asString(e['numero']),
+      complemento: asString(e['complemento']),
+      bairro: asString(e['bairro']),
+      cidade: asString(e['cidade']),
+      estado: asString(e['estado']),
+      cep: asString(e['cep']),
+      contato: asString(j['contato']),
+      fornecedor: j['fornecedor'] == true,
+      dataCadastro: asDate(j['data_cadastro']),
+      totalOs: asInt(j['total_os']),
+      totalVendas: asInt(j['total_vendas']),
+    );
+  }
+
   Map<String, dynamic> toJson() => {
-        if (id > 0) 'idClientes': id,
-        'nomeCliente': nome,
-        'pessoa_fisica': pessoaFisica ? 1 : 0,
+        'nome': nome,
         'documento': documento,
         'telefone': telefone,
         'celular': celular,
         'email': email,
-        'rua': rua,
-        'numero': numero,
-        'complemento': complemento,
-        'bairro': bairro,
-        'cidade': cidade,
-        'estado': estado,
-        'cep': cep,
         'contato': contato,
-        'fornecedor': fornecedor ? 1 : 0,
+        'fornecedor': fornecedor,
+        'endereco': {
+          'cep': cep,
+          'rua': rua,
+          'numero': numero,
+          'complemento': complemento,
+          'bairro': bairro,
+          'cidade': cidade,
+          'estado': estado,
+        },
       };
 }

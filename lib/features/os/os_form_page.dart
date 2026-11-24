@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/widgets/ui.dart';
-import '../../data/models/cliente.dart';
+import '../../data/models/catalogo.dart';
 import '../../data/models/conta.dart';
 import '../../data/models/ordem_servico.dart';
 import '../../data/repositories/cadastros_repository.dart';
@@ -39,6 +39,8 @@ class _OsFormPageState extends State<OsFormPage> {
   late final _observacoes = TextEditingController(text: Fmt.plain(_os?.observacoes));
   late final _laudo = TextEditingController(text: Fmt.plain(_os?.laudoTecnico));
   late final _garantia = TextEditingController(text: _os?.garantia);
+  late int? _termoId = _os?.termoGarantiaId;
+  late String _termoNome = _os?.termoGarantia ?? '';
 
   bool _saving = false;
   bool _submitted = false;
@@ -74,15 +76,15 @@ class _OsFormPageState extends State<OsFormPage> {
 
   Future<void> _pickCliente() async {
     final repo = context.read<ClientesRepository>();
-    final c = await showSearchPicker<Cliente>(
+    final c = await showSearchPicker<Sugestao>(
       context,
       title: 'Selecionar cliente',
-      hint: 'Buscar cliente',
-      fetch: (s) => repo.list(search: s),
+      hint: 'Buscar por nome, telefone ou documento',
+      fetch: repo.sugestoes,
       itemBuilder: (context, c) => ListTile(
         leading: InitialsAvatar(c.nome, size: 38),
         title: Text(c.nome, maxLines: 1, overflow: TextOverflow.ellipsis),
-        subtitle: Text([c.phone, c.documento].where((s) => s.isNotEmpty).join(' · ')),
+        subtitle: c.detalhe.isEmpty ? null : Text(c.detalhe),
       ),
     );
     if (c != null) {
@@ -93,21 +95,34 @@ class _OsFormPageState extends State<OsFormPage> {
     }
   }
 
+  Future<void> _pickTermo() async {
+    final repo = context.read<OsRepository>();
+    final t = await showSearchPicker<Sugestao>(
+      context,
+      title: 'Termo de garantia',
+      hint: 'Buscar termo',
+      fetch: repo.termosDeGarantia,
+      itemBuilder: (context, t) => ListTile(leading: const Icon(Icons.verified_user_outlined), title: Text(t.nome)),
+    );
+    if (t != null) {
+      setState(() {
+        _termoId = t.id;
+        _termoNome = t.nome;
+      });
+    }
+  }
+
   Future<void> _pickUsuario() async {
     final repo = context.read<ContaRepository>();
     final u = await showSearchPicker<Usuario>(
       context,
       title: 'Selecionar técnico',
       hint: 'Buscar técnico',
-      fetch: (s) async {
-        final all = await repo.usuarios();
-        final q = s.toLowerCase();
-        return q.isEmpty ? all : all.where((u) => u.nome.toLowerCase().contains(q)).toList();
-      },
+      fetch: (s) => repo.usuarios(search: s),
       itemBuilder: (context, u) => ListTile(
         leading: InitialsAvatar(u.nome, size: 38, imageUrl: u.fotoUrl),
         title: Text(u.nome),
-        subtitle: Text(u.email),
+        subtitle: u.telefone.isEmpty ? null : Text(u.telefone),
       ),
     );
     if (u != null) {
@@ -138,6 +153,7 @@ class _OsFormPageState extends State<OsFormPage> {
       observacoes: _observacoes.text.trim(),
       laudoTecnico: _laudo.text.trim(),
       garantia: _garantia.text.trim(),
+      termoGarantiaId: _termoId,
     );
     final repo = context.read<OsRepository>();
     try {
@@ -262,6 +278,12 @@ class _OsFormPageState extends State<OsFormPage> {
                           textCapitalization: TextCapitalization.sentences,
                         ),
                         AppTextField(controller: _garantia, label: 'Garantia (dias)', icon: Icons.verified_user_outlined, keyboardType: TextInputType.number),
+                        PickerField(
+                          label: 'Termo de garantia',
+                          icon: Icons.gavel_outlined,
+                          value: _termoNome,
+                          onTap: _pickTermo,
+                        ),
                       ],
                     ),
                   ],

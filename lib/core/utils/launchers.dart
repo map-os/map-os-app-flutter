@@ -7,6 +7,8 @@ abstract final class Launch {
   static Future<bool> phone(String number) =>
       launchUrl(Uri(scheme: 'tel', path: Fmt.onlyDigits(number)));
 
+  static Future<bool> url(String endereco) => launchUrl(Uri.parse(endereco), mode: LaunchMode.externalApplication);
+
   static Future<bool> email(String address) => launchUrl(Uri(scheme: 'mailto', path: address));
 
   static Future<bool> whatsapp(String number, {String text = ''}) {
